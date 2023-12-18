@@ -17,9 +17,9 @@ using AnyCAD.Foundation;
 using AnyCAD.WPF;
 using System.Security.Cryptography;
 using MVUnity.Geometry3D;
-using MVCADTest.Graphics;
+using MViewer.Graphics;
 
-namespace MVCADTest
+namespace MViewer
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑

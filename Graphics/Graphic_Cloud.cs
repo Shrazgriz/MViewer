@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MVCADTest.Graphics
+namespace MViewer.Graphics
 {
     internal class Graphic_Cloud
     {

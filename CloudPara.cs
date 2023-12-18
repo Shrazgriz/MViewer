@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Windows.Media;
 using MVUnity;
 
-namespace MVCADTest
+namespace MViewer
 {
     public class CloudPara : INotifyPropertyChanged
     {
