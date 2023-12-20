@@ -40,19 +40,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AnyCAD.Foundation.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
-      <HintPath>..\MVUnity\packages\AnyCAD.Foundation.NET.2023.12.1.1706\lib\net48\AnyCAD.Foundation.NET4.dll</HintPath>
-    </Reference>
-    <Reference Include="AnyCAD.Platform.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
-      <HintPath>..\MVUnity\packages\AnyCAD.Platform.NET.2023.12.1.1706\lib\net48\AnyCAD.Platform.NET4.dll</HintPath>
+      <HintPath>packages\AnyCAD.Foundation.NET.2023.12.1.1706\lib\net48\AnyCAD.Foundation.NET4.dll</HintPath>
     </Reference>
     <Reference Include="AnyCAD.Simulate.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
-      <HintPath>..\MVUnity\packages\AnyCAD.Simulate.NET.2023.12.1.1706\lib\net48\AnyCAD.Simulate.NET4.dll</HintPath>
+      <HintPath>packages\AnyCAD.Simulate.NET.2023.12.1.1706\lib\net48\AnyCAD.Simulate.NET4.dll</HintPath>
     </Reference>
     <Reference Include="AnyCAD.WinForms.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
-      <HintPath>..\MVUnity\packages\AnyCAD.Rapid.NET.2023.12.1.1706\lib\net48\AnyCAD.WinForms.NET4.dll</HintPath>
+      <HintPath>packages\AnyCAD.Rapid.NET.2023.12.1.1706\lib\net48\AnyCAD.WinForms.NET4.dll</HintPath>
     </Reference>
     <Reference Include="AnyCAD.WPF.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
-      <HintPath>..\MVUnity\packages\AnyCAD.Rapid.NET.2023.12.1.1706\lib\net48\AnyCAD.WPF.NET4.dll</HintPath>
+      <HintPath>packages\AnyCAD.Rapid.NET.2023.12.1.1706\lib\net48\AnyCAD.WPF.NET4.dll</HintPath>
+    </Reference>
+    <Reference Include="MVUnity, Version=1.1.0.9, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MVUnity\bin\x64\Debug\MVUnity.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -127,20 +128,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MVUnity\MVUnity.csproj">
-      <Project>{a7a67a7a-ed35-418a-af53-20764adf01a9}</Project>
-      <Name>MVUnity</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\MVUnity\packages\AnyCAD.Foundation.Win32.2023.12.1.1706\build\net\AnyCAD.Foundation.Win32.targets" Condition="Exists('..\MVUnity\packages\AnyCAD.Foundation.Win32.2023.12.1.1706\build\net\AnyCAD.Foundation.Win32.targets')" />
+  <Import Project="packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets" Condition="Exists('packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\MVUnity\packages\AnyCAD.Foundation.Win32.2023.12.1.1706\build\net\AnyCAD.Foundation.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\MVUnity\packages\AnyCAD.Foundation.Win32.2023.12.1.1706\build\net\AnyCAD.Foundation.Win32.targets'))" />
-    <Error Condition="!Exists('..\MVUnity\packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\MVUnity\packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets'))" />
+    <Error Condition="!Exists('packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets'))" />
   </Target>
-  <Import Project="..\MVUnity\packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets" Condition="Exists('..\MVUnity\packages\AnyCAD.Foundation.Win64.2023.12.1.1706\build\net\AnyCAD.Foundation.Win64.targets')" />
 </Project>

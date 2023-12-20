@@ -18,6 +18,7 @@ using AnyCAD.WPF;
 using System.Security.Cryptography;
 using MVUnity.Geometry3D;
 using MViewer.Graphics;
+using System.Drawing;
 
 namespace MViewer
 {
@@ -49,8 +50,8 @@ namespace MViewer
             InitializeComponent();
             DataContext = this;
 
-            XYZCommand = new Command(param => ReadFile());
-            ASCCommand = new Command(param => DrawAll());
+            XYZCommand = new Command(param => ReadXYZ());
+            ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
             showPoints = true;
         }
@@ -60,23 +61,24 @@ namespace MViewer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void DrawAll()
+        private void ReadASC()
         {
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "asc文件|*.asc" };
             if (openfile.ShowDialog() == true)
             {
-                //pts = ReadPoints(openfile.FileName);
-                //enumerator = pts.GetEnumerator();
-                //triangulator = new DelaunayTriangulator(new V2(DiagramWidth, DiagramHeight), V2.Zero);
-                //while (enumerator.MoveNext())
-                //{
-                //    V2 value = enumerator.Current;
-                //    triangulator.AddPoint(value);
-                //}
-                //var triangulation = triangulator.DomesticTris;
-                //DrawTriangulation(triangulation, System.Windows.Media.Brushes.LightBlue);
-                //var border = triangulator.GetBorderSegs();
-                //DrawSegments(border);
+                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileName));
+                if (readCloud.ShowDialog() == true)
+                {
+                    mRenderCtrl.ClearScene();
+                    var filereader = new CloudReader
+                    {
+                        Scale = readCloud.Para.Cloudscale,
+                        FileName = readCloud.Para.CloudFilePath,
+                        Format = readCloud.Para.Cloudformat
+                    };
+                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
+                    cloud.Run(mRenderCtrl);
+                }
             }
         }
         
@@ -124,7 +126,7 @@ namespace MViewer
             clip.PolySelection(cloud, bound);
         }
 
-        private void ReadFile()
+        private void ReadXYZ()
         {
             Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog();
             if (open.ShowDialog() == true)

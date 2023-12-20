@@ -23,7 +23,7 @@
                     </MenuItem>
                     <Separator/>
                     <MenuItem      Header="XYZ" x:Name="menuXYZ"  Command="{Binding Path=XYZCommand}"/>
-                    <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=DrawCommand}">
+                    <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=ASCCommand}">
                     </MenuItem>
                 </MenuItem>
                 <MenuItem    Header="格栅化">
@@ -35,9 +35,6 @@
             </Menu>
         </DockPanel>
         <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="4">
-            <Button Content="读取模型" Command="{Binding Path=CADCommand}" FontSize="24" Margin="2" />
-            <Button Content="读取xyz" Command="{Binding Path=XYZCommand}" FontSize="24" Margin="2" />
-            <Button Content="读取asc" Command="{Binding Path=DrawCommand}" FontSize="24" Margin="2" />
             <Button Content="点云开关" Click="ButtonPoints_Click" FontSize="24" Margin="2"/>
             <Button Content="样条曲线" Click="Button_Click" FontSize="24" Margin="2"/>
         </StackPanel>

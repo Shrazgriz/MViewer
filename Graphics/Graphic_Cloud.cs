@@ -53,6 +53,9 @@ namespace MViewer.Graphics
                 case ".pcd":
                     ReadPCD();
                     break;
+                case ".asc":
+                    ReadASC();
+                    break;
                 default:
                     break;
             }
@@ -103,6 +106,26 @@ namespace MViewer.Graphics
                     pts.Add(pt);
                 }
                 #endregion
+            }
+            return true;
+        }
+        private bool ReadASC()
+        {
+            var points = filereader.ReadASC(filereader.VertSkip);
+            ColorLookupTable mColorTable = new ColorLookupTable();
+            mColorTable.SetMinValue((float)filereader.Min.Z);
+            mColorTable.SetMaxValue((float)filereader.Max.Z);
+            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            foreach (V3 pt in points)
+            {
+                mPositions.Append((float)pt.X);
+                mPositions.Append((float)pt.Y);
+                mPositions.Append((float)pt.Z);
+                var color = mColorTable.GetColor((float)pt.Z);
+                mColors.Append(color.x);
+                mColors.Append(color.y);
+                mColors.Append(color.z);
+                pts.Add(pt);
             }
             return true;
         }
