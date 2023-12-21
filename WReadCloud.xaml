@@ -31,6 +31,8 @@
                          Text="{Binding Path= Cloudscale, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
             <TextBox x:Name="TB_Format" Margin="4" 
                          Text="{Binding Path= Cloudformat, Mode=TwoWay}"/>
+            <TextBox x:Name="TB_VertSkip" Margin="4" 
+                         Text="{Binding Path= VertSkip, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"

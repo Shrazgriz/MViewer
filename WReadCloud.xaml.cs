@@ -57,6 +57,7 @@ namespace MViewer
             cfa.AppSettings.Settings["CloudScale"].Value = Para.Cloudscale.ToString();
             cfa.AppSettings.Settings["PointSize"].Value = Para.PointSize.ToString();
             cfa.AppSettings.Settings["PointBrush"].Value = Para.PointBrush.ToString();
+            cfa.AppSettings.Settings["VertSkip"].Value=Para.VertSkip.ToString();
             cfa.Save();
         }
     }

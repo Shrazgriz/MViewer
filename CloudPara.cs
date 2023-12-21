@@ -12,11 +12,12 @@ namespace MViewer
         private string cloudFilePath;
         private Color pointColor;
         private int pointSize;
-
+        
         public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
         public string CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
         public int PointSize { get => pointSize; set => pointSize = value; }
+        public int VertSkip { get; set; }
         public SolidColorBrush PointBrush
         {
             get
@@ -48,6 +49,7 @@ namespace MViewer
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
             string burshString = ConfigurationManager.AppSettings["PointBrush"];
             PointColor = (Color)ColorConverter.ConvertFromString(burshString);
+            VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
         }
     }
 }

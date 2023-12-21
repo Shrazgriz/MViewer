@@ -74,7 +74,8 @@ namespace MViewer
                     {
                         Scale = readCloud.Para.Cloudscale,
                         FileName = readCloud.Para.CloudFilePath,
-                        Format = readCloud.Para.Cloudformat
+                        Format = readCloud.Para.Cloudformat,
+                        VertSkip= readCloud.Para.VertSkip
                     };
                     Graphic_Cloud cloud = new Graphic_Cloud(filereader);
                     cloud.Run(mRenderCtrl);
@@ -139,7 +140,8 @@ namespace MViewer
                     {
                         Scale = readCloud.Para.Cloudscale,
                         FileName = readCloud.Para.CloudFilePath,
-                        Format = readCloud.Para.Cloudformat
+                        Format = readCloud.Para.Cloudformat,
+                        VertSkip = readCloud.Para.VertSkip
                     };
                     Graphic_Cloud cloud = new Graphic_Cloud(filereader);
                     cloud.Run(mRenderCtrl);
