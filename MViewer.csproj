@@ -78,6 +78,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CloudPara.cs" />
+    <Compile Include="WMessage.xaml.cs">
+      <DependentUpon>WMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WReadCloud.xaml.cs">
       <DependentUpon>WReadCloud.xaml</DependentUpon>
     </Compile>
@@ -96,6 +99,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="WMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WReadCloud.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

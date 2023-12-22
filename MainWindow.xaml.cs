@@ -101,6 +101,8 @@ namespace MViewer
         private void mRenderCtrl_ViewerReady()
         {
             mRenderCtrl.ViewContext.SetRectPick(true);
+            mRenderCtrl.ClearPickFilters();
+            mRenderCtrl.AddPickFilter(EnumShapeFilter.Vertex);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -129,7 +131,9 @@ namespace MViewer
 
         private void ReadXYZ()
         {
-            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog() {
+                Filter = "xyz文件|*.xyz"
+            };
             if (open.ShowDialog() == true)
             {
                 WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
@@ -159,6 +163,41 @@ namespace MViewer
             showPoints = !showPoints;
             node.SetVisible(showPoints);
             mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
+        }
+
+        private void BN_PointMeasure_Click(object sender, RoutedEventArgs e)
+        {
+            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+            var selection = mng.GetSelection();
+            var iter = selection.CreateIterator();
+            List<V3> points = new List<V3>();
+            while (iter.More())
+            {
+                var item = iter.Current();
+                var value = item.GetPosition();
+                points.Add(ConvertVector3.ToV3(value));
+                iter.Next();
+            }
+            switch (points.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    WMessage wMessage1 = new WMessage(points[0].ToString());
+                    wMessage1.Show();
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    V3 vec1 = points[1] - points[0];
+                    V3 vec2 = points[2] - points[1];
+                    V3 cross= vec1.Cross(vec2).Normalized;
+                    WMessage wMessage3 = new WMessage(cross.ToString());
+                    wMessage3.Show();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
