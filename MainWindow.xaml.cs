@@ -39,6 +39,8 @@ namespace MViewer
         public ICommand ASCCommand { get; set; }
         public ICommand CADCommand { get; set; }
 
+        public ICommand Seg2Command { get; set; }
+
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
@@ -53,6 +55,7 @@ namespace MViewer
             XYZCommand = new Command(param => ReadXYZ());
             ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
+            Seg2Command = new Command(param => ReadSeg());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -97,7 +100,15 @@ namespace MViewer
             mRenderCtrl.ShowSceneNode(node);
             mRenderCtrl.ZoomAll();
         }
-
+        private void ReadSeg()
+        {
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
+            if (openfile.ShowDialog() == true)
+            {
+                Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
+                seg.Run(openfile.FileName);
+            }
+        }
         private void mRenderCtrl_ViewerReady()
         {
             mRenderCtrl.ViewContext.SetRectPick(true);

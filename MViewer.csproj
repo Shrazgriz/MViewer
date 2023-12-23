@@ -78,6 +78,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CloudPara.cs" />
+    <Compile Include="Graphics\Graphic_Segs.cs" />
     <Compile Include="WMessage.xaml.cs">
       <DependentUpon>WMessage.xaml</DependentUpon>
     </Compile>

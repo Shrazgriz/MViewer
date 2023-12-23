@@ -95,14 +95,19 @@ namespace MViewer.Graphics
             {
                 #region 无序点云
                 Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
+                ColorLookupTable mColorTable = new ColorLookupTable();
+                mColorTable.SetMinValue((float)filereader.Min.Z);
+                mColorTable.SetMaxValue((float)filereader.Max.Z);
+                mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
                 foreach (Point3D pt in points)
                 {
                     mPositions.Append((float)pt.X);
                     mPositions.Append((float)pt.Y);
                     mPositions.Append((float)pt.Z);
-                    mColors.Append(pColor.R);
-                    mColors.Append(pColor.G);
-                    mColors.Append(pColor.B);
+                    var color = mColorTable.GetColor((float)pt.Z);
+                    mColors.Append(color.x);
+                    mColors.Append(color.y);
+                    mColors.Append(color.z);
                     pts.Add(pt);
                 }
                 #endregion
