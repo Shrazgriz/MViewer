@@ -159,6 +159,11 @@ namespace MViewer.Graphics
         {
             if (!ReadData())
                 return;
+            var prveNode = render.Scene.FindNodeByUserId(CloudID);
+            if(prveNode != null)
+            {
+                render.Scene.RemoveNode(prveNode);
+            }
             PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
             node.SetUserId(CloudID);
             render.ShowSceneNode(node);

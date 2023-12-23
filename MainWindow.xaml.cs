@@ -72,7 +72,7 @@ namespace MViewer
                 WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileName));
                 if (readCloud.ShowDialog() == true)
                 {
-                    mRenderCtrl.ClearScene();
+                    //mRenderCtrl.ClearScene();
                     var filereader = new CloudReader
                     {
                         Scale = readCloud.Para.Cloudscale,
@@ -150,7 +150,7 @@ namespace MViewer
                 WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
                 if(readCloud.ShowDialog() == true)
                 {
-                    mRenderCtrl.ClearScene();
+                    //mRenderCtrl.ClearScene();
                     var filereader = new CloudReader
                     {
                         Scale = readCloud.Para.Cloudscale,
