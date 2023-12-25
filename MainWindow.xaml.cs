@@ -198,6 +198,9 @@ namespace MViewer
                     wMessage1.Show();
                     break;
                 case 2:
+                    V3 vec0 = points[1] - points[0];
+                    WMessage wMessage2 = new WMessage(vec0.Mod.ToString());
+                    wMessage2.Show();
                     break;
                 case 3:
                     V3 vec1 = points[1] - points[0];
