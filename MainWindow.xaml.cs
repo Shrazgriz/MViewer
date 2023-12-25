@@ -194,24 +194,30 @@ namespace MViewer
                 case 0:
                     break;
                 case 1:
-                    WMessage wMessage1 = new WMessage(points[0].ToString());
-                    wMessage1.Show();
+                    WriteLine(points[0].ToString());
                     break;
                 case 2:
                     V3 vec0 = points[1] - points[0];
-                    WMessage wMessage2 = new WMessage(vec0.Mod.ToString());
-                    wMessage2.Show();
+                    WriteLine(vec0.Mod.ToString());
                     break;
                 case 3:
                     V3 vec1 = points[1] - points[0];
                     V3 vec2 = points[2] - points[1];
                     V3 cross= vec1.Cross(vec2).Normalized;
-                    WMessage wMessage3 = new WMessage(cross.ToString());
-                    wMessage3.Show();
+                    WriteLine(cross.ToString());
                     break;
                 default:
                     break;
             }
+        }
+
+        private void AppendLine(string text)
+        {
+            TB_Output.Text += string.Format("{0}\n", text);
+        }
+        private void WriteLine(string text)
+        {
+            TB_Output.Text = string.Format("{0}\n", text);
         }
     }
 
