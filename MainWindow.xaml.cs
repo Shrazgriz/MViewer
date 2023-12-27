@@ -38,9 +38,9 @@ namespace MViewer
         public ICommand XYZCommand { get; set; }
         public ICommand ASCCommand { get; set; }
         public ICommand CADCommand { get; set; }
-
+        public ICommand PCDCommand { get; set; }
         public ICommand Seg2Command { get; set; }
-
+        public ICommand ExpPtsCommand { get; set; }
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
@@ -56,6 +56,8 @@ namespace MViewer
             ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
             Seg2Command = new Command(param => ReadSeg());
+            PCDCommand = new Command(param => ReadPCD());
+            ExpPtsCommand = new Command(param=> ExpPts());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -85,7 +87,50 @@ namespace MViewer
                 }
             }
         }
-        
+        private void ReadPCD()
+        {
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "pcd文件|*.pcd" };
+            if (dlg.ShowDialog() == true)
+            {
+                WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileName));
+                if (readCloud.ShowDialog() == true)
+                {
+                    var filereader = new CloudReader
+                    {
+                        Scale = readCloud.Para.Cloudscale,
+                        FileName = readCloud.Para.CloudFilePath,
+                        Format = readCloud.Para.Cloudformat,
+                        VertSkip = readCloud.Para.VertSkip
+                    };
+                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
+                    cloud.Run(mRenderCtrl);
+                }
+            }
+        }
+        private void ReadXYZ()
+        {
+            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog()
+            {
+                Filter = "xyz文件|*.xyz"
+            };
+            if (open.ShowDialog() == true)
+            {
+                WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
+                if (readCloud.ShowDialog() == true)
+                {
+                    //mRenderCtrl.ClearScene();
+                    var filereader = new CloudReader
+                    {
+                        Scale = readCloud.Para.Cloudscale,
+                        FileName = readCloud.Para.CloudFilePath,
+                        Format = readCloud.Para.Cloudformat,
+                        VertSkip = readCloud.Para.VertSkip
+                    };
+                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
+                    cloud.Run(mRenderCtrl);
+                }
+            }
+        }
         private void ReadCAD()
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -99,7 +144,7 @@ namespace MViewer
 
             mRenderCtrl.ShowSceneNode(node);
             mRenderCtrl.ZoomAll();
-        }
+        }        
         private void ReadSeg()
         {
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
@@ -107,6 +152,43 @@ namespace MViewer
             {
                 Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
                 seg.Run(openfile.FileName);
+            }
+        }
+        private void ExpPts()
+        {
+            SaveFileDialog savefile = new SaveFileDialog() {Filter="xyz文件|*.xyz" };
+            if(savefile.ShowDialog() == true)
+            {
+                StreamWriter writer = new StreamWriter(savefile.FileName);
+                var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+                var selection = mng.GetSelection();
+                if(selection.GetCount() > 0)
+                {
+                    var iter = selection.CreateIterator();
+                    while (iter.More())
+                    {
+                        var item = iter.Current();
+                        var value = item.GetPosition();
+                        writer.WriteLine(value.ToString());
+                        iter.Next();
+                    }
+                    writer.Close();
+                }
+                else
+                {
+                    var pcn = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
+                    if(pcn != null)
+                    {
+                        PointCloud n = PointCloud.Cast(pcn);
+                        var count = n.GetPointCount();
+                        for (uint i = 0; i < count; i++)
+                        {
+                            var value = n.GetPosition(i);
+                            writer.WriteLine(value.ToString());
+                        }
+                    }
+                    writer.Close();
+                }
             }
         }
         private void mRenderCtrl_ViewerReady()
@@ -138,30 +220,6 @@ namespace MViewer
             MVUnity.Geometry3D.Polygon bound = new MVUnity.Geometry3D.Polygon(points);
             Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
             clip.PolySelection(cloud, bound);
-        }
-
-        private void ReadXYZ()
-        {
-            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog() {
-                Filter = "xyz文件|*.xyz"
-            };
-            if (open.ShowDialog() == true)
-            {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
-                if(readCloud.ShowDialog() == true)
-                {
-                    //mRenderCtrl.ClearScene();
-                    var filereader = new CloudReader
-                    {
-                        Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath,
-                        Format = readCloud.Para.Cloudformat,
-                        VertSkip = readCloud.Para.VertSkip
-                    };
-                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                    cloud.Run(mRenderCtrl);
-                }
-            }
         }
 
         private void ButtonPoints_Click(object sender, RoutedEventArgs e)
