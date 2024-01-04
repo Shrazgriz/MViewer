@@ -42,7 +42,7 @@
         </DockPanel>
         <Grid Grid.Row="1" Grid.Column="0" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Row="0">
@@ -50,6 +50,7 @@
             </StackPanel>            
             <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="4">
                 <Button Content="测量" x:Name="BN_PointMeasure" Click="BN_PointMeasure_Click" FontSize="24" Margin="2"/>
+                <Button Content="格栅化" x:Name="BN_CubicMtx" Click="BN_CubicMtx_Click" FontSize="24" Margin="2"/>
                 <Button Content="点云开关" Click="ButtonPoints_Click" FontSize="24" Margin="2"/>
                 <Button Content="样条曲线" Click="Button_Click" FontSize="24" Margin="2"/>
             </StackPanel>

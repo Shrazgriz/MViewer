@@ -415,5 +415,7 @@ namespace MViewer.Graphics
             RLMatrix AND2 = new RLMatrix(result, mtx.ColumnCount / 2, mtx.RowCount);
             return AND2;
         }
+
+        public List<V3> GetPoints() { return pts; }
     }
 }

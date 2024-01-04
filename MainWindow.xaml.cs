@@ -46,6 +46,7 @@ namespace MViewer
         IEnumerator<V2> enumerator;
         DelaunayTriangulator triangulator;
         const ulong CloudID = 1;
+        const ulong CubicMapID = 12;
         bool showPoints;
         public MainWindow()
         {
@@ -267,6 +268,23 @@ namespace MViewer
                 default:
                     break;
             }
+        }
+
+        private void BN_CubicMtx_Click(object sender, RoutedEventArgs e)
+        {
+            var cloud = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
+            if (cloud == null) return;
+            PointCloud pcn= PointCloud.Cast(cloud);
+            var n=pcn.GetPointCount();
+            List<V3> points = new List<V3>();
+            for (uint i = 0; i < n; i++)
+            {
+                var value = pcn.GetPosition(i);
+                points.Add(ConvertVector3.ToV3(value));
+            }
+            CubicMap cMap = CubicMap.CreateCubicMap(points,5);
+            Graphic_CMTX cmtx = new Graphic_CMTX(mRenderCtrl,cMap);
+            cmtx.DrawCubicRLMtx(2);
         }
 
         private void AppendLine(string text)
