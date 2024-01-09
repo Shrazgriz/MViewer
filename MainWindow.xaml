@@ -6,10 +6,10 @@
         xmlns:anycad="clr-namespace:AnyCAD.WPF;assembly=AnyCAD.WPF.NET4"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="MViewer" Height="450" Width="800">
+        Title="MViewer" Height="600" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="150"/>
+            <ColumnDefinition MaxWidth="180"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -19,12 +19,10 @@
         <DockPanel VerticalAlignment="Top"  Grid.ColumnSpan="2">
             <Menu  IsMainMenu="True">
                 <MenuItem    Header="读取" >
-                    <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}">
-                    </MenuItem>
+                    <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
                     <Separator/>
                     <MenuItem      Header="XYZ" x:Name="menuXYZ"  Command="{Binding Path=XYZCommand}"/>
-                    <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=ASCCommand}">
-                    </MenuItem>
+                    <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=ASCCommand}"/>
                     <MenuItem Header="PCD" Name="menuPCD" Command="{Binding Path=PCDCommand}"/>
                     <Separator/>
                     <MenuItem Header="平面线段" x:Name="menuSeg2D" Command="{Binding Path=Seg2Command}"/>
@@ -42,13 +40,21 @@
         </DockPanel>
         <Grid Grid.Row="1" Grid.Column="0" >
             <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="30"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Row="0">
                 <TextBox x:Name="TB_Output" />
-            </StackPanel>            
-            <StackPanel Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="4">
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <TreeView x:Name="TV_Models">
+                        <TreeViewItem x:Name="TVI_root"></TreeViewItem>
+                    </TreeView>
+                </ScrollViewer>
+            </StackPanel>
+            <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="4">
                 <Button Content="测量" x:Name="BN_PointMeasure" Click="BN_PointMeasure_Click" FontSize="24" Margin="2"/>
                 <Button Content="格栅化" x:Name="BN_CubicMtx" Click="BN_CubicMtx_Click" FontSize="24" Margin="2"/>
                 <Button Content="点云开关" Click="ButtonPoints_Click" FontSize="24" Margin="2"/>
