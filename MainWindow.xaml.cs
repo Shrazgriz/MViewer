@@ -39,8 +39,10 @@ namespace MViewer
         public ICommand ASCCommand { get; set; }
         public ICommand CADCommand { get; set; }
         public ICommand PCDCommand { get; set; }
+        public ICommand PLYCommand { get; set; }
         public ICommand Seg2Command { get; set; }
         public ICommand ExpPtsCommand { get; set; }
+        
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
@@ -58,6 +60,7 @@ namespace MViewer
             CADCommand = new Command(param => ReadCAD());
             Seg2Command = new Command(param => ReadSeg());
             PCDCommand = new Command(param => ReadPCD());
+            PLYCommand = new Command(param => ReadPLY());
             ExpPtsCommand = new Command(param=> ExpPts());
             showPoints = true;
         }
@@ -115,6 +118,32 @@ namespace MViewer
             Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog()
             {
                 Filter = "xyz文件|*.xyz"
+            };
+            if (open.ShowDialog() == true)
+            {
+                WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
+                if (readCloud.ShowDialog() == true)
+                {
+                    //mRenderCtrl.ClearScene();
+                    var filereader = new CloudReader
+                    {
+                        Scale = readCloud.Para.Cloudscale,
+                        FileName = readCloud.Para.CloudFilePath,
+                        Format = readCloud.Para.Cloudformat,
+                        VertSkip = readCloud.Para.VertSkip
+                    };
+                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
+                    cloud.Run(mRenderCtrl);
+                    TVI_root.Header = System.IO.Path.GetFileName(open.FileName);
+                }
+            }
+        }
+
+        private void ReadPLY()
+        {
+            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog()
+            {
+                Filter = "ply文件|*.ply"
             };
             if (open.ShowDialog() == true)
             {

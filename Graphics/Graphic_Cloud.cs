@@ -56,6 +56,9 @@ namespace MViewer.Graphics
                 case ".asc":
                     ReadASC();
                     break;
+                case ".ply":
+                    ReadPLY();
+                    break;
                 default:
                     break;
             }
@@ -138,6 +141,25 @@ namespace MViewer.Graphics
         private bool ReadPCD()
         {
             List<V3> verts = filereader.ReadPCD();
+            ColorLookupTable mColorTable = new ColorLookupTable();
+            mColorTable.SetMinValue((float)filereader.Min.Z);
+            mColorTable.SetMaxValue((float)filereader.Max.Z);
+            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            foreach (V3 pt in verts)
+            {
+                mPositions.Append((float)pt.X);
+                mPositions.Append((float)pt.Y);
+                mPositions.Append((float)pt.Z);
+                var color = mColorTable.GetColor((float)pt.Z);
+                mColors.Append(color.x);
+                mColors.Append(color.y);
+                mColors.Append(color.z);
+                pts.Add(pt);
+            }
+            return true;
+        }
+        private bool ReadPLY() {
+            List<V3> verts = filereader.ReadPLY();
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetMinValue((float)filereader.Min.Z);
             mColorTable.SetMaxValue((float)filereader.Max.Z);
