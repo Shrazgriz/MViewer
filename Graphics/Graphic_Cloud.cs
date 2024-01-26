@@ -159,7 +159,7 @@ namespace MViewer.Graphics
             return true;
         }
         private bool ReadPLY() {
-            List<V3> verts = filereader.ReadPLY();
+            List<V3> verts = filereader.ReadPLY(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetMinValue((float)filereader.Min.Z);
             mColorTable.SetMaxValue((float)filereader.Max.Z);
