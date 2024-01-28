@@ -21,16 +21,20 @@ namespace MViewer.Graphics
         const ulong OBBID = 6;
         const ulong MeshID = 10;
         const ulong Seg2ID = 11;
+        const ulong Seg3ID = 12;
         const ulong PolygonID = 1000;
         const ulong StiffID = 100;
         RenderControl render;
         LineMaterial lineMat;
         List<Segment2D> seg2s;
-        GroupSceneNode plotModel;
+        List<Segment> seg3s;
+        GroupSceneNode plot2Model;
+        GroupSceneNode plot3Model;
         public Graphic_Segs(RenderControl control)
         {
             render=control;
             seg2s = new List<Segment2D>();
+            seg3s = new List<Segment>();
             lineMat = LineMaterial.Create("MatSeg2");
             lineMat.SetColor(ColorTable.Crimson);
             lineMat.SetLineWidth(4);
@@ -49,6 +53,19 @@ namespace MViewer.Graphics
             }
             return true;
         }
+        public bool ReadSeg3(string Filename)
+        {
+            StreamReader reader = new StreamReader(Filename);
+            seg3s = new List<Segment>();
+            string line = reader.ReadLine();
+            while (line != null && line.Length != 0)
+            {
+                Segment seg3 = Segment.CreateSegment(line);
+                seg3s.Add(seg3);
+                line = reader.ReadLine();
+            }
+            return true;
+        }
 
         public void DrawSeg2()
         {
@@ -57,8 +74,8 @@ namespace MViewer.Graphics
             {
                 render.Scene.RemoveNode(prev);
             }
-            plotModel = new GroupSceneNode();
-            plotModel.SetUserId(Seg2ID);
+            plot2Model = new GroupSceneNode();
+            plot2Model.SetUserId(Seg2ID);
             
             GPntList pts = new GPntList();
             foreach (var seg in seg2s)
@@ -68,16 +85,45 @@ namespace MViewer.Graphics
                 TopoShape line = SketchBuilder.MakeLine(s,e);
                 BrepSceneNode lineNode = BrepSceneNode.Create(line, null, lineMat);
                 lineNode.SetPickable(false);
-                plotModel.AddNode(lineNode);
+                plot2Model.AddNode(lineNode);
             }
-            render.ShowSceneNode(plotModel);
+            render.ShowSceneNode(plot2Model);
         }
 
-        public void Run(string filename)
+        public void DrawSeg3()
+        {
+            var prev = render.Scene.FindNodeByUserId(Seg2ID);
+            if (prev != null)
+            {
+                render.Scene.RemoveNode(prev);
+            }
+            plot3Model = new GroupSceneNode();
+            plot3Model.SetUserId(Seg3ID);
+
+            GPntList pts = new GPntList();
+            foreach (var seg in seg3s)
+            {
+                GPnt s = new GPnt(seg.Start.X, seg.Start.Y, seg.Start.Z);
+                GPnt e = new GPnt(seg.Destination.X, seg.Destination.Y, seg.Destination.Z);
+                TopoShape line = SketchBuilder.MakeLine(s, e);
+                BrepSceneNode lineNode = BrepSceneNode.Create(line, null, lineMat);
+                lineNode.SetPickable(false);
+                plot3Model.AddNode(lineNode);
+            }
+            render.ShowSceneNode(plot3Model);
+        }
+        public void Run2(string filename)
         {
             if(ReadSeg2(filename))
             {
                 DrawSeg2();
+            }
+        }
+        public void Run3(string filename)
+        {
+            if (ReadSeg3(filename))
+            {
+                DrawSeg3();
             }
         }
     }

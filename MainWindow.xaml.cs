@@ -41,6 +41,7 @@ namespace MViewer
         public ICommand PCDCommand { get; set; }
         public ICommand PLYCommand { get; set; }
         public ICommand Seg2Command { get; set; }
+        public ICommand Seg3Command { get; set; }
         public ICommand ExpPtsCommand { get; set; }
         
         private V3 step;
@@ -58,7 +59,8 @@ namespace MViewer
             XYZCommand = new Command(param => ReadXYZ());
             ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
-            Seg2Command = new Command(param => ReadSeg());
+            Seg2Command = new Command(param => ReadSeg2());
+            Seg3Command = new Command(param => ReadSeg3());
             PCDCommand = new Command(param => ReadPCD());
             PLYCommand = new Command(param => ReadPLY());
             ExpPtsCommand = new Command(param=> ExpPts());
@@ -178,13 +180,22 @@ namespace MViewer
             mRenderCtrl.ShowSceneNode(node);
             mRenderCtrl.ZoomAll();
         }        
-        private void ReadSeg()
+        private void ReadSeg2()
         {
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
             if (openfile.ShowDialog() == true)
             {
                 Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
-                seg.Run(openfile.FileName);
+                seg.Run2(openfile.FileName);
+            }
+        }
+        private void ReadSeg3()
+        {
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
+            if (openfile.ShowDialog() == true)
+            {
+                Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
+                seg.Run3(openfile.FileName);
             }
         }
         private void ExpPts()
