@@ -140,7 +140,7 @@ namespace MViewer.Graphics
 
         private bool ReadPCD()
         {
-            List<V3> verts = filereader.ReadPCD();
+            List<V3> verts = filereader.ReadPCD(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetMinValue((float)filereader.Min.Z);
             mColorTable.SetMaxValue((float)filereader.Max.Z);
