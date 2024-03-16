@@ -338,6 +338,11 @@ namespace MViewer
         {
             TB_Output.Text = string.Format("{0}\n", text);
         }
+
+        private void BN_ToClip_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetDataObject(TB_Output.Text);
+        }
     }
 
     public class Command : ICommand

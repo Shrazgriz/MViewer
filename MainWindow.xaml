@@ -42,15 +42,16 @@
         </DockPanel>
         <Grid Grid.Row="1" Grid.Column="0" >
             <Grid.RowDefinitions>
-                <RowDefinition MaxHeight="30"/>
+                <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Vertical" VerticalAlignment="Top" Grid.Row="0">
-                <TextBox x:Name="TB_Output" />
+                <TextBox x:Name="TB_Output" Margin="4"/>
+                <Button x:Name="BN_ToClip" Content="复制到剪贴板" MinHeight="24" Margin="4" Click="BN_ToClip_Click"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="4">
                     <TreeView x:Name="TV_Models">
                         <TreeViewItem x:Name="TVI_root"></TreeViewItem>
                     </TreeView>
