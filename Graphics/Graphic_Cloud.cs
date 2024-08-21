@@ -8,6 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MViewer.Graphics
 {
@@ -181,14 +182,22 @@ namespace MViewer.Graphics
         {
             if (!ReadData())
                 return;
-            var prveNode = render.Scene.FindNodeByUserId(CloudID);
-            if(prveNode != null)
+            var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
+            if(prevNode != null)
             {
-                render.Scene.RemoveNode(prveNode);
+                render.Scene.RemoveNode(prevNode);
             }
             PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
-            node.SetUserId(CloudID);
-            render.ShowSceneNode(node);
+            prevNode.AddNode(node);
+        }
+
+        public void Append(RenderControl render)
+        {
+            if (!ReadData())
+                return;
+            var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
+            PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
+            prevNode.AddNode(node);
         }
 
         public void DrawBoundingBox(RenderControl render, float FontSize)

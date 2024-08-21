@@ -48,6 +48,7 @@ namespace MViewer
         List<V2> pts;
         IEnumerator<V2> enumerator;
         DelaunayTriangulator triangulator;
+        GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
         bool showPoints;
@@ -84,7 +85,7 @@ namespace MViewer
                     var filereader = new CloudReader
                     {
                         Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath,
+                        FileName = readCloud.Para.CloudFilePath.First(),
                         Format = readCloud.Para.Cloudformat,
                         VertSkip= readCloud.Para.VertSkip
                     };
@@ -96,22 +97,37 @@ namespace MViewer
         }
         private void ReadPCD()
         {
-            OpenFileDialog dlg = new OpenFileDialog() { Filter = "pcd文件|*.pcd" };
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "pcd文件|*.pcd", Multiselect = true };
             if (dlg.ShowDialog() == true)
             {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileName));
+                WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileNames));
                 if (readCloud.ShowDialog() == true)
                 {
-                    var filereader = new CloudReader
+                    var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(CloudID));
+                    if (prevNode != null)
                     {
-                        Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath,
-                        Format = readCloud.Para.Cloudformat,
-                        VertSkip = readCloud.Para.VertSkip
-                    };
-                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                    cloud.Run(mRenderCtrl);
+                        prevNode.Clear();
+                    }
+                    else
+                    {
+                        prevNode = new GroupSceneNode();
+                        prevNode.SetUserId(CloudID);
+                        mRenderCtrl.Scene.AddNode(prevNode);
+                    }
+                    foreach (var fn in readCloud.Para.CloudFilePath)
+                    {
+                        var filereader = new CloudReader
+                        {
+                            Scale = readCloud.Para.Cloudscale,
+                            FileName = fn,
+                            Format = readCloud.Para.Cloudformat,
+                            VertSkip = readCloud.Para.VertSkip
+                        };
+                        Graphic_Cloud cloud = new Graphic_Cloud(filereader);
+                        cloud.Append(mRenderCtrl);
+                    }
                     TVI_root.Header = System.IO.Path.GetFileName(dlg.FileName);
+                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
                 }
             }
         }
@@ -130,7 +146,7 @@ namespace MViewer
                     var filereader = new CloudReader
                     {
                         Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath,
+                        FileName = readCloud.Para.CloudFilePath.First(),
                         Format = readCloud.Para.Cloudformat,
                         VertSkip = readCloud.Para.VertSkip
                     };
@@ -156,7 +172,7 @@ namespace MViewer
                     var filereader = new CloudReader
                     {
                         Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath,
+                        FileName = readCloud.Para.CloudFilePath.First(),
                         Format = readCloud.Para.Cloudformat,
                         VertSkip = readCloud.Para.VertSkip
                     };
@@ -240,6 +256,8 @@ namespace MViewer
             mRenderCtrl.ViewContext.SetRectPick(true);
             mRenderCtrl.ClearPickFilters();
             mRenderCtrl.AddPickFilter(EnumShapeFilter.Vertex);
+            cloudroot = new GroupSceneNode();
+            mRenderCtrl.ShowSceneNode(cloudroot);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

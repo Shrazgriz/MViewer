@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Windows.Media;
 using MVUnity;
@@ -9,13 +10,13 @@ namespace MViewer
     {
         private V3 cloudscale;
         private string cloudformat;
-        private string cloudFilePath;
+        private string[] cloudFilePath;
         private Color pointColor;
         private int pointSize;
         
         public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
-        public string CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
+        public string[] CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
         public int PointSize { get => pointSize; set => pointSize = value; }
         public int VertSkip { get; set; }
         public SolidColorBrush PointBrush
@@ -41,9 +42,19 @@ namespace MViewer
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CloudPara(string filename)
+        public CloudPara(string[] filename)
         {
             CloudFilePath = filename;
+            Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
+            Cloudscale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
+            PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
+            string burshString = ConfigurationManager.AppSettings["PointBrush"];
+            PointColor = (Color)ColorConverter.ConvertFromString(burshString);
+            VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
+        }
+        public CloudPara(string filename)
+        {
+            CloudFilePath = new string[] { filename };
             Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
             Cloudscale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
