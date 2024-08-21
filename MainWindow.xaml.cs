@@ -92,6 +92,7 @@ namespace MViewer
                     Graphic_Cloud cloud = new Graphic_Cloud(filereader);
                     cloud.Run(mRenderCtrl);
                     TVI_root.Header = System.IO.Path.GetFileName(openfile.FileName);
+                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
                 }
             }
         }
@@ -153,6 +154,7 @@ namespace MViewer
                     Graphic_Cloud cloud = new Graphic_Cloud(filereader);
                     cloud.Run(mRenderCtrl);
                     TVI_root.Header = System.IO.Path.GetFileName(open.FileName);
+                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
                 }
             }
         }
@@ -179,6 +181,7 @@ namespace MViewer
                     Graphic_Cloud cloud = new Graphic_Cloud(filereader);
                     cloud.Run(mRenderCtrl);
                     TVI_root.Header = System.IO.Path.GetFileName(open.FileName);
+                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
                 }
             }
         }
