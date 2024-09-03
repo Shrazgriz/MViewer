@@ -37,6 +37,11 @@ namespace MViewer.Graphics
             MaxCol = 0;
             MaxRow = 0;
         }
+        public Graphic_Cloud()
+        {
+            pColor = System.Windows.Media.Colors.Red;
+            Size = 2;
+        }
         bool ReadData()
         {
             mPositions = new Float32Buffer(0);
@@ -177,6 +182,35 @@ namespace MViewer.Graphics
                 pts.Add(pt);
             }
             return true;
+        }
+        public void ShowCloud(List<V3> verts, RenderControl render)
+        {
+            var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
+            if (prevNode != null)
+            {
+                prevNode.Clear();
+            }
+            else
+            {
+                prevNode = new GroupSceneNode();
+                prevNode.SetUserId(CloudID);
+                render.Scene.AddNode(prevNode);
+            }
+            mPositions = new Float32Buffer(0);
+            mColors = new Float32Buffer(0);
+            foreach (V3 pt in verts)
+            {
+                mPositions.Append((float)pt.X);
+                mPositions.Append((float)pt.Y);
+                mPositions.Append((float)pt.Z);
+                
+                mColors.Append(pColor.R);
+                mColors.Append(pColor.G);
+                mColors.Append(pColor.B);
+            }
+            PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
+            prevNode.AddNode(node);
+            render.RequestDraw(EnumUpdateFlags.Scene);
         }
         public void Run(RenderControl render)
         {

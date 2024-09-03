@@ -43,7 +43,7 @@ namespace MViewer
         public ICommand Seg2Command { get; set; }
         public ICommand Seg3Command { get; set; }
         public ICommand ExpPtsCommand { get; set; }
-        
+        public ICommand M2CloudCommand { get; set; }
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
@@ -60,6 +60,7 @@ namespace MViewer
             XYZCommand = new Command(param => ReadXYZ());
             ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
+            M2CloudCommand = new Command(param=>Model2Cloud());
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
             PCDCommand = new Command(param => ReadPCD());
@@ -198,7 +199,42 @@ namespace MViewer
 
             mRenderCtrl.ShowSceneNode(node);
             mRenderCtrl.ZoomAll();
-        }        
+        }
+        private void Model2Cloud()
+        {
+            OpenFileDialog dlg = new OpenFileDialog() { Filter="stl模型|*.stl"};
+            //dlg.Filter = SceneIO.FormatFilters();
+            if (dlg.ShowDialog() != true)
+                return;
+
+            var node = SceneIO.Load(dlg.FileName);
+            if (node == null)
+                return;
+            TopoShape shape = StlIO.Open(dlg.FileName);
+            ShapeExplor sExp = new ShapeExplor();
+            sExp.AddShape(shape);
+            var count = sExp.GetFaceCount();
+            List<V3> pts = new List<V3>();
+            for (uint i = 0; i < count; i++)
+            {
+                var face = sExp.GetFace(i);
+                var u0 = face.FirstUParameter();
+                var v0 = face.FirstVParameter();
+                var u1 = face.LastUParameter();
+                var v1 = face.LastVParameter();
+                for (int m = (int)Math.Ceiling(u0); m < u1; m += 8)
+                {
+                    for (int n = (int)Math.Ceiling(v0); n < v1; n += 8)
+                    {
+                        var p = face.D0(m, n);
+                        pts.Add(new V3(p.x, p.y, p.z));
+                    }
+                }
+            }
+            Graphic_Cloud cloud = new Graphic_Cloud();
+            cloud.ShowCloud(pts, mRenderCtrl);
+            mRenderCtrl.ZoomAll();
+        }
         private void ReadSeg2()
         {
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };

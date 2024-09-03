@@ -20,6 +20,7 @@
             <Menu  IsMainMenu="True">
                 <MenuItem    Header="读取" >
                     <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
+                    <MenuItem   Header="模型并离散" Name="menuM2C" Command="{Binding Path=M2CloudCommand}"/>
                     <Separator/>
                     <MenuItem      Header="XYZ" x:Name="menuXYZ"  Command="{Binding Path=XYZCommand}"/>
                     <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=ASCCommand}"/>
