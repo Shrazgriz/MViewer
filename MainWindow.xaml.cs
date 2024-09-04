@@ -206,15 +206,21 @@ namespace MViewer
             //dlg.Filter = SceneIO.FormatFilters();
             if (dlg.ShowDialog() != true)
                 return;
-
+            SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
+            if (dlg2.ShowDialog() != true)return;
+            WReadCloud wRead = new WReadCloud(new CloudPara(dlg2.FileName));
+            wRead.ShowDialog();
             var node = SceneIO.Load(dlg.FileName);
             if (node == null)
                 return;
+            var para = wRead.Para;
+            int step = para.VertSkip + 1;
             TopoShape shape = StlIO.Open(dlg.FileName);
             ShapeExplor sExp = new ShapeExplor();
             sExp.AddShape(shape);
             var count = sExp.GetFaceCount();
             List<V3> pts = new List<V3>();
+            StreamWriter w = new StreamWriter(dlg2.FileName);
             for (uint i = 0; i < count; i++)
             {
                 var face = sExp.GetFace(i);
@@ -222,15 +228,17 @@ namespace MViewer
                 var v0 = face.FirstVParameter();
                 var u1 = face.LastUParameter();
                 var v1 = face.LastVParameter();
-                for (int m = (int)Math.Ceiling(u0); m < u1; m += 8)
+                for (int m = (int)Math.Ceiling(u0); m < u1; m += step)
                 {
-                    for (int n = (int)Math.Ceiling(v0); n < v1; n += 8)
+                    for (int n = (int)Math.Ceiling(v0); n < v1; n += step)
                     {
                         var p = face.D0(m, n);
                         pts.Add(new V3(p.x, p.y, p.z));
+                        w.WriteLine(string.Format("{0},{1},{2}", p.x, p.y, p.z));
                     }
                 }
             }
+            w.Close();
             Graphic_Cloud cloud = new Graphic_Cloud();
             cloud.ShowCloud(pts, mRenderCtrl);
             mRenderCtrl.ZoomAll();
