@@ -236,6 +236,12 @@ namespace MViewer.Graphics
             if (!ReadData())
                 return;
             var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
+            if(prevNode == null)
+            {
+                prevNode = new GroupSceneNode();
+                prevNode.SetUserId(CloudID);
+                render.Scene.AddNode(prevNode);
+            }
             PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
             prevNode.AddNode(node);
         }

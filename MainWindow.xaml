@@ -22,10 +22,7 @@
                     <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
                     <MenuItem   Header="模型并离散" Name="menuM2C" Command="{Binding Path=M2CloudCommand}"/>
                     <Separator/>
-                    <MenuItem      Header="XYZ" x:Name="menuXYZ"  Command="{Binding Path=XYZCommand}"/>
-                    <MenuItem      Header="ASC" x:Name="menuASC" Command="{Binding Path=ASCCommand}"/>
-                    <MenuItem Header="PCD" Name="menuPCD" Command="{Binding Path=PCDCommand}"/>
-                    <MenuItem Header="PLY" Name="menuPLY" Command="{Binding Path=PLYCommand}"/>
+                    <MenuItem      Header="点云" x:Name="menuXYZ"  Command="{Binding Path=PCDCommand}"/>
                     <Separator/>
                     <MenuItem Header="平面线段" x:Name="menuSeg2D" Command="{Binding Path=Seg2Command}"/>
                     <MenuItem Header="空间线段" x:Name="menuSeg3D" Command="{Binding Path=Seg3Command}"/>

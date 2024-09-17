@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
-using System.Windows.Media;
 using System.Linq;
 using MVUnity;
 using MVUnity.PointCloud;
@@ -14,11 +11,7 @@ using MVUnity.Exchange;
 using System.IO;
 using Microsoft.Win32;
 using AnyCAD.Foundation;
-using AnyCAD.WPF;
-using System.Security.Cryptography;
-using MVUnity.Geometry3D;
 using MViewer.Graphics;
-using System.Drawing;
 
 namespace MViewer
 {
@@ -35,11 +28,8 @@ namespace MViewer
         public double Radius { get; set; } = 150;
         public int PointCount { get; set; } = 200;
 
-        public ICommand XYZCommand { get; set; }
-        public ICommand ASCCommand { get; set; }
         public ICommand CADCommand { get; set; }
         public ICommand PCDCommand { get; set; }
-        public ICommand PLYCommand { get; set; }
         public ICommand Seg2Command { get; set; }
         public ICommand Seg3Command { get; set; }
         public ICommand ExpPtsCommand { get; set; }
@@ -47,7 +37,6 @@ namespace MViewer
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
-        DelaunayTriangulator triangulator;
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
@@ -56,15 +45,11 @@ namespace MViewer
         {
             InitializeComponent();
             DataContext = this;
-
-            XYZCommand = new Command(param => ReadXYZ());
-            ASCCommand = new Command(param => ReadASC());
             CADCommand = new Command(param => ReadCAD());
             M2CloudCommand = new Command(param=>Model2Cloud());
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
             PCDCommand = new Command(param => ReadPCD());
-            PLYCommand = new Command(param => ReadPLY());
             ExpPtsCommand = new Command(param=> ExpPts());
             showPoints = true;
         }
@@ -74,32 +59,9 @@ namespace MViewer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void ReadASC()
-        {
-            OpenFileDialog openfile = new OpenFileDialog() { Filter = "asc文件|*.asc" };
-            if (openfile.ShowDialog() == true)
-            {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileName));
-                if (readCloud.ShowDialog() == true)
-                {
-                    //mRenderCtrl.ClearScene();
-                    var filereader = new CloudReader
-                    {
-                        Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath.First(),
-                        Format = readCloud.Para.Cloudformat,
-                        VertSkip= readCloud.Para.VertSkip
-                    };
-                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                    cloud.Run(mRenderCtrl);
-                    TVI_root.Header = System.IO.Path.GetFileName(openfile.FileName);
-                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
-                }
-            }
-        }
         private void ReadPCD()
         {
-            OpenFileDialog dlg = new OpenFileDialog() { Filter = "pcd文件|*.pcd", Multiselect = true };
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "点云文件|*.pcd;*.asc;*.xyz;*.ply", Multiselect = true };
             if (dlg.ShowDialog() == true)
             {
                 WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileNames));
@@ -129,59 +91,6 @@ namespace MViewer
                         cloud.Append(mRenderCtrl);
                     }
                     TVI_root.Header = System.IO.Path.GetFileName(dlg.FileName);
-                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
-                }
-            }
-        }
-        private void ReadXYZ()
-        {
-            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog()
-            {
-                Filter = "xyz文件|*.xyz"
-            };
-            if (open.ShowDialog() == true)
-            {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
-                if (readCloud.ShowDialog() == true)
-                {
-                    //mRenderCtrl.ClearScene();
-                    var filereader = new CloudReader
-                    {
-                        Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath.First(),
-                        Format = readCloud.Para.Cloudformat,
-                        VertSkip = readCloud.Para.VertSkip
-                    };
-                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                    cloud.Run(mRenderCtrl);
-                    TVI_root.Header = System.IO.Path.GetFileName(open.FileName);
-                    mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
-                }
-            }
-        }
-
-        private void ReadPLY()
-        {
-            Microsoft.Win32.OpenFileDialog open = new Microsoft.Win32.OpenFileDialog()
-            {
-                Filter = "ply文件|*.ply"
-            };
-            if (open.ShowDialog() == true)
-            {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(open.FileName));
-                if (readCloud.ShowDialog() == true)
-                {
-                    //mRenderCtrl.ClearScene();
-                    var filereader = new CloudReader
-                    {
-                        Scale = readCloud.Para.Cloudscale,
-                        FileName = readCloud.Para.CloudFilePath.First(),
-                        Format = readCloud.Para.Cloudformat,
-                        VertSkip = readCloud.Para.VertSkip
-                    };
-                    Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                    cloud.Run(mRenderCtrl);
-                    TVI_root.Header = System.IO.Path.GetFileName(open.FileName);
                     mRenderCtrl.Viewer.RequestUpdate(EnumUpdateFlags.Scene);
                 }
             }
@@ -370,7 +279,7 @@ namespace MViewer
                 case 3:
                     V3 vec1 = points[1] - points[0];
                     V3 vec2 = points[2] - points[1];
-                    V3 cross= vec1.Cross(vec2).Normalized;
+                    V3 cross= vec1.Cross(vec2).Normalized();
                     WriteLine(cross.ToString());
                     break;
                 default:

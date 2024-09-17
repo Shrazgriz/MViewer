@@ -86,7 +86,7 @@ namespace MViewer
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            V3 v = (value as V3).Normalized;
+            V3 v = (value as V3).Normalized();
             byte r = (byte)(int)(Math.Abs(v.X) * 255f);
             byte g = (byte)(int)(Math.Abs(v.Y) * 255f);
             byte b = (byte)(int)(Math.Abs(v.Z) * 255f);
@@ -100,7 +100,7 @@ namespace MViewer
                 double x = c.Color.R;
                 double y = c.Color.G;
                 double z = c.Color.B;
-                return new V3(x, y, z).Normalized;
+                return new V3(x, y, z).Normalized();
             }
             return V3.Zero;
         }
