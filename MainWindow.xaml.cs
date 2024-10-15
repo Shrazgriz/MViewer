@@ -195,12 +195,22 @@ namespace MViewer
                     var pcn = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
                     if(pcn != null)
                     {
-                        PointCloud n = PointCloud.Cast(pcn);
-                        var count = n.GetPointCount();
-                        for (uint i = 0; i < count; i++)
+                        GroupSceneNode gp = GroupSceneNode.Cast(pcn);
+                        var iter =gp.CreateIterator();
+                        while (iter.More())
                         {
-                            var value = n.GetPosition(i);
-                            writer.WriteLine(value.ToString());
+                            var item = iter.Current();
+                            var n = PointCloud.Cast(item);
+                            if(n != null)
+                            {
+                                var count = n.GetPointCount();
+                                for (uint i = 0; i < count; i++)
+                                {
+                                    var value = n.GetPosition(i);
+                                    writer.WriteLine(value.ToString());
+                                }
+                            }
+                            iter.Next();
                         }
                     }
                     writer.Close();
