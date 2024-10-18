@@ -233,7 +233,9 @@ namespace MViewer
             {
                 return;
             }
-            PointCloud cloud = PointCloud.Cast(node);
+            var group = GroupSceneNode.Cast(node);
+            var citer =group.CreateIterator();            
+            PointCloud cloud = PointCloud.Cast(citer.Current());
             var mng = mRenderCtrl.ViewContext.GetSelectionManager();
             var selection = mng.GetSelection();
             var iter = selection.CreateIterator();

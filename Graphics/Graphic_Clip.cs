@@ -103,21 +103,22 @@ namespace MViewer.Graphics
 
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti
             int cellSize = 100;
-            int nLongi = 10;
-            int nLatti = 10;
+            int nLongi = 3;
+            int nLatti = 3;
+            double size = 1f / nLatti;
             RectMap map = RectMap.CreateRectMap(projected, cellSize);
             List<CubicSpline> longitudes = new List<CubicSpline>();
             Segment2D low = new Segment2D(bound[0], bound[1]);
             Segment2D top = new Segment2D(bound[3], bound[2]);
             for (int i = 0; i < nLongi + 1; i++)
             {
-                V2 v0 = low.Lerp(0.1f * i);
-                V2 v1 = top.Lerp(0.1f * i);
+                V2 v0 = low.Lerp(size * i);
+                V2 v1 = top.Lerp(size * i);
                 Segment2D longit = new Segment2D(v0, v1);
                 List<V3> knots = new List<V3>();
                 for (int j = 0; j < nLatti + 1; j++)
                 {
-                    V2 XY = longit.Lerp(0.1f * j);
+                    V2 XY = longit.Lerp(size * j);
                     var near = map.NeighbourList(XY, 1);
                     if (near.Count == 0) continue;
                     var mah = near.Select(i1 => V2.Manhattan(projected[i1].X, projected[i1].Y, XY.X, XY.Y)).ToList();
