@@ -103,8 +103,8 @@ namespace MViewer.Graphics
 
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti
             int cellSize = 100;
-            int nLongi = 3;
-            int nLatti = 3;
+            int nLongi = 10;
+            int nLatti = 10;
             double size = 1f / nLatti;
             RectMap map = RectMap.CreateRectMap(projected, cellSize);
             List<CubicSpline> longitudes = new List<CubicSpline>();

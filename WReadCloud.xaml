@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="{Binding Path=CloudFilePath}" Height="200" Width="400">
+        Title="{Binding Path=CloudFilePath}" Height="280" Width="400">
     <Window.Resources>
         <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
     </Window.Resources>
@@ -20,6 +20,11 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
+            <ComboBox x:Name="LB_ColorMode" SelectedIndex="0" SelectionChanged="LB_ColorMode_SelectionChanged">
+                <ComboBoxItem>单色</ComboBoxItem>
+                <ComboBoxItem>高度</ComboBoxItem>
+                <ComboBoxItem>纹理</ComboBoxItem>
+            </ComboBox>
             <Button Margin="4" Click="BN_Color_Click" Height="30" Background="{Binding Path=PointBrush}">
                 调色板
             </Button>
@@ -33,6 +38,9 @@
                          Text="{Binding Path= Cloudformat, Mode=TwoWay}"/>
             <TextBox x:Name="TB_VertSkip" Margin="4" 
                          Text="{Binding Path= VertSkip, Mode=TwoWay}"/>
+            <CheckBox Margin="4" IsChecked="{Binding Path=UseROI, Mode=TwoWay}">设定ROI</CheckBox>
+            <TextBox Margin="4" Text="{Binding Path= UL, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+            <TextBox Margin="4" Text="{Binding Path= LL,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
