@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Linq;
+using Microsoft.Win32;
+using AnyCAD.Foundation;
 using MVUnity;
 using MVUnity.PointCloud;
 using MVUnity.Exchange;
-using System.IO;
-using Microsoft.Win32;
-using AnyCAD.Foundation;
-using MViewer.Graphics;
 using MVUnity.Geometry3D;
+using MViewer.Graphics;
 
 namespace MViewer
 {
@@ -35,6 +35,7 @@ namespace MViewer
         public ICommand Seg3Command { get; set; }
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
+        public ICommand CalibCommand { get; set; }
         private V3 step;
         List<V2> pts;
         IEnumerator<V2> enumerator;
@@ -52,6 +53,7 @@ namespace MViewer
             Seg3Command = new Command(param => ReadSeg3());
             PCDCommand = new Command(param => ReadPCD());
             ExpPtsCommand = new Command(param=> ExpPts());
+            CalibCommand = new Command(param => Calib());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -225,9 +227,13 @@ namespace MViewer
                 }
             }
         }
+        private void Calib()
+        {
+
+        }
         private void mRenderCtrl_ViewerReady()
         {
-            mRenderCtrl.ViewContext.SetRectPick(true);
+            mRenderCtrl.ViewContext.SetRectPick(false);
             mRenderCtrl.ClearPickFilters();
             mRenderCtrl.AddPickFilter(EnumShapeFilter.Vertex);
             cloudroot = new GroupSceneNode();
@@ -336,6 +342,11 @@ namespace MViewer
         private void BN_ToClip_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetDataObject(TB_Output.Text);
+        }
+
+        private void BN_Calibra_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

@@ -105,4 +105,18 @@ namespace MViewer
             return V3.Zero;
         }
     }
+
+    public class PointInfo
+    {
+        private V3 coord;
+        public string Value
+        {
+            get { return coord.ToString("F2"); }
+            set { coord = new V3(value); }
+        }
+        public PointInfo(V3 Point)
+        {
+            coord = new V3(Point);
+        }
+    }
 }

@@ -30,9 +30,7 @@
                 <MenuItem Header="输出">
                     <MenuItem Header="点集" x:Name="menuExpPts" Command="{Binding Path=ExpPtsCommand}"/>
                 </MenuItem>
-                <MenuItem    Header="格栅化">
-                    <MenuItem      Header="规则舱（矩形体）" x:Name="menuCabinBox" >
-                    </MenuItem>
+                <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}">
                 </MenuItem>
                 <MenuItem Header="样条拟合" x:Name="menuSpline" Click="Button_Click">
                 </MenuItem>
@@ -57,7 +55,6 @@
             </StackPanel>
             <StackPanel Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="4">
                 <Button Content="测量" x:Name="BN_PointMeasure" Click="BN_PointMeasure_Click" FontSize="24" Margin="2"/>
-                <Button Content="格栅化" x:Name="BN_CubicMtx" Click="BN_CubicMtx_Click" FontSize="24" Margin="2"/>
                 <Button Content="点云开关" Click="ButtonPoints_Click" FontSize="24" Margin="2"/>
                 <Button Content="样条曲线" Click="Button_Click" FontSize="24" Margin="2"/>
             </StackPanel>
