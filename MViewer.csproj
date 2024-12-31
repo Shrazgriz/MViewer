@@ -52,9 +52,9 @@
     <Reference Include="AnyCAD.WPF.NET4, Version=2023.12.1.1650, Culture=neutral, PublicKeyToken=adad17ef48f32d48, processorArchitecture=MSIL">
       <HintPath>packages\AnyCAD.Rapid.NET.2023.12.1.1706\lib\net48\AnyCAD.WPF.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="MVUnity, Version=1.1.2.1, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="MVUnity, Version=1.1.2.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MVUnity\bin\x64\Release\MVUnity.dll</HintPath>
+      <HintPath>..\MVUnity\bin\x64\Debug\MVUnity.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

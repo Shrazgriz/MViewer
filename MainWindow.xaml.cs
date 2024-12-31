@@ -229,7 +229,19 @@ namespace MViewer
         }
         private void Calib()
         {
-
+            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+            var selection = mng.GetSelection();
+            var iter = selection.CreateIterator();
+            List<V3> points = new List<V3>();
+            while (iter.More())
+            {
+                var item = iter.Current();
+                var value = ConvertVector3.ToV3(item.GetPosition());
+                points.Add(value);
+                iter.Next();
+            }
+            WCalib calib = new WCalib(points);
+            calib.Show();
         }
         private void mRenderCtrl_ViewerReady()
         {

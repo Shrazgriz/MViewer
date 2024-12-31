@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Microsoft.Win32;
 using MVUnity;
 
 namespace MViewer
@@ -53,7 +46,16 @@ namespace MViewer
 
         private void BN_Export_Click(object sender, RoutedEventArgs e)
         {
-
+            SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter= "文本文件|*.txt"};
+            if(saveFileDialog.ShowDialog()== true)
+            {
+                string fn = saveFileDialog.FileName;
+                StreamWriter writer = new StreamWriter(fn);
+                writer.WriteLine(TB_DispV.Text);
+                writer.WriteLine(TB_RotaM.Text);
+                writer.Close();
+                MessageBox.Show("写入完成");
+            }
         }
 
         private void BN_ClipM_Click(object sender, RoutedEventArgs e)

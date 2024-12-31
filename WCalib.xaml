@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="WCalib" Height="450" Width="800">
+        Title="点云标定" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -18,37 +18,45 @@
         </Grid.RowDefinitions>
         <Button x:Name="BN_Calculation" Click="BN_Calculation_Click"  Grid.Row="1" Grid.Column="1" FontSize="24" Margin="4">计算</Button>
         <Button x:Name="BN_Export" Click="BN_Export_Click" Grid.Row="1" Grid.Column="2" FontSize="24" Margin="4">输出</Button>
-        <StackPanel Grid.Row="0" Grid.Column="0">
-            <Label Margin="4" FontSize="18">原始点云坐标</Label>
-            <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18">
-                <ListBox.ItemTemplate>
+        <StackPanel Grid.Row="0" Grid.Column="0" Margin="4">
+            <Label Margin="4" FontSize="18" Background="LightCyan" HorizontalContentAlignment="Center">原始点云坐标</Label>
+            <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                <ListBox.ItemTemplate>                    
                     <DataTemplate>
-                        <TextBox FontSize="18" Text="{Binding Path=Value}"/>
+                        <Border BorderBrush="LightCyan" BorderThickness="1" >
+                            <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch"/>
+                        </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button x:Name="BN_newI" FontSize="16" Margin="4"
-                    Click="BN_newI_Click">+</Button>
+            <Button x:Name="BN_newI" FontSize="16" Margin="4" Background="RoyalBlue" FontWeight="Bold"
+                    Click="BN_newI_Click" >+</Button>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" >
-            <Label Margin="4" FontSize="18">目标点云坐标</Label>
-            <ListBox x:Name="LB_TargetCoords" Margin="4" FontSize="18">
+        <StackPanel Grid.Row="0" Grid.Column="1" Margin="4">
+            <Label Margin="4" FontSize="18" Background="LightPink" HorizontalContentAlignment="Center">目标点云坐标</Label>
+            <ListBox x:Name="LB_TargetCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBox FontSize="18" Text="{Binding Path=Value}"/>
+                        <Border BorderBrush="LightPink" BorderThickness="1" >
+                            <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
+                        </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button x:Name="BN_newT" FontSize="16" Margin="4"
+            <Button x:Name="BN_newT" FontSize="16" Margin="4" Background="Crimson" FontWeight="Bold"
                     Click="BN_newT_Click">+</Button>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="2">
-            <Label Margin="4" FontSize="18">旋转矩阵</Label>
-            <TextBlock x:Name="TB_RotaM" Margin="4"></TextBlock>
-            <Button x:Name="BN_ClipM" Margin="4" FontSize="18" Click="BN_ClipM_Click">复制到剪贴板</Button>
-            <Label Margin="4" FontSize="18">位移矢量</Label>
+        <StackPanel Grid.Row="0" Grid.Column="2">            
+            <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
+                位移矢量</Label>
             <TextBlock x:Name="TB_DispV" Margin="4"></TextBlock>
-            <Button x:Name="BN_ClipV" Margin="4" FontSize="18" Click="BN_ClipV_Click">复制到剪贴板</Button>
+            <Button x:Name="BN_ClipV" Margin="4" FontSize="18" Background="MediumPurple" MinHeight="36"
+                    Click="BN_ClipV_Click">复制到剪贴板</Button>
+            <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
+                旋转矩阵</Label>
+            <TextBlock x:Name="TB_RotaM" Margin="4"></TextBlock>
+            <Button x:Name="BN_ClipM" Margin="4" FontSize="18" Background="LightGreen" MinHeight="36"
+                    Click="BN_ClipM_Click">复制到剪贴板</Button>
         </StackPanel>
     </Grid>
 </Window>
