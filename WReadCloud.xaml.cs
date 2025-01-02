@@ -27,6 +27,7 @@ namespace MViewer
             InitializeComponent();
             Para = value;
             DataContext = Para;
+            LB_ColorMode.SelectedIndex = (int)(value.ColorMode);
         }
         private void BN_Cancel_Click(object sender, RoutedEventArgs e)
         {
