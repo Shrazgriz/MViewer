@@ -20,6 +20,8 @@
         <Button x:Name="BN_Export" Click="BN_Export_Click" Grid.Row="1" Grid.Column="2" FontSize="24" Margin="4">输出</Button>
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="4">
             <Label Margin="4" FontSize="18" Background="LightCyan" HorizontalContentAlignment="Center">原始点云坐标</Label>
+            <Button x:Name="BN_ImportInput" Background="LightCyan" FontSize="18" Margin="4"
+                    Click="BN_ImportInput_Click">导  入</Button>
             <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemTemplate>                    
                     <DataTemplate>
@@ -29,11 +31,13 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button x:Name="BN_newI" FontSize="16" Margin="4" Background="RoyalBlue" FontWeight="Bold"
+            <Button x:Name="BN_newI" FontSize="18" Margin="4" Background="RoyalBlue" FontWeight="Bold"
                     Click="BN_newI_Click" >+</Button>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Margin="4">
             <Label Margin="4" FontSize="18" Background="LightPink" HorizontalContentAlignment="Center">目标点云坐标</Label>
+            <Button x:Name="BN_ImportTarget" Background="LightPink" Margin="4" FontSize="18"
+                    Click="BN_ImportTarget_Click">导  入</Button>
             <ListBox x:Name="LB_TargetCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -43,7 +47,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button x:Name="BN_newT" FontSize="16" Margin="4" Background="Crimson" FontWeight="Bold"
+            <Button x:Name="BN_newT" FontSize="18" Margin="4" Background="Crimson" FontWeight="Bold"
                     Click="BN_newT_Click">+</Button>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="2">            

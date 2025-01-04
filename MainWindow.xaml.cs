@@ -182,7 +182,7 @@ namespace MViewer
         }
         private void ExpPts()
         {
-            SaveFileDialog savefile = new SaveFileDialog() {Filter="xyz文件|*.xyz" };
+            SaveFileDialog savefile = new SaveFileDialog() { Filter="xyz文件|*.xyz" };
             if(savefile.ShowDialog() == true)
             {
                 StreamWriter writer = new StreamWriter(savefile.FileName);
@@ -199,6 +199,7 @@ namespace MViewer
                         iter.Next();
                     }
                     writer.Close();
+                    MessageBox.Show("写入完成");
                 }
                 else
                 {
@@ -224,6 +225,7 @@ namespace MViewer
                         }
                     }
                     writer.Close();
+                    MessageBox.Show("写入完成");
                 }
             }
         }

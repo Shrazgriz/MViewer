@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using Microsoft.Win32;
 using MVUnity;
+using MVUnity.Exchange;
 
 namespace MViewer
 {
@@ -78,6 +79,46 @@ namespace MViewer
         {
             PointInfo newInfo = new PointInfo(V3.Zero);
             inputPts.Add(newInfo);
+        }
+
+        private void BN_ImportInput_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
+            if(openFile.ShowDialog()== true)
+            {
+                var filereader = new CloudReader
+                {
+                    Scale = V3.Identity,
+                    FileName = openFile.FileName,
+                    Format = "xyz",
+                    VertSkip = 0
+                };
+                var pts = filereader.ReadXYZ();
+                foreach (var pt in pts)
+                {
+                    inputPts.Add(new PointInfo(pt));
+                }
+            }
+        }
+
+        private void BN_ImportTarget_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
+            if (openFile.ShowDialog() == true)
+            {
+                var filereader = new CloudReader
+                {
+                    Scale = V3.Identity,
+                    FileName = openFile.FileName,
+                    Format = "xyz",
+                    VertSkip = 0
+                };
+                var pts = filereader.ReadXYZ();
+                foreach (var pt in pts)
+                {
+                    targetPts.Add(new PointInfo(pt));
+                }
+            }
         }
     }
 }
