@@ -90,8 +90,11 @@ namespace MViewer
                             Format = readCloud.Para.Cloudformat,
                             VertSkip = readCloud.Para.VertSkip
                         };
-                        Graphic_Cloud cloud = new Graphic_Cloud(filereader);
-                        cloud.ColorMode = readCloud.Para.ColorMode;
+                        Graphic_Cloud cloud = new Graphic_Cloud(filereader)
+                        {
+                            ColorMode = readCloud.Para.ColorMode,
+                            Size = readCloud.Para.PointSize
+                        };
                         if (readCloud.Para.UseROI)
                         {
                             ABB roi = new ABB(readCloud.Para.UL, readCloud.Para.LL);

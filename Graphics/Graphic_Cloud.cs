@@ -22,7 +22,7 @@ namespace MViewer.Graphics
         static Float32Buffer mColors;
         MVUnity.Exchange.CloudReader filereader;
         System.Windows.Media.Color pColor;
-        int Size;
+        public int Size;
         public int IntervalX;
         public int IntervalY;
         public int IntervalZ;
