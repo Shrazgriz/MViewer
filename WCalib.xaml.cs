@@ -17,6 +17,7 @@ namespace MViewer
     {
         ObservableCollection<PointInfo> inputPts = new ObservableCollection<PointInfo>();
         ObservableCollection<PointInfo> targetPts = new ObservableCollection<PointInfo>();
+        ObservableCollection<PointInfo> corrections = new ObservableCollection<PointInfo>();
         private WCalib()
         {
             InitializeComponent();
@@ -31,14 +32,27 @@ namespace MViewer
                 inputPts.Add(new PointInfo(pt));
             }
             targetPts = new ObservableCollection<PointInfo>();
+            corrections = new ObservableCollection<PointInfo>();
             LB_InputCoords.ItemsSource = inputPts;
             LB_TargetCoords.ItemsSource = targetPts;
+            LB_Corrections.ItemsSource = corrections;
         }
 
         private void BN_Calculation_Click(object sender, RoutedEventArgs e)
         {
             List<V3> input0 = inputPts.Select(p=>new V3(p.Value)).ToList();
-            List<V3> target0 = targetPts.Select(p => new V3(p.Value)).ToList();
+            List<V3> target0 = new List<V3>();
+            for (int i = 0; i < targetPts.Count; i++)
+            {
+                PointInfo pt = targetPts[i];
+                V3 value = new V3(pt.Value);
+                if (i < corrections.Count)
+                {
+                    PointInfo pt2 = corrections[i];
+                    value += new V3(pt2.Value);
+                }
+                target0.Add(value);
+            }
             int num = Math.Min(input0.Count, target0.Count);
             EuclideanTransform et = EuclideanTransform.SVD(input0, target0);
             TB_RotaM.Text = et.R.ToString();
@@ -117,6 +131,32 @@ namespace MViewer
                 foreach (var pt in pts)
                 {
                     targetPts.Add(new PointInfo(pt));
+                }
+            }
+        }
+
+        private void BN_newC_Click(object sender, RoutedEventArgs e)
+        {
+            PointInfo newInfo = new PointInfo(V3.Zero);
+            corrections.Add(newInfo);
+        }
+
+        private void BN_ImportCorrection_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
+            if (openFile.ShowDialog() == true)
+            {
+                var filereader = new CloudReader
+                {
+                    Scale = V3.Identity,
+                    FileName = openFile.FileName,
+                    Format = "xyz",
+                    VertSkip = 0
+                };
+                var pts = filereader.ReadXYZ();
+                foreach (var pt in pts)
+                {
+                    corrections.Add(new PointInfo(pt));
                 }
             }
         }

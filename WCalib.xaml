@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="点云标定" Height="450" Width="800">
+        Title="点云标定" Height="450" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -18,39 +19,61 @@
         </Grid.RowDefinitions>
         <Button x:Name="BN_Calculation" Click="BN_Calculation_Click"  Grid.Row="1" Grid.Column="1" FontSize="24" Margin="4">计算</Button>
         <Button x:Name="BN_Export" Click="BN_Export_Click" Grid.Row="1" Grid.Column="2" FontSize="24" Margin="4">输出</Button>
-        <StackPanel Grid.Row="0" Grid.Column="0" Margin="4">
-            <Label Margin="4" FontSize="18" Background="LightCyan" HorizontalContentAlignment="Center">原始点云坐标</Label>
-            <Button x:Name="BN_ImportInput" Background="LightCyan" FontSize="18" Margin="4"
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="0" Margin="4">
+            <StackPanel >
+                <Label Margin="4" FontSize="18" Background="LightCyan" HorizontalContentAlignment="Center">原始点云坐标</Label>
+                <Button x:Name="BN_ImportInput" Background="LightCyan" FontSize="18" Margin="4"
                     Click="BN_ImportInput_Click">导  入</Button>
-            <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
-                <ListBox.ItemTemplate>                    
-                    <DataTemplate>
-                        <Border BorderBrush="LightCyan" BorderThickness="1" >
-                            <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch"/>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button x:Name="BN_newI" FontSize="18" Margin="4" Background="RoyalBlue" FontWeight="Bold"
+                <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightCyan" BorderThickness="1" >
+                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch"/>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="BN_newI" FontSize="18" Margin="4" Background="RoyalBlue" FontWeight="Bold"
                     Click="BN_newI_Click" >+</Button>
-        </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" Margin="4">
-            <Label Margin="4" FontSize="18" Background="LightPink" HorizontalContentAlignment="Center">目标点云坐标</Label>
-            <Button x:Name="BN_ImportTarget" Background="LightPink" Margin="4" FontSize="18"
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="1" Margin="4">
+            <StackPanel>
+                <Label Margin="4" FontSize="18" Background="LightPink" HorizontalContentAlignment="Center">目标点云坐标</Label>
+                <Button x:Name="BN_ImportTarget" Background="LightPink" Margin="4" FontSize="18"
                     Click="BN_ImportTarget_Click">导  入</Button>
-            <ListBox x:Name="LB_TargetCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="LightPink" BorderThickness="1" >
-                            <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button x:Name="BN_newT" FontSize="18" Margin="4" Background="Crimson" FontWeight="Bold"
+                <ListBox x:Name="LB_TargetCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightPink" BorderThickness="1" >
+                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="BN_newT" FontSize="18" Margin="4" Background="OrangeRed" FontWeight="Bold"
                     Click="BN_newT_Click">+</Button>
-        </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="2">            
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="2" Margin="4">
+            <StackPanel>
+                <Label Margin="4" FontSize="18" Background="LightCoral" HorizontalContentAlignment="Center">修正量</Label>
+                <Button x:Name="BN_ImportCorrection" Background="LightCoral" Margin="4" FontSize="18"
+                    Click="BN_ImportCorrection_Click">导  入</Button>
+                <ListBox x:Name="LB_Corrections" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightPink" BorderThickness="1" >
+                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="BN_newC" FontSize="18" Margin="4" Background="Crimson" FontWeight="Bold"
+                    Click="BN_newC_Click" >+</Button>
+            </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="0" Grid.Column="3">
             <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
                 位移矢量</Label>
             <TextBlock x:Name="TB_DispV" Margin="4"></TextBlock>
