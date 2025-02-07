@@ -300,7 +300,6 @@ namespace MViewer.Graphics
             {
                 foreach (V3 pt in verts)
                 {
-                    if (!ROI.Cover(pt)) continue;
                     mPositions.Append((float)pt.X);
                     mPositions.Append((float)pt.Y);
                     mPositions.Append((float)pt.Z);
@@ -378,7 +377,6 @@ namespace MViewer.Graphics
                             mColors.Append(color.x);
                             mColors.Append(color.y);
                             mColors.Append(color.z);
-                            //pts.Add(pt);
                         }
                         break;
                     case ColorMode.Texture:
@@ -392,7 +390,6 @@ namespace MViewer.Graphics
                             mColors.Append((float)color.X);
                             mColors.Append((float)color.Y);
                             mColors.Append((float)color.Z);
-                            //pts.Add(pt);
                         }
                         break;
                     case ColorMode.Mono:
