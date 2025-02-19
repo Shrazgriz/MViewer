@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MVUnity.PointCloud;
 
 namespace MViewer.Graphics
@@ -30,6 +28,7 @@ namespace MViewer.Graphics
         Polygon polyBound;
         List<V3> pts;
         RenderControl render;
+        CubicSplineSurface surf;
 
         public Graphic_Clip(RenderControl control)
         {
@@ -85,13 +84,13 @@ namespace MViewer.Graphics
             }
             #region 筛选点
             var count = cloud.GetPointCount();
-            List<V3> rowPts= new List<V3>();
+            List<V3> rowPts = new List<V3>();
             for (uint i = 0; i < count; i++)
             {
                 var position = cloud.GetPosition(i);
                 rowPts.Add(ConvertVector3.ToV3(position));
             }
-            List<V3> points= Polygon.PointsInPoly(Selection,rowPts);
+            List<V3> points = Polygon.PointsInPoly(Selection, rowPts);
             List<V2> projected = new List<V2>();
             foreach (var point in points)
             {
@@ -103,8 +102,8 @@ namespace MViewer.Graphics
 
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti
             int cellSize = 100;
-            int nLongi = 10;
-            int nLatti = 10;
+            int nLongi = 20;
+            int nLatti = 20;
             double size = 1f / nLatti;
             RectMap map = RectMap.CreateRectMap(projected, cellSize);
             List<CubicSpline> longitudes = new List<CubicSpline>();
@@ -131,11 +130,11 @@ namespace MViewer.Graphics
             }
             #endregion
             #region 基于longtitudes插值, 输入longtitudes, rslx, rsly
-            int rslx = 40; int rsly = 40;
+            int rslx = 20; int rsly = 20;
             List<ScanRow> scanRows = new List<ScanRow>();
             int rowid = 0;
             int vertid = 0;
-            CubicSplineSurface surf = new CubicSplineSurface(longitudes);
+            surf = new CubicSplineSurface(longitudes);
             var longtiLines = surf.GetLongtitudes(rslx);
             foreach (var longti in longtiLines)
             {
@@ -151,36 +150,57 @@ namespace MViewer.Graphics
             CellGrid grid = CellGrid.CompileFromAligned(scanRows);
             #endregion
             #region cellgrid to anycad scene node
-            
-                var positions = CellGrid.ToAnyCADPosition(grid);
-                MeshStandardMaterial material = MeshStandardMaterial.Create("cae-material");
-                material.SetFaceSide(EnumFaceSide.DoubleSide);
-                material.SetVertexColors(true);
-                var vPositions = new Float32Buffer(0);
-                var vColors = new Float32Buffer(0);
-                var color = AnyCAD.Foundation.ColorTable.Auqamarin;
-                foreach (var v in positions)
-                {
-                    vPositions.Append((float)v.X);
-                    vPositions.Append((float)v.Y);
-                    vPositions.Append((float)v.Z);
 
-                    vColors.Append(color.x);
-                    vColors.Append(color.y);
-                    vColors.Append(color.z);
-                }
+            var positions = CellGrid.ToAnyCADPosition(grid);
+            MeshStandardMaterial material = MeshStandardMaterial.Create("cae-material");
+            material.SetFaceSide(EnumFaceSide.DoubleSide);
+            material.SetVertexColors(true);
+            var vPositions = new Float32Buffer(0);
+            var vColors = new Float32Buffer(0);
+            var color = AnyCAD.Foundation.ColorTable.Auqamarin;
+            foreach (var v in positions)
+            {
+                vPositions.Append((float)v.X);
+                vPositions.Append((float)v.Y);
+                vPositions.Append((float)v.Z);
 
-                BufferGeometry geometry = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
-                geometry.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, vPositions);
-                geometry.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, vColors);
-                NormalCalculator.ComputeVertexNormals(geometry);
-                var node = new PrimitiveSceneNode(geometry, material);
-                node.SetPickable(false);
-                render.ShowSceneNode(node);
-            
+                vColors.Append(color.x);
+                vColors.Append(color.y);
+                vColors.Append(color.z);
+            }
+            BufferGeometry geometry = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
+            geometry.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, vPositions);
+            geometry.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, vColors);
+            NormalCalculator.ComputeVertexNormals(geometry);
+            var node = new PrimitiveSceneNode(geometry, material);
+            node.SetPickable(false);
+            render.ShowSceneNode(node);
             #endregion
         }
 
+        public List<Segment> GetMeshSegs(int rslx, int rsly)
+        {
+            var longtiLines = surf.GetLongtitudes(rslx);
+            List<List<V3>> meshpts = new List<List<V3>>();
+            List<Segment> meshsegs = new List<Segment>();
+            foreach (var longti in longtiLines)
+            {
+                var pts = longti.Interpolate(rsly);
+                meshpts.Add(pts);
+                Polyline longtiline = new Polyline(pts);
+                meshsegs.AddRange(longtiline.ToSegments());
+            }
+            for (int i = 0; i < rsly-1; i++)
+            {
+                List<V3> segs = new List<V3>();
+                for (int j = 0; j < rslx; j++)
+                {
+                    Segment seg = new Segment(meshpts[i][j], meshpts[i + 1][j]);
+                    meshsegs.Add(seg);
+                }
+            }
+            return meshsegs;
+        }
         //private List<V3> PointsInPoly(List<V3> points, Polygon3D poly, int rsl)
         //{
         //    MVUnity.Plane plane = MVUnity.Plane.CreatePlane(poly.Center, poly.Norm);

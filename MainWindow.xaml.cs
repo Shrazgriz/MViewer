@@ -36,12 +36,16 @@ namespace MViewer
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
         public ICommand CalibCommand { get; set; }
-        private V3 step;
-        List<V2> pts;
-        IEnumerator<V2> enumerator;
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
+        const ulong TestObjID = 3;
+        const ulong ColorCloudID = 4;
+        const ulong ClipID = 5;
+        const ulong OBBID = 6;
+        const ulong MeshID = 10;
+        const ulong PolygonID = 1000;
+        const ulong StiffID = 100;
         bool showPoints;
         public MainWindow()
         {
@@ -125,7 +129,6 @@ namespace MViewer
         private void Model2Cloud()
         {
             OpenFileDialog dlg = new OpenFileDialog() { Filter="stl模型|*.stl"};
-            //dlg.Filter = SceneIO.FormatFilters();
             if (dlg.ShowDialog() != true)
                 return;
             SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
@@ -281,6 +284,12 @@ namespace MViewer
             MVUnity.Geometry3D.Polygon bound = new MVUnity.Geometry3D.Polygon(points);
             Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
             clip.PolySelection(cloud, bound);
+            var segs = clip.GetMeshSegs(20, 20);
+            GroupSceneNode lineroot = new GroupSceneNode();
+            mRenderCtrl.Scene.AddNode(lineroot);
+            Graphic_Lines mesh = new Graphic_Lines();
+            mesh.Segs(mRenderCtrl, lineroot, segs, ColorTable.Red);
+
         }
 
         private void ButtonPoints_Click(object sender, RoutedEventArgs e)

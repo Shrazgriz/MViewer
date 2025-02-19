@@ -79,7 +79,9 @@
     </ApplicationDefinition>
     <Compile Include="CloudPara.cs" />
     <Compile Include="Graphics\Graphic_Cubes.cs" />
+    <Compile Include="Graphics\Graphic_Lines.cs" />
     <Compile Include="Graphics\Graphic_Segs.cs" />
+    <Compile Include="Graphics\Graphic_Tris.cs" />
     <Compile Include="WCalib.xaml.cs">
       <DependentUpon>WCalib.xaml</DependentUpon>
     </Compile>
