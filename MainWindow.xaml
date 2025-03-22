@@ -32,7 +32,8 @@
                 </MenuItem>
                 <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}">
                 </MenuItem>
-                <MenuItem Header="样条拟合" x:Name="menuSpline" Click="Button_Click">
+                <MenuItem Header="选择...">
+                    <MenuItem Header="法向筛选" x:Name="menuSelectByNorm" Click="menuSelectByNorm_Click"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

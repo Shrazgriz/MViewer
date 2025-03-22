@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MVUnity.PointCloud;
+using System.Runtime.CompilerServices;
 
 namespace MViewer.Graphics
 {
@@ -100,6 +101,73 @@ namespace MViewer.Graphics
             V2[] bound = simplyBound.GetAllVertice().Select(e => new V2(e.X, e.Y)).ToArray();
             #endregion
 
+            splineSurface(bound, points, projected);
+        }
+
+        public void XYSplineSurface(List<V3> Points)
+        {
+            List<V2> projected = new List<V2>();
+            foreach (var point in Points)
+            {
+                projected.Add(new V2(point.X, point.Y));
+            }
+            Rectangle2D rect = Rectangle2D.AlphaORect(projected, 100);
+            V2[] bound = rect.Get4Points().ToArray();
+            splineSurface(bound, Points, projected);
+        }
+        public List<Segment> GetMeshSegs(int rslx, int rsly)
+        {
+            var longtiLines = surf.GetLongtitudes(rslx);
+            List<List<V3>> meshpts = new List<List<V3>>();
+            List<Segment> meshsegs = new List<Segment>();
+            foreach (var longti in longtiLines)
+            {
+                var pts = longti.Interpolate(rsly);
+                meshpts.Add(pts);
+                Polyline longtiline = new Polyline(pts);
+                meshsegs.AddRange(longtiline.ToSegments());
+            }
+            for (int i = 0; i < rsly-1; i++)
+            {
+                List<V3> segs = new List<V3>();
+                for (int j = 0; j < rslx; j++)
+                {
+                    Segment seg = new Segment(meshpts[i][j], meshpts[i + 1][j]);
+                    meshsegs.Add(seg);
+                }
+            }
+            return meshsegs;
+        }
+        /// <summary>
+        /// 筛选平面点
+        /// </summary>
+        /// <param name="cloud"></param>
+        /// <param name="Coord"></param>
+        /// <param name="DotValue"></param>
+        /// <returns></returns>
+        public static List<V3> SelectByNorm(PointCloud cloud, V3 Coord, double DotValue)
+        {
+            #region 筛选点
+            int cellSize = 100;
+            var count = cloud.GetPointCount();
+            List<V3> rawPts = new List<V3>();
+            for (uint i = 0; i < count; i++)
+            {
+                var position = cloud.GetPosition(i);
+                var pt = ConvertVector3.ToV3(position);
+                rawPts.Add(pt);
+            }
+            List<double> dist = rawPts.Select(p => p.Distance(Coord)).ToList();
+            int pID = dist.IndexOf(dist.Min());
+            #endregion
+            #region 构造网格并法向筛选
+            var result = Delaunator.NeighbourPoints_NormCheck(rawPts, pID, DotValue);
+            return result;
+            #endregion
+        }
+
+        private void splineSurface(V2[] bound, List<V3> points, List<V2> projected)
+        {
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti
             int cellSize = 100;
             int nLongi = 20;
@@ -178,30 +246,6 @@ namespace MViewer.Graphics
             node.SetPickable(false);
             render.ShowSceneNode(node);
             #endregion
-        }
-
-        public List<Segment> GetMeshSegs(int rslx, int rsly)
-        {
-            var longtiLines = surf.GetLongtitudes(rslx);
-            List<List<V3>> meshpts = new List<List<V3>>();
-            List<Segment> meshsegs = new List<Segment>();
-            foreach (var longti in longtiLines)
-            {
-                var pts = longti.Interpolate(rsly);
-                meshpts.Add(pts);
-                Polyline longtiline = new Polyline(pts);
-                meshsegs.AddRange(longtiline.ToSegments());
-            }
-            for (int i = 0; i < rsly-1; i++)
-            {
-                List<V3> segs = new List<V3>();
-                for (int j = 0; j < rslx; j++)
-                {
-                    Segment seg = new Segment(meshpts[i][j], meshpts[i + 1][j]);
-                    meshsegs.Add(seg);
-                }
-            }
-            return meshsegs;
         }
         private class NumberWithIndex
         {

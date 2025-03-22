@@ -289,7 +289,6 @@ namespace MViewer
             mRenderCtrl.Scene.AddNode(lineroot);
             Graphic_Lines mesh = new Graphic_Lines();
             mesh.Segs(mRenderCtrl, lineroot, segs, ColorTable.Red);
-
         }
 
         private void ButtonPoints_Click(object sender, RoutedEventArgs e)
@@ -370,9 +369,34 @@ namespace MViewer
             Clipboard.SetDataObject(TB_Output.Text);
         }
 
-        private void BN_Calibra_Click(object sender, RoutedEventArgs e)
+        private void menuSelectByNorm_Click(object sender, RoutedEventArgs e)
         {
-
+            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+            var selection = mng.GetSelection();
+            var iter = selection.CreateIterator();
+            List<V3> points = new List<V3>();
+            while (iter.More())
+            {
+                var item = iter.Current();
+                var value = item.GetPosition();
+                points.Add(ConvertVector3.ToV3(value));
+                iter.Next();
+            }
+            if (points.Count > 0)
+            {
+                SceneNode node = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
+                if (node == null)
+                {
+                    return;
+                }
+                var group = GroupSceneNode.Cast(node);
+                var citer = group.CreateIterator();
+                PointCloud cloud = PointCloud.Cast(citer.Current());
+                Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
+                var pt = points.First();
+                var selectedPts = Graphic_Clip.SelectByNorm(cloud, pt, 0.95f);
+                clip.XYSplineSurface(selectedPts);
+            }
         }
     }
 
