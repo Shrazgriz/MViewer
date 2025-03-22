@@ -120,9 +120,11 @@ namespace MViewer.Graphics
                     V2 XY = longit.Lerp(size * j);
                     var near = map.NeighbourList(XY, 1);
                     if (near.Count == 0) continue;
-                    var mah = near.Select(i1 => V2.Manhattan(projected[i1].X, projected[i1].Y, XY.X, XY.Y)).ToList();
-                    var ind = near[mah.IndexOf(mah.Min())];
-                    knots.Add(points[ind]);
+                    var mah = near.Select(i1 => V2.Manhattan(projected[i1].X, projected[i1].Y, XY.X, XY.Y)).ToArray();
+                    var nearest10 = GetSmallestNumbersWithPositions(mah, 4);
+                    double zave = nearest10.Average(p => points[near[p.Key]].Z);
+                    V3 pt = new V3(XY.X, XY.Y, zave);
+                    knots.Add(pt);
                 }
                 if (knots.Count < 3) continue;
                 CubicSpline longiLine = new CubicSpline(knots);
@@ -201,14 +203,52 @@ namespace MViewer.Graphics
             }
             return meshsegs;
         }
-        //private List<V3> PointsInPoly(List<V3> points, Polygon3D poly, int rsl)
-        //{
-        //    MVUnity.Plane plane = MVUnity.Plane.CreatePlane(poly.Center, poly.Norm);
-        //    ProjectedCloud prj = ProjectedCloud.CreateProjectedCloud(plane, points, rsl);
-        //    List<Point3D> projects = prj.GetProjectedPoints();
-        //    IEnumerable<Point2D> p2d = projects.Select(e => new Point2D(e.X, e.Y, e.ID));
-        //    RectMap map = RectMap.CreateRectMap(p2d, rsl);
+        private class NumberWithIndex
+        {
+            public double Value { get; set; }
+            public int Index { get; set; }
 
-        //}
+            public NumberWithIndex(double value, int index)
+            {
+                Value = value;
+                Index = index;
+            }
+        }
+
+        // 自定义比较器类，实现 IComparer<NumberWithIndex> 接口
+        private class NumberWithIndexComparer : IComparer<NumberWithIndex>
+        {
+            public int Compare(NumberWithIndex x, NumberWithIndex y)
+            {
+                int cmp = x.Value.CompareTo(y.Value);
+                return cmp != 0 ? cmp : x.Index.CompareTo(y.Index);
+            }
+        }
+        static Dictionary<int, double> GetSmallestNumbersWithPositions(double[] numbers, int Count)
+        {
+            // 最小堆（优先队列）
+            var maxHeap = new SortedSet<NumberWithIndex>(new NumberWithIndexComparer());
+
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (maxHeap.Count < Count)
+                {
+                    maxHeap.Add(new NumberWithIndex(numbers[i], i));
+                }
+                else if (numbers[i] < maxHeap.Max.Value)
+                {
+                    maxHeap.Remove(maxHeap.Max);
+                    maxHeap.Add(new NumberWithIndex(numbers[i], i));
+                }
+            }
+
+            // 存储结果
+            var result = new Dictionary<int, double>();
+            foreach (var item in maxHeap)
+            {
+                result[item.Index] = item.Value;
+            }
+            return result;
+        }
     }
 }
