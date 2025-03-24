@@ -284,11 +284,11 @@ namespace MViewer
             MVUnity.Geometry3D.Polygon bound = new MVUnity.Geometry3D.Polygon(points);
             Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
             clip.PolySelection(cloud, bound);
-            var segs = clip.GetMeshSegs(20, 20);
+            var segs = clip.GetMeshSegs(100, 100);
             GroupSceneNode lineroot = new GroupSceneNode();
             mRenderCtrl.Scene.AddNode(lineroot);
             Graphic_Lines mesh = new Graphic_Lines();
-            mesh.Segs(mRenderCtrl, lineroot, segs, ColorTable.Red);
+            mesh.Segs(mRenderCtrl, lineroot, segs, ColorTable.DarkGray);
         }
 
         private void ButtonPoints_Click(object sender, RoutedEventArgs e)

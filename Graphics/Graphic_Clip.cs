@@ -169,9 +169,9 @@ namespace MViewer.Graphics
         private void splineSurface(V2[] bound, List<V3> points, List<V2> projected)
         {
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti
-            int cellSize = 100;
-            int nLongi = 20;
-            int nLatti = 20;
+            int cellSize = 10;
+            int nLongi = 10;
+            int nLatti = 10;
             double size = 1f / nLatti;
             RectMap map = RectMap.CreateRectMap(projected, cellSize);
             List<CubicSpline> longitudes = new List<CubicSpline>();
@@ -200,7 +200,7 @@ namespace MViewer.Graphics
             }
             #endregion
             #region 基于longtitudes插值, 输入longtitudes, rslx, rsly
-            int rslx = 20; int rsly = 20;
+            int rslx = 200; int rsly = 200;
             List<ScanRow> scanRows = new List<ScanRow>();
             int rowid = 0;
             int vertid = 0;

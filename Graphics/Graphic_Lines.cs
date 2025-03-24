@@ -22,7 +22,7 @@ namespace MViewer.Graphics
             mColors = new Float32Buffer(0);
             mat = BasicMaterial.Create("matline");
             mat.SetVertexColors(true);
-            mat.SetLineWidth(4);
+            mat.SetLineWidth(1);
         }
 
         public void Run(RenderControl renderControl, GroupSceneNode root, List<Segment> Segments, List<double> Values)
