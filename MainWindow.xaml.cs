@@ -115,11 +115,31 @@ namespace MViewer
         private void ReadCAD()
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = SceneIO.FormatFilters();
+            dlg.Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl|*.igs;*.iges;*.stp;*.step;*.brep;*.stl";
             if (dlg.ShowDialog() != true)
                 return;
-
-            var node = SceneIO.Load(dlg.FileName);
+            SceneNode node;
+            switch (System.IO.Path.GetExtension(dlg.FileName))
+            {
+                case ".stp":
+                case ".step":
+                    {
+                        var shape = StepIO.Open(dlg.FileName);
+                        node = BrepSceneNode.Create(shape, null, null, 0, false);
+                    }
+                    break;
+                case ".iges":
+                case ".igs":
+                    {
+                        var shape = IgesIO.Open(dlg.FileName);
+                        node = BrepSceneNode.Create(shape, null, null, 0, false);
+                    }
+                    break;
+                default:
+                    node = SceneIO.Load(dlg.FileName);
+                    break;
+            }
+            
             if (node == null)
                 return;
 
