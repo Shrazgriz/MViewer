@@ -3,6 +3,8 @@ using AnyCAD.Foundation;
 using System.Collections.Generic;
 using System.Linq;
 using MVUnity;
+using MVUnity.Geometry3D;
+using System.Windows.Shapes;
 
 namespace MViewer.Graphics
 {
@@ -181,6 +183,21 @@ namespace MViewer.Graphics
                 }
             }
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
+        }
+        public static void DrawCircle(RenderControl renderControl, Circle cir)
+        {
+            GPnt c = new GPnt(cir.Center.X, cir.Center.Y, cir.Center.Z);
+            GDir n = new GDir(cir.Normal.X, cir.Normal.Y, cir.Normal.Z);
+            var shape = SketchBuilder.MakeCircle(c, cir.R, n);
+            MeshStandardMaterial mat = MeshStandardMaterial.Create("my-material");
+            mat.SetFaceSide(EnumFaceSide.DoubleSide);
+            mat.SetOpacity(0.75f);
+            mat.SetRoughness(0.5f);
+            mat.SetTransparent(true);
+            mat.SetMetalness(0.2f);
+            mat.SetColor(ColorTable.Green);
+            var circle = BrepSceneNode.Create(shape, mat, mat);
+            renderControl.ShowSceneNode(circle);
         }
     }
 }

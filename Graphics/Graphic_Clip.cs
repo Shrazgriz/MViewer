@@ -26,8 +26,8 @@ namespace MViewer.Graphics
         System.Windows.Media.Color pColor;
         int Size;
         private PointCloud clipNode;
-        Polygon polyBound;
         List<V3> pts;
+        int PointID;
         RenderControl render;
         CubicSplineSurface surf;
 
@@ -38,6 +38,25 @@ namespace MViewer.Graphics
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
             render = control;
+        }
+        public Graphic_Clip(RenderControl control, PointCloud Cloud, V3 Coord)
+        {
+            pColor = System.Windows.Media.Colors.Purple;
+            Size = 4;
+            mPositions = new Float32Buffer(0);
+            mColors = new Float32Buffer(0);
+            render = control;
+            #region 筛选点
+            var count = Cloud.GetPointCount();
+            pts = new List<V3>();
+            for (uint i = 0; i < count; i++)
+            {
+                var position = Cloud.GetPosition(i);
+                var pt = ConvertVector3.ToV3(position);
+                pts.Add(pt);
+            }
+            PointID = nearestP(pts, Coord);
+            #endregion
         }
         public void BoxSelection(PointCloud cloud, Box Selection)
         {
@@ -170,30 +189,33 @@ namespace MViewer.Graphics
         /// <summary>
         /// 筛选平面点
         /// </summary>
-        /// <param name="cloud"></param>
-        /// <param name="Coord"></param>
-        /// <param name="DotValue"></param>
+        /// <param name="Thickness"></param>
         /// <returns></returns>
-        public static List<V3> SelectByNorm(PointCloud cloud, V3 Coord, double DotValue)
-        {
-            #region 筛选点
-            var count = cloud.GetPointCount();
-            List<V3> rawPts = new List<V3>();
-            for (uint i = 0; i < count; i++)
-            {
-                var position = cloud.GetPosition(i);
-                var pt = ConvertVector3.ToV3(position);
-                rawPts.Add(pt);
-            }
-            List<double> dist = rawPts.Select(p => p.Distance(Coord)).ToList();
-            int pID = dist.IndexOf(dist.Min());
-            #endregion
-            #region 构造网格并法向筛选
-            var result = Delaunator.PlanePoints_NormCheck(rawPts, pID, DotValue);
-            return result;
+        public List<V3> SelectByThick(double Thickness)
+        {   
+            #region 厚度筛选
+            var thickSelection = Delaunator.PlanePoints_ThickCheck(pts, PointID, Thickness);
+            return thickSelection;
             #endregion
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="DotValue"></param>
+        /// <returns></returns>
+        public List<V3> SelectByNorm(double DotValue)
+        {
+            #region 厚度筛选
+            var normSelection = Delaunator.PlanePoints_NormCheck(pts, PointID, DotValue);
+            return normSelection;
+            #endregion
+        }
+        private static int nearestP(List<V3> pts, V3 Coord)
+        {
+            List<double> dist = pts.Select(p => p.Distance(Coord)).ToList();
+            int pID = dist.IndexOf(dist.Min());
+            return pID;
+        }
         private void splineSurface(V2[] bound, List<V3> points, List<V2> projected)
         {
             #region 构造经线网格longitudes, 输入:points projected bound cellSize nLongi nLatti

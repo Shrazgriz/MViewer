@@ -411,14 +411,20 @@ namespace MViewer
                 }
                 var group = GroupSceneNode.Cast(node);
                 var citer = group.CreateIterator();
-                PointCloud cloud = PointCloud.Cast(citer.Current());
-                Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
+                PointCloud cloud = PointCloud.Cast(citer.Current());                
                 var pt = points.First();
-                var selectedPts = Graphic_Clip.SelectByNorm(cloud, pt, 0.95f);
-
+                Graphic_Clip clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
+                //var selectedPts1 = clip.SelectByThick(10f);
+                //Circle fitted = Circle.MinimumEnclosingCircle(selectedPts1);
+                var selectedPts2 = clip.SelectByNorm(0.85f);
+                Circle fitted = Circle.MinimumEnclosingCircle(selectedPts2);
+                MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(selectedPts2);
+                V3 prjCenter = plane.Projection(fitted.Center);
+                Circle prjCir = new Circle(prjCenter, fitted.Normal, fitted.R);
+                Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
                 showPoints = false;
                 node.SetVisible(false);
-                clip.ShowPoints(selectedPts);
+                clip.ShowPoints(selectedPts2);
             }
         }
     }
