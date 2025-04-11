@@ -415,7 +415,10 @@ namespace MViewer
                 Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
                 var pt = points.First();
                 var selectedPts = Graphic_Clip.SelectByNorm(cloud, pt, 0.95f);
-                clip.XYSplineSurface(selectedPts);
+
+                showPoints = false;
+                node.SetVisible(false);
+                clip.ShowPoints(selectedPts);
             }
         }
     }

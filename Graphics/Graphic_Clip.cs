@@ -115,6 +115,35 @@ namespace MViewer.Graphics
             V2[] bound = rect.Get4Points().ToArray();
             splineSurface(bound, Points, projected);
         }
+        public void ShowPoints(List<V3> Points)
+        {
+            var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(ClipID));
+            if (prevNode != null)
+            {
+                prevNode.Clear();
+            }
+            else
+            {
+                prevNode = new GroupSceneNode();
+                prevNode.SetUserId(ClipID);
+                render.Scene.AddNode(prevNode);
+            }
+            mPositions = new Float32Buffer(0);
+            mColors = new Float32Buffer(0);
+            foreach (V3 pt in Points)
+            {
+                mPositions.Append((float)pt.X);
+                mPositions.Append((float)pt.Y);
+                mPositions.Append((float)pt.Z);
+
+                mColors.Append(pColor.R);
+                mColors.Append(pColor.G);
+                mColors.Append(pColor.B);
+            }
+            PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
+            prevNode.AddNode(node);
+            render.RequestDraw(EnumUpdateFlags.Scene);
+        }
         public List<Segment> GetMeshSegs(int rslx, int rsly)
         {
             var longtiLines = surf.GetLongtitudes(rslx);
@@ -148,7 +177,6 @@ namespace MViewer.Graphics
         public static List<V3> SelectByNorm(PointCloud cloud, V3 Coord, double DotValue)
         {
             #region 筛选点
-            int cellSize = 100;
             var count = cloud.GetPointCount();
             List<V3> rawPts = new List<V3>();
             for (uint i = 0; i < count; i++)
@@ -161,7 +189,7 @@ namespace MViewer.Graphics
             int pID = dist.IndexOf(dist.Min());
             #endregion
             #region 构造网格并法向筛选
-            var result = Delaunator.NeighbourPoints_NormCheck(rawPts, pID, DotValue);
+            var result = Delaunator.PlanePoints_NormCheck(rawPts, pID, DotValue);
             return result;
             #endregion
         }
