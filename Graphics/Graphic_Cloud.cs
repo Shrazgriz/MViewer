@@ -12,7 +12,7 @@ namespace MViewer.Graphics
     internal class Graphic_Cloud
     {
         const int CloudID = 1;
-        const int BoxID = 2;
+        const ulong OBBID = 6;
         static Float32Buffer mPositions;
         static Float32Buffer mColors;
         MVUnity.Exchange.CloudReader filereader;
@@ -541,7 +541,7 @@ namespace MViewer.Graphics
                 throw new Exception("需要先指定点云来源");
             }
             var boxNode = DrawBoundBox(filereader, FontSize);
-            boxNode.SetUserId(BoxID);
+            boxNode.SetUserId(OBBID);
             render.ShowSceneNode(boxNode);
         }
 

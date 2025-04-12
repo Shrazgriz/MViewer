@@ -19,11 +19,12 @@ namespace MViewer.Graphics
         const ulong ColorCloudID = 4;
         const ulong ClipID = 5;
         const ulong OBBID = 6;
-        const ulong MeshID = 10;
         const ulong Seg2ID = 11;
         const ulong Seg3ID = 12;
         const ulong PolygonID = 1000;
-        const ulong StiffID = 100;
+        const ulong MeshObjID = 10;
+        const ulong LineObjID = 100;
+
         RenderControl render;
         LineMaterial lineMat;
         List<Segment2D> seg2s;

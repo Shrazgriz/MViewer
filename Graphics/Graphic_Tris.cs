@@ -15,7 +15,9 @@ namespace MViewer.Graphics
         public double MaxValue;
         public double MinValue;
         MaterialInstance mat;
-        const int pwID = 10;
+        const ulong MeshObjID = 10;
+        const ulong LineObjID = 100;
+
         public Graphic_Tris(double min, double max)
         {
             MaxValue = max;
@@ -94,14 +96,14 @@ namespace MViewer.Graphics
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
             root.AddNode(geoNode);
-            var prev = renderControl.Scene.FindNodeByUserId(pwID);
+            var prev = renderControl.Scene.FindNodeByUserId(MeshObjID);
             if(!(prev is null))
             {
                 renderControl.Scene.RemoveNode(prev);
             }
             PaletteWidget pw = new PaletteWidget();
             pw.Update(mColorTable);
-            pw.SetUserId(pwID);
+            pw.SetUserId(MeshObjID);
             renderControl.ShowSceneNode(pw);
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }

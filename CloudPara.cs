@@ -113,11 +113,15 @@ namespace MViewer
         /// 法向点乘容差
         /// </summary>
         public double NormDotTol { get; set; }
+        public bool RadiusCheck { get; set; }
+        public double AlphaRadius { get; set; }
         public SelectionPara()
         {
             UserNormal = new V3(ConfigurationManager.AppSettings["UserNormal"], ',');
             UseUserNorm = bool.Parse(ConfigurationManager.AppSettings["UseUserNorm"]);
             NormDotTol = double.Parse(ConfigurationManager.AppSettings["NormDotTol"]);
+            RadiusCheck = bool.Parse(ConfigurationManager.AppSettings["RadiusCheck"]);
+            AlphaRadius = double.Parse(ConfigurationManager.AppSettings["AlphaRadius"]);
         }
     }
 }

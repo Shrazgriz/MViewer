@@ -33,7 +33,11 @@
                 <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}">
                 </MenuItem>
                 <MenuItem Header="选择...">
-                    <MenuItem Header="法向筛选" x:Name="menuSelectByNorm" Click="menuSelectByNorm_Click"/>
+                    <MenuItem Header="法向筛选" x:Name="menuSelectByNorm" Command="{Binding Path=SeleByNormCommand}"/>
+                    <MenuItem Header="厚度筛选" Command="{Binding Path=SeleByThickCommand}"/>
+                </MenuItem>
+                <MenuItem Header="拟合...">
+                    <MenuItem Header="圆形" x:Name="menuFitCircle" Command="{Binding Path= FitCirCommand}"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

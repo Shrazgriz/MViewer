@@ -19,9 +19,15 @@
             <RowDefinition MaxHeight="60"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
+            <TextBlock Margin="2" Text="法向容差"/>
             <TextBox Margin="4" Text="{Binding Path= NormDotTol, Mode=TwoWay}"/>
             <CheckBox Margin="4" IsChecked="{Binding Path= UseUserNorm, Mode=TwoWay}">设定法向</CheckBox>
             <TextBox Margin="4" Text="{Binding Path= UserNormal, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="0" Margin="8" Orientation="Vertical">
+            <CheckBox Margin="4" IsChecked="{Binding Path= RadiusCheck, Mode=TwoWay}">检查AlphaShape</CheckBox>
+            <TextBlock Margin="2" Text="AlphaShape半径"/>
+            <TextBox Margin="4" Text="{Binding Path= AlphaRadius, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"

@@ -36,6 +36,9 @@ namespace MViewer
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
         public ICommand CalibCommand { get; set; }
+        public ICommand SeleByNormCommand { get; set; }
+        public ICommand SeleByThickCommand { get; set; }
+        public ICommand FitCirCommand { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
@@ -43,10 +46,10 @@ namespace MViewer
         const ulong ColorCloudID = 4;
         const ulong ClipID = 5;
         const ulong OBBID = 6;
-        const ulong MeshID = 10;
-        const ulong PolygonID = 1000;
-        const ulong StiffID = 100;
+        const ulong MeshObjID = 10;
+        const ulong LineObjID = 100;
         bool showPoints;
+        Graphic_Clip clip;
         public MainWindow()
         {
             InitializeComponent();
@@ -58,6 +61,8 @@ namespace MViewer
             PCDCommand = new Command(param => ReadPCD());
             ExpPtsCommand = new Command(param=> ExpPts());
             CalibCommand = new Command(param => Calib());
+            SeleByNormCommand = new Command(param => SelectByNorm());
+            FitCirCommand = new Command(param=>FitCircle());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -302,7 +307,7 @@ namespace MViewer
                 iter.Next();
             }
             MVUnity.Geometry3D.Polygon bound = new MVUnity.Geometry3D.Polygon(points);
-            Graphic_Clip clip = new Graphic_Clip(mRenderCtrl);
+            clip = new Graphic_Clip(mRenderCtrl);
             clip.PolySelection(cloud, bound);
             var segs = clip.GetMeshSegs(100, 100);
             GroupSceneNode lineroot = new GroupSceneNode();
@@ -389,7 +394,7 @@ namespace MViewer
             Clipboard.SetDataObject(TB_Output.Text);
         }
 
-        private void menuSelectByNorm_Click(object sender, RoutedEventArgs e)
+        private void SelectByNorm()
         {
             SelectionPara spara = new SelectionPara();
             WSelection wSelection = new WSelection(spara);
@@ -417,21 +422,33 @@ namespace MViewer
                     var citer = group.CreateIterator();
                     PointCloud cloud = PointCloud.Cast(citer.Current());
                     var pt = points.First();
-                    Graphic_Clip clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
-                    //var selectedPts1 = clip.SelectByThick(10f);
-                    //Circle fitted = Circle.MinimumEnclosingCircle(selectedPts1);
-                    var selectedPts2 = clip.SelectByNorm(spara.NormDotTol);
-                    Circle fitted = Circle.MinimumEnclosingCircle(selectedPts2);
-                    MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(selectedPts2);
-                    V3 prjCenter = plane.Projection(fitted.Center);
-                    Circle prjCir = new Circle(prjCenter, fitted.Normal, fitted.R);
-                    Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
-                    //showPoints = false;
-                    //node.SetVisible(false);
-                    clip.ShowPoints(selectedPts2);
+                    clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
+                    if (spara.RadiusCheck)
+                    {
+                        var selectedPts2 = clip.SelectByNorm(spara.NormDotTol, spara.AlphaRadius);
+                        clip.ShowPoints(selectedPts2);
+                    }
+                    else
+                    {
+                        var selectedPts2 = clip.SelectByNorm(spara.NormDotTol);
+                        clip.ShowPoints(selectedPts2);
+                    }
                 }
             }
-            
+        }
+        private void FitCircle()
+        {
+            var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ClipID));
+            if (prevNode != null)
+            {
+                var selectedPts2 = clip.ClipPoints;
+                Circle fitted = Circle.MinimumEnclosingCircle(selectedPts2);
+                MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(selectedPts2);
+                V3 prjCenter = plane.Projection(fitted.Center);
+                Circle prjCir = new Circle(prjCenter, fitted.Normal, fitted.R);
+                Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
+                WriteLine(prjCenter.ToString());
+            }
         }
     }
 

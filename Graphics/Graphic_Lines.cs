@@ -10,6 +10,8 @@ namespace MViewer.Graphics
 {
     internal class Graphic_Lines
     {
+        const ulong MeshObjID = 10;
+        const ulong LineObjID = 100;
         Float32Buffer mPositions;
         Float32Buffer mColors;
         public double MaxValue;
@@ -186,6 +188,14 @@ namespace MViewer.Graphics
         }
         public static void DrawCircle(RenderControl renderControl, Circle cir)
         {
+            GroupSceneNode prevNode = GroupSceneNode.Cast(renderControl.Scene.FindNodeByUserId(LineObjID));
+            if (prevNode != null) { prevNode.Clear(); }
+            else
+            {
+                prevNode = new GroupSceneNode();
+                prevNode.SetUserId(LineObjID);
+                renderControl.Scene.AddNode(prevNode);
+            }
             GPnt c = new GPnt(cir.Center.X, cir.Center.Y, cir.Center.Z);
             GDir n = new GDir(cir.Normal.X, cir.Normal.Y, cir.Normal.Z);
             var shape = SketchBuilder.MakeCircle(c, cir.R, n);
@@ -197,7 +207,8 @@ namespace MViewer.Graphics
             mat.SetMetalness(0.2f);
             mat.SetColor(ColorTable.Green);
             var circle = BrepSceneNode.Create(shape, mat, mat);
-            renderControl.ShowSceneNode(circle);
+            prevNode.AddNode(circle);
+            renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }
     }
 }

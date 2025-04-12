@@ -18,19 +18,18 @@ namespace MViewer.Graphics
         const ulong ColorCloudID = 4;
         const ulong ClipID = 5;
         const ulong OBBID = 6;
-        const ulong MeshID = 10;
+        const ulong MeshObjID = 10;
         const ulong PolygonID = 1000;
-        const ulong StiffID = 100;
+        const ulong LineObjID = 100;
         Float32Buffer mPositions;
         Float32Buffer mColors;
         System.Windows.Media.Color pColor;
         int Size;
-        private PointCloud clipNode;
-        List<V3> pts;
+        public List<V3> ClipPoints;
         int PointID;
         RenderControl render;
         CubicSplineSurface surf;
-
+        
         public Graphic_Clip(RenderControl control)
         {
             pColor = System.Windows.Media.Colors.Purple;
@@ -48,14 +47,14 @@ namespace MViewer.Graphics
             render = control;
             #region 筛选点
             var count = Cloud.GetPointCount();
-            pts = new List<V3>();
+            ClipPoints = new List<V3>();
             for (uint i = 0; i < count; i++)
             {
                 var position = Cloud.GetPosition(i);
                 var pt = ConvertVector3.ToV3(position);
-                pts.Add(pt);
+                ClipPoints.Add(pt);
             }
-            PointID = nearestP(pts, Coord);
+            PointID = nearestP(ClipPoints, Coord);
             #endregion
         }
         public void BoxSelection(PointCloud cloud, Box Selection)
@@ -81,7 +80,7 @@ namespace MViewer.Graphics
 
                 }
             }
-            clipNode = PointCloud.Create(mPositions, mColors, null, Size);
+            var clipNode = PointCloud.Create(mPositions, mColors, null, Size);
             clipNode.SetUserId(ClipID);
             render.ShowSceneNode(clipNode);
         }
@@ -159,6 +158,7 @@ namespace MViewer.Graphics
                 mColors.Append(pColor.G);
                 mColors.Append(pColor.B);
             }
+            ClipPoints = Points;
             PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
             prevNode.AddNode(node);
             render.RequestDraw(EnumUpdateFlags.Scene);
@@ -194,7 +194,7 @@ namespace MViewer.Graphics
         public List<V3> SelectByThick(double Thickness)
         {   
             #region 厚度筛选
-            var thickSelection = Delaunator.PlanePoints_ThickCheck(pts, PointID, Thickness);
+            var thickSelection = Delaunator.PlanePoints_ThickCheck(ClipPoints, PointID, Thickness);
             return thickSelection;
             #endregion
         }
@@ -206,7 +206,19 @@ namespace MViewer.Graphics
         public List<V3> SelectByNorm(double DotValue)
         {
             #region 厚度筛选
-            var normSelection = Delaunator.PlanePoints_NormCheck(pts, PointID, DotValue);
+            var normSelection = Delaunator.PlanePoints_NormCheck(ClipPoints, PointID, DotValue);
+            return normSelection;
+            #endregion
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="DotValue"></param>
+        /// <returns></returns>
+        public List<V3> SelectByNorm(double DotValue, double Rad)
+        {
+            #region 厚度筛选
+            var normSelection = Delaunator.PlanePoints_NormRadCheck(ClipPoints, PointID, DotValue, Rad);
             return normSelection;
             #endregion
         }
