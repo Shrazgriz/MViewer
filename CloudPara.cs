@@ -98,4 +98,26 @@ namespace MViewer
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
         }
     }
+
+    public class SelectionPara
+    {
+        /// <summary>
+        /// 是否由指定法向
+        /// </summary>
+        public bool UseUserNorm { get; set; }
+        /// <summary>
+        /// 用户指定法向
+        /// </summary>
+        public V3 UserNormal { get; set;}
+        /// <summary>
+        /// 法向点乘容差
+        /// </summary>
+        public double NormDotTol { get; set; }
+        public SelectionPara()
+        {
+            UserNormal = new V3(ConfigurationManager.AppSettings["UserNormal"], ',');
+            UseUserNorm = bool.Parse(ConfigurationManager.AppSettings["UseUserNorm"]);
+            NormDotTol = double.Parse(ConfigurationManager.AppSettings["NormDotTol"]);
+        }
+    }
 }
