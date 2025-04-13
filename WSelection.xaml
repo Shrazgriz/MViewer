@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="WSelection" Height="280" Width="400">
+        Title="WSelection" Height="300" Width="400">
     <Window.Resources>
         <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
     </Window.Resources>
@@ -18,17 +18,30 @@
             <RowDefinition/>
             <RowDefinition MaxHeight="60"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
-            <TextBlock Margin="2" Text="法向容差"/>
-            <TextBox Margin="4" Text="{Binding Path= NormDotTol, Mode=TwoWay}"/>
-            <CheckBox Margin="4" IsChecked="{Binding Path= UseUserNorm, Mode=TwoWay}">设定法向</CheckBox>
-            <TextBox Margin="4" Text="{Binding Path= UserNormal, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="0" Margin="8" Orientation="Vertical">
-            <CheckBox Margin="4" IsChecked="{Binding Path= RadiusCheck, Mode=TwoWay}">检查AlphaShape</CheckBox>
-            <TextBlock Margin="2" Text="AlphaShape半径"/>
-            <TextBox Margin="4" Text="{Binding Path= AlphaRadius, Mode=TwoWay}"/>
-        </StackPanel>
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="8" Orientation="Vertical">
+            <Expander Header="法向判定" >
+                <StackPanel Orientation="Vertical">
+                    <CheckBox Margin="4" IsChecked="{Binding Path= UseUserNorm, Mode=TwoWay}">指定法向</CheckBox>
+                    <TextBox Margin="4" Text="{Binding Path= UserNormal, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+                    <CheckBox Margin="4" IsChecked="{Binding Path= NormCheck, Mode=TwoWay}">"法向相似度"</CheckBox>
+                    <TextBox Margin="4" Text="{Binding Path= NormDotTol, Mode=TwoWay}"/>
+                    <CheckBox Margin="4" IsChecked="{Binding Path= NLCheck, Mode=TwoWay}">"下限距离"</CheckBox>
+                    <TextBox Margin="4" Text="{Binding Path= NLowLimit, Mode=TwoWay}"/>
+                    <CheckBox Margin="4" IsChecked="{Binding Path= NUCheck, Mode=TwoWay}">"上限距离"</CheckBox>
+                    <TextBox Margin="4" Text="{Binding Path= NUpLimit, Mode=TwoWay}"/>
+                </StackPanel>
+            </Expander>
+            <Expander Header="半径判定">
+                <StackPanel Grid.Column="1" Grid.Row="0" Margin="8" Orientation="Vertical">
+                    <CheckBox Margin="4" IsChecked="{Binding Path= RadiusCheck, Mode=TwoWay}">启用</CheckBox>
+                    <TextBlock Margin="2" Text="AlphaShape半径"/>
+                    <TextBox Margin="4" Text="{Binding Path= AlphaRadius, Mode=TwoWay}"/>
+                </StackPanel>
+            </Expander>
+            <Expander Header="检查厚度">
+                
+            </Expander>
+        </StackPanel>        
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
                     Click="BN_OK_Click">

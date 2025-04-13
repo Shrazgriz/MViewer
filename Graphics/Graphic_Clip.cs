@@ -8,6 +8,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using MVUnity.PointCloud;
 using System.Runtime.CompilerServices;
+using static System.Windows.Forms.AxHost;
+using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace MViewer.Graphics
 {
@@ -29,7 +32,7 @@ namespace MViewer.Graphics
         int PointID;
         RenderControl render;
         CubicSplineSurface surf;
-        
+
         public Graphic_Clip(RenderControl control)
         {
             pColor = System.Windows.Media.Colors.Purple;
@@ -175,7 +178,7 @@ namespace MViewer.Graphics
                 Polyline longtiline = new Polyline(pts);
                 meshsegs.AddRange(longtiline.ToSegments());
             }
-            for (int i = 0; i < rsly-1; i++)
+            for (int i = 0; i < rsly - 1; i++)
             {
                 List<V3> segs = new List<V3>();
                 for (int j = 0; j < rslx; j++)
@@ -192,7 +195,7 @@ namespace MViewer.Graphics
         /// <param name="Thickness"></param>
         /// <returns></returns>
         public List<V3> SelectByThick(double Thickness)
-        {   
+        {
             #region 厚度筛选
             var thickSelection = Delaunator.PlanePoints_ThickCheck(ClipPoints, PointID, Thickness);
             return thickSelection;
@@ -220,6 +223,78 @@ namespace MViewer.Graphics
             #region 厚度筛选
             var normSelection = Delaunator.PlanePoints_NormRadCheck(ClipPoints, PointID, DotValue, Rad);
             return normSelection;
+            #endregion
+        }
+        /// <summary>
+        /// 基于条件委托筛选
+        /// </summary>
+        /// <param name="para"></param>
+        /// <returns></returns>
+        public IEnumerable<V3> SelectByNB(SelectionPara para)
+        {
+            #region 
+            CatersianSys lsys = CatersianSys.CreateSysPCA(ClipPoints);
+            var lpts = ClipPoints.Select(p => lsys.ToLocalCoord(p)).ToList();
+            var lpts2 = lpts.Select(p => new V2(p.X, p.Y));
+            Delaunator dt = new Delaunator(lpts2);
+            #endregion
+            #region 初始化
+            V3 norm;
+            double rsq = 0;
+            if (para.RadiusCheck) rsq = para.AlphaRadius * para.AlphaRadius;
+            if (para.UseUserNorm)
+            {
+                norm = para.UserNormal;
+            }
+            else
+            {
+                var tedges = dt.TriangleIndex().ToList();
+                var firstE = tedges.IndexOf(PointID);
+                var edges = dt.EdgesAroundPoint(firstE);
+                var startTris = edges.Select(e => Delaunator.TriangleOfEdge(e)).ToList();
+                V3 NormSum = V3.Zero;
+                foreach (var tri in startTris)
+                {
+                    if (para.RadiusCheck)
+                    {
+                        double r = dt.GetCircuRadiusSquare(tri);
+                        if (r > rsq) continue;
+                    }
+                    var points = dt.PointsOfTriangle(tri);
+                    var triP3 = points.Select(p => ClipPoints[p]).ToArray();
+                    V3 tNorm = (triP3[1] - triP3[0]).Cross(triP3[2] - triP3[1]);
+                    NormSum += tNorm;
+                }
+                norm = NormSum.Normalized();
+            }
+            double dotValue = ClipPoints[PointID].Dot(norm);
+            Delaunator.TCondition cond = delegate (int t)
+            {
+                var triR = dt.GetCircuRadiusSquare(t);
+                if (para.RadiusCheck)
+                {
+                    if (triR > para.AlphaRadius) { return false; }
+                }
+                var points = dt.PointsOfTriangle(t);
+                var triP3 = points.Select(p => ClipPoints[p]).ToArray();
+                var triDot = triP3.Select(p => p.Dot(norm));
+                if (para.NormCheck)
+                {
+                    V3 tNorm = (triP3[1] - triP3[0]).Cross(triP3[2] - triP3[1]).Normalized();
+                    if (Math.Abs(norm.Dot(tNorm)) < para.NormDotTol) { return false; }
+                }
+                if (para.NLCheck)
+                {
+                    if (triDot.Min() < dotValue + para.NLowLimit) { return false; }
+                }
+                if (para.NUCheck)
+                {
+                    if (triDot.Max() > dotValue + para.NUpLimit) { return false; }
+                }
+                return true;
+            };
+            var result = dt.SelectPointsP(PointID, cond);
+            return result.Select(e => ClipPoints[e]);
             #endregion
         }
         private static int nearestP(List<V3> pts, V3 Coord)

@@ -24,7 +24,6 @@ namespace MViewer
         public int StartAngle { get; set; } = 0;
         public int LastAngle { get; set; } = 120;
         public int AngleStep { get; set; } = 10;
-
         public int Thickness { get; set; } = 10;
         public double Radius { get; set; } = 150;
         public int PointCount { get; set; } = 200;
@@ -36,7 +35,7 @@ namespace MViewer
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
         public ICommand CalibCommand { get; set; }
-        public ICommand SeleByNormCommand { get; set; }
+        public ICommand SeleByNBCommand { get; set; }
         public ICommand SeleByThickCommand { get; set; }
         public ICommand FitCirCommand { get; set; }
         GroupSceneNode cloudroot;
@@ -61,7 +60,7 @@ namespace MViewer
             PCDCommand = new Command(param => ReadPCD());
             ExpPtsCommand = new Command(param=> ExpPts());
             CalibCommand = new Command(param => Calib());
-            SeleByNormCommand = new Command(param => SelectByNorm());
+            SeleByNBCommand = new Command(param => SelectByNorm());
             FitCirCommand = new Command(param=>FitCircle());
             showPoints = true;
         }

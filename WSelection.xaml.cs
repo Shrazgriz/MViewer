@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MViewer
 {
@@ -27,6 +28,12 @@ namespace MViewer
         private void SavePara()
         {
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            cfa.AppSettings.Settings["AlphaRadius"].Value = Para.AlphaRadius.ToString();
+            cfa.AppSettings.Settings["NormCheck"].Value = Para.NormCheck.ToString();
+            cfa.AppSettings.Settings["NLCheck"].Value = Para.NLCheck.ToString();
+            cfa.AppSettings.Settings["NLowLimit"].Value = Para.NLowLimit.ToString();
+            cfa.AppSettings.Settings["NUCheck"].Value = Para.NUCheck.ToString();
+            cfa.AppSettings.Settings["NUpLimit"].Value = Para.NUpLimit.ToString();
             cfa.AppSettings.Settings["UserNormal"].Value = Para.UserNormal.ToString();
             cfa.AppSettings.Settings["UseUserNorm"].Value = Para.UseUserNorm.ToString();
             cfa.AppSettings.Settings["NormDotTol"].Value = Para.NormDotTol.ToString();

@@ -102,6 +102,10 @@ namespace MViewer
     public class SelectionPara
     {
         /// <summary>
+        /// 检查法向
+        /// </summary>
+        public bool NormCheck { get; set; }
+        /// <summary>
         /// 是否由指定法向
         /// </summary>
         public bool UseUserNorm { get; set; }
@@ -115,13 +119,22 @@ namespace MViewer
         public double NormDotTol { get; set; }
         public bool RadiusCheck { get; set; }
         public double AlphaRadius { get; set; }
+        public bool NLCheck { get; set; }
+        public double NLowLimit { get; set; }
+        public bool NUCheck { get; set; }
+        public double NUpLimit { get; set; }
         public SelectionPara()
         {
+            NormCheck = bool.Parse(ConfigurationManager.AppSettings["NormCheck"]);
             UserNormal = new V3(ConfigurationManager.AppSettings["UserNormal"], ',');
             UseUserNorm = bool.Parse(ConfigurationManager.AppSettings["UseUserNorm"]);
             NormDotTol = double.Parse(ConfigurationManager.AppSettings["NormDotTol"]);
             RadiusCheck = bool.Parse(ConfigurationManager.AppSettings["RadiusCheck"]);
             AlphaRadius = double.Parse(ConfigurationManager.AppSettings["AlphaRadius"]);
+            NLCheck = bool.Parse(ConfigurationManager.AppSettings["NLCheck"]);
+            NLowLimit = double.Parse(ConfigurationManager.AppSettings["NLowLimit"]);
+            NUCheck = bool.Parse(ConfigurationManager.AppSettings["NUCheck"]);
+            NUpLimit = double.Parse(ConfigurationManager.AppSettings["NUpLimit"]);
         }
     }
 }
