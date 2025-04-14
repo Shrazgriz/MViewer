@@ -34,7 +34,7 @@
                 </MenuItem>
                 <MenuItem Header="选择点...">
                     <MenuItem Header="邻接点" Command="{Binding Path=SeleByNBCommand}"/>
-                    <MenuItem Header="ROI" />
+                    <MenuItem Header="ROI" Command="{Binding Path=SeleByROICommand}"/>
                 </MenuItem>
                 <MenuItem Header="拟合...">
                     <MenuItem Header="圆形" x:Name="menuFitCircle" Command="{Binding Path= FitCirCommand}"/>

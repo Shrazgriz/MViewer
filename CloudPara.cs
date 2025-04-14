@@ -102,6 +102,14 @@ namespace MViewer
     public class SelectionPara
     {
         /// <summary>
+        /// 是否进行高差检查
+        /// </summary>
+        public bool HDiffCheck { get; set; }
+        /// <summary>
+        /// 高差值
+        /// </summary>
+        public double HDiff { get; set; }
+        /// <summary>
         /// 检查法向
         /// </summary>
         public bool NormCheck { get; set; }
@@ -125,6 +133,8 @@ namespace MViewer
         public double NUpLimit { get; set; }
         public SelectionPara()
         {
+            HDiff = double.Parse(ConfigurationManager.AppSettings["HDiff"]);
+            HDiffCheck = bool.Parse(ConfigurationManager.AppSettings["HDiffCheck"]);
             NormCheck = bool.Parse(ConfigurationManager.AppSettings["NormCheck"]);
             UserNormal = new V3(ConfigurationManager.AppSettings["UserNormal"], ',');
             UseUserNorm = bool.Parse(ConfigurationManager.AppSettings["UseUserNorm"]);

@@ -88,6 +88,9 @@
     <Compile Include="WReadCloud.xaml.cs">
       <DependentUpon>WReadCloud.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WROI.xaml.cs">
+      <DependentUpon>WROI.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WSelection.xaml.cs">
       <DependentUpon>WSelection.xaml</DependentUpon>
     </Compile>
@@ -115,6 +118,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WReadCloud.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WROI.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

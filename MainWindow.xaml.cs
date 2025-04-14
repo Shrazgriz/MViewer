@@ -13,6 +13,7 @@ using MVUnity.PointCloud;
 using MVUnity.Exchange;
 using MVUnity.Geometry3D;
 using MViewer.Graphics;
+using System.Windows.Documents;
 
 namespace MViewer
 {
@@ -36,7 +37,7 @@ namespace MViewer
         public ICommand M2CloudCommand { get; set; }
         public ICommand CalibCommand { get; set; }
         public ICommand SeleByNBCommand { get; set; }
-        public ICommand SeleByThickCommand { get; set; }
+        public ICommand SeleByROICommand { get; set; }
         public ICommand FitCirCommand { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
@@ -61,6 +62,7 @@ namespace MViewer
             ExpPtsCommand = new Command(param=> ExpPts());
             CalibCommand = new Command(param => Calib());
             SeleByNBCommand = new Command(param => SelectByNorm());
+            SeleByROICommand = new Command(param => SelectByROI());
             FitCirCommand = new Command(param=>FitCircle());
             showPoints = true;
         }
@@ -434,6 +436,11 @@ namespace MViewer
                     }
                 }
             }
+        }
+
+        private void SelectByROI()
+        {
+            WROI wROI = new WROI();
         }
         private void FitCircle()
         {
