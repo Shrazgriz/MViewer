@@ -422,21 +422,23 @@ namespace MViewer
                     var group = GroupSceneNode.Cast(node);
                     var citer = group.CreateIterator();
                     PointCloud cloud = PointCloud.Cast(citer.Current());
-                    List<V3> selePts = new List<V3>();
-                    foreach (var pt in points)
-                    {
-                        clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
-                        var selectedPts2 = new List<V3>();
-                        if (spara.RadiusCheck)
-                        {
-                            selectedPts2 = clip.SelectByNorm(spara.NormDotTol, spara.AlphaRadius); 
-                        }
-                        else
-                        {
-                            selectedPts2 = clip.SelectByNorm(spara.NormDotTol);
-                        }
-                        selePts.AddRange(selectedPts2);
-                    }
+                    //List<V3> selePts = new List<V3>();
+                    //foreach (var pt in points)
+                    //{
+                    //    clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
+                    //    var selectedPts2 = new List<V3>();
+                    //    if (spara.RadiusCheck)
+                    //    {
+                    //        selectedPts2 = clip.SelectByNorm(spara.NormDotTol, spara.AlphaRadius); 
+                    //    }
+                    //    else
+                    //    {
+                    //        selectedPts2 = clip.SelectByNorm(spara.NormDotTol);
+                    //    }
+                    //    selePts.AddRange(selectedPts2);
+                    //}
+                    clip = new Graphic_Clip(mRenderCtrl, cloud);
+                    var selePts = clip.SelectNeighbours(points, wSelection.Para);
                     clip.ShowPoints(selePts);
                 }
             }

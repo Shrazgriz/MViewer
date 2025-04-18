@@ -60,6 +60,22 @@ namespace MViewer.Graphics
             PointID = nearestP(ClipPoints, Coord);
             #endregion
         }
+        public Graphic_Clip(RenderControl control, PointCloud Cloud)
+        {
+            pColor = System.Windows.Media.Colors.Purple;
+            Size = 4;
+            mPositions = new Float32Buffer(0);
+            mColors = new Float32Buffer(0);
+            render = control;
+            var count = Cloud.GetPointCount();
+            ClipPoints = new List<V3>();
+            for (uint i = 0; i < count; i++)
+            {
+                var position = Cloud.GetPosition(i);
+                var pt = ConvertVector3.ToV3(position);
+                ClipPoints.Add(pt);
+            }
+        }
         public void BoxSelection(PointCloud cloud, Box Selection)
         {
             var clipPrev = render.Scene.FindNodeByUserId(ClipID);
@@ -226,17 +242,46 @@ namespace MViewer.Graphics
             #endregion
         }
         /// <summary>
+        /// 根据参数选择邻接点
+        /// </summary>
+        /// <param name="Coords"></param>
+        /// <param name="Para"></param>
+        /// <returns></returns>
+        public List<V3> SelectNeighbours(IEnumerable<V3> Coords, SelectionPara Para)
+        {
+            Dictionary<int,bool> IDPairs = new Dictionary<int,bool>();
+            for (int i = 0; i < ClipPoints.Count; i++)
+            {
+                IDPairs.Add(i, false);
+            }
+            foreach (var coord in Coords)
+            {
+                var selected = selectPtFrom(coord, Para);
+                foreach (var item in selected)
+                {
+                    IDPairs[item] = true;
+                }
+            }
+            List<V3> result = new List<V3>();
+            for (int i = 0; i < ClipPoints.Count; i++)
+            {
+                if (IDPairs[i]) result.Add(ClipPoints[i]);
+            }
+            return result;
+        }
+        /// <summary>
         /// 基于条件委托筛选
         /// </summary>
         /// <param name="para"></param>
         /// <returns></returns>
-        public IEnumerable<V3> SelectByNB(SelectionPara para)
+        private List<int> selectPtFrom(V3 Coord, SelectionPara para)
         {
             #region 
             CatersianSys lsys = CatersianSys.CreateSysPCA(ClipPoints);
             var lpts = ClipPoints.Select(p => lsys.ToLocalCoord(p)).ToList();
             var lpts2 = lpts.Select(p => new V2(p.X, p.Y));
             Delaunator dt = new Delaunator(lpts2);
+            PointID = nearestP(ClipPoints, Coord);
             #endregion
             #region 初始化
             V3 norm;
@@ -294,7 +339,7 @@ namespace MViewer.Graphics
                 return true;
             };
             var result = dt.SelectPointsP(PointID, cond);
-            return result.Select(e => ClipPoints[e]);
+            return result;
             #endregion
         }
         private static int nearestP(List<V3> pts, V3 Coord)
