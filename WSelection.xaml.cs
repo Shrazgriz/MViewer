@@ -29,6 +29,8 @@ namespace MViewer
         {
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["AlphaRadius"].Value = Para.AlphaRadius.ToString();
+            cfa.AppSettings.Settings["HDiff"].Value = Para.HDiff.ToString();
+            cfa.AppSettings.Settings["HDiffCheck"].Value = Para.HDiffCheck.ToString();
             cfa.AppSettings.Settings["NormCheck"].Value = Para.NormCheck.ToString();
             cfa.AppSettings.Settings["NLCheck"].Value = Para.NLCheck.ToString();
             cfa.AppSettings.Settings["NLowLimit"].Value = Para.NLowLimit.ToString();
