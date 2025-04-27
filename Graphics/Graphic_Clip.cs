@@ -336,6 +336,10 @@ namespace MViewer.Graphics
                 {
                     if (triDot.Max() > dotValue + para.NUpLimit) { return false; }
                 }
+                if (para.HDiffCheck)
+                {
+                    if(triDot.Max()- triDot.Min()> para.HDiff) { return false;}
+                }
                 return true;
             };
             var result = dt.SelectPointsP(PointID, cond);

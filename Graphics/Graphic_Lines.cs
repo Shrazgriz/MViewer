@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MVUnity;
 using MVUnity.Geometry3D;
-using System.Windows.Shapes;
 
 namespace MViewer.Graphics
 {

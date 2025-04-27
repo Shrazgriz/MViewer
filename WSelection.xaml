@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="WSelection" Height="300" Width="400">
+        Title="WSelection" Height="400" Width="400">
     <Window.Resources>
         <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
     </Window.Resources>
@@ -29,6 +29,8 @@
                     <TextBox Margin="4" Text="{Binding Path= NLowLimit, Mode=TwoWay}"/>
                     <CheckBox Margin="4" IsChecked="{Binding Path= NUCheck, Mode=TwoWay}">"上限距离"</CheckBox>
                     <TextBox Margin="4" Text="{Binding Path= NUpLimit, Mode=TwoWay}"/>
+                    <CheckBox Margin="4" IsChecked="{Binding Path= HDiffCheck, Mode=TwoWay}">"高差检验"</CheckBox>
+                    <TextBox Margin="4" Text="{Binding Path= HDiff, Mode=TwoWay}"/>
                 </StackPanel>
             </Expander>
             <Expander Header="半径判定">
