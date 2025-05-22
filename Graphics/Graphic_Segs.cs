@@ -67,7 +67,6 @@ namespace MViewer.Graphics
             }
             return true;
         }
-
         public void DrawSeg2()
         {
             var prev = render.Scene.FindNodeByUserId(Seg2ID);

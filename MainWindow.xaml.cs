@@ -33,6 +33,7 @@ namespace MViewer
         public ICommand PCDCommand { get; set; }
         public ICommand Seg2Command { get; set; }
         public ICommand Seg3Command { get; set; }
+        public ICommand CirCommand { get; set; }
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
         public ICommand CalibCommand { get; set; }
@@ -55,15 +56,16 @@ namespace MViewer
             InitializeComponent();
             DataContext = this;
             CADCommand = new Command(param => ReadCAD());
-            M2CloudCommand = new Command(param=>Model2Cloud());
+            M2CloudCommand = new Command(param => Model2Cloud());
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
+            CirCommand = new Command(param => ReadCir());
             PCDCommand = new Command(param => ReadPCD());
-            ExpPtsCommand = new Command(param=> ExpPts());
+            ExpPtsCommand = new Command(param => ExpPts());
             CalibCommand = new Command(param => Calib());
             SeleByNBCommand = new Command(param => SelectByNorm());
             SeleByROICommand = new Command(param => SelectByROI());
-            FitCirCommand = new Command(param=>FitCircle());
+            FitCirCommand = new Command(param => FitCircle());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -145,7 +147,7 @@ namespace MViewer
                     node = SceneIO.Load(dlg.FileName);
                     break;
             }
-            
+
             if (node == null)
                 return;
 
@@ -154,11 +156,11 @@ namespace MViewer
         }
         private void Model2Cloud()
         {
-            OpenFileDialog dlg = new OpenFileDialog() { Filter="stl模型|*.stl"};
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "stl模型|*.stl" };
             if (dlg.ShowDialog() != true)
                 return;
             SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
-            if (dlg2.ShowDialog() != true)return;
+            if (dlg2.ShowDialog() != true) return;
             WReadCloud wRead = new WReadCloud(new CloudPara(dlg2.FileName));
             wRead.ShowDialog();
             var node = SceneIO.Load(dlg.FileName);
@@ -212,15 +214,32 @@ namespace MViewer
                 seg.Run3(openfile.FileName);
             }
         }
+        private void ReadCir()
+        {
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "圆数据|*.txt" };
+            if (openfile.ShowDialog() == true)
+            {
+                StreamReader reader = new StreamReader(openfile.FileName);
+                string line = reader.ReadLine();
+                while (line != null && line.Length != 0)
+                {
+                    Circle cir = new Circle(line);
+                    Graphic_Lines.DrawCircle(mRenderCtrl, cir);
+                    line = reader.ReadLine();
+                }
+                reader.Close();
+            }
+            mRenderCtrl.RequestDraw();
+        }
         private void ExpPts()
         {
-            SaveFileDialog savefile = new SaveFileDialog() { Filter="xyz文件|*.xyz" };
-            if(savefile.ShowDialog() == true)
+            SaveFileDialog savefile = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
+            if (savefile.ShowDialog() == true)
             {
                 StreamWriter writer = new StreamWriter(savefile.FileName);
                 var mng = mRenderCtrl.ViewContext.GetSelectionManager();
                 var selection = mng.GetSelection();
-                if(selection.GetCount() > 0)
+                if (selection.GetCount() > 0)
                 {
                     var iter = selection.CreateIterator();
                     while (iter.More())
@@ -236,15 +255,15 @@ namespace MViewer
                 else
                 {
                     var pcn = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
-                    if(pcn != null)
+                    if (pcn != null)
                     {
                         GroupSceneNode gp = GroupSceneNode.Cast(pcn);
-                        var iter =gp.CreateIterator();
+                        var iter = gp.CreateIterator();
                         while (iter.More())
                         {
                             var item = iter.Current();
                             var n = PointCloud.Cast(item);
-                            if(n != null)
+                            if (n != null)
                             {
                                 var count = n.GetPointCount();
                                 for (uint i = 0; i < count; i++)
@@ -294,7 +313,7 @@ namespace MViewer
                 return;
             }
             var group = GroupSceneNode.Cast(node);
-            var citer =group.CreateIterator();            
+            var citer = group.CreateIterator();
             PointCloud cloud = PointCloud.Cast(citer.Current());
             var mng = mRenderCtrl.ViewContext.GetSelectionManager();
             var selection = mng.GetSelection();
@@ -356,7 +375,7 @@ namespace MViewer
                 case 3:
                     V3 vec1 = points[1] - points[0];
                     V3 vec2 = points[2] - points[1];
-                    V3 cross= vec1.Cross(vec2).Normalized();
+                    V3 cross = vec1.Cross(vec2).Normalized();
                     WriteLine(cross.ToString());
                     break;
                 default:
@@ -368,16 +387,16 @@ namespace MViewer
         {
             var cloud = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
             if (cloud == null) return;
-            PointCloud pcn= PointCloud.Cast(cloud);
-            var n=pcn.GetPointCount();
+            PointCloud pcn = PointCloud.Cast(cloud);
+            var n = pcn.GetPointCount();
             List<V3> points = new List<V3>();
             for (uint i = 0; i < n; i++)
             {
                 var value = pcn.GetPosition(i);
                 points.Add(ConvertVector3.ToV3(value));
             }
-            CubicMap cMap = CubicMap.CreateCubicMap(points,5);
-            Graphic_CMTX cmtx = new Graphic_CMTX(mRenderCtrl,cMap);
+            CubicMap cMap = CubicMap.CreateCubicMap(points, 5);
+            Graphic_CMTX cmtx = new Graphic_CMTX(mRenderCtrl, cMap);
             cmtx.DrawCubicRLMtx(2);
         }
 
@@ -399,7 +418,7 @@ namespace MViewer
         {
             SelectionPara spara = new SelectionPara();
             WSelection wSelection = new WSelection(spara);
-            if(wSelection.ShowDialog()== true)
+            if (wSelection.ShowDialog() == true)
             {
                 var mng = mRenderCtrl.ViewContext.GetSelectionManager();
                 var selection = mng.GetSelection();
