@@ -175,7 +175,7 @@ namespace MViewer.Graphics
             {
                 Vector3 c = new Vector3((float)item.Center.X, (float)item.Center.Y, 0);
                 Vector3 s = new Vector3((float)item.Start.X, (float)item.Start.Y, 0);
-                Vector3 e = new Vector3((float)item.End.X, (float)item.End.Y, 0);
+                Vector3 e = new Vector3((float)item.Destination.X, (float)item.Destination.Y, 0);
                 BufferGeometry shape = GeometryBuilder.CreateArc(c, s, e, 0);
                 if(shape != null )
                 {

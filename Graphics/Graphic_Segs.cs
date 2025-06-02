@@ -29,6 +29,7 @@ namespace MViewer.Graphics
         LineMaterial lineMat;
         List<Segment2D> seg2s;
         List<Segment> seg3s;
+        List<Arc2D> arc2s;
         GroupSceneNode plot2Model;
         GroupSceneNode plot3Model;
         public Graphic_Segs(RenderControl control)
@@ -36,6 +37,7 @@ namespace MViewer.Graphics
             render=control;
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
+            arc2s = new List<Arc2D>();
             lineMat = LineMaterial.Create("MatSeg2");
             lineMat.SetColor(ColorTable.Crimson);
             lineMat.SetLineWidth(4);
@@ -44,12 +46,25 @@ namespace MViewer.Graphics
         public bool ReadSeg2(string Filename)
         {
             StreamReader reader = new StreamReader(Filename);
-            seg2s=new List<Segment2D>();
+            seg2s.Clear();
+            arc2s.Clear();
             string line = reader.ReadLine();
             while (line != null && line.Length!=0)
             {
-                Segment2D seg2 = Segment2D.CreateSegment2D(line);
-                seg2s.Add(seg2);
+                var split = line.Split(';');
+                switch (split[0])
+                {
+                    case "Segment2D":
+                        Segment2D seg2 = Segment2D.CreateSegment2D(line);
+                        seg2s.Add(seg2);
+                        break;
+                    case "Arc2D":
+                        Arc2D arc2 = Arc2D.CreateArc2D(line);
+                        arc2s.Add(arc2);
+                        break;
+                    default:
+                        break;
+                }
                 line = reader.ReadLine();
             }
             return true;
@@ -57,7 +72,7 @@ namespace MViewer.Graphics
         public bool ReadSeg3(string Filename)
         {
             StreamReader reader = new StreamReader(Filename);
-            seg3s = new List<Segment>();
+            seg3s.Clear();
             string line = reader.ReadLine();
             while (line != null && line.Length != 0)
             {
@@ -86,6 +101,20 @@ namespace MViewer.Graphics
                 BrepSceneNode lineNode = BrepSceneNode.Create(line, null, lineMat);
                 lineNode.SetPickable(false);
                 plot2Model.AddNode(lineNode);
+            }
+            foreach (var arc in arc2s)
+            {
+                GPnt s = new GPnt(arc.Start.X, arc.Start.Y, 0);
+                GPnt e = new GPnt(arc.Destination.X, arc.Destination.Y, 0);
+                //V2 m = arc.Slerp(0.5f);
+                //GPnt c = new GPnt(m.X, m.Y, 0);
+                GPnt c = new GPnt(arc.Center.X, arc.Center.Y, 0);
+                TopoShape outline = SketchBuilder.MakeArcOfCircle(s, e, c);
+                BrepSceneNode entity;
+                entity = BrepSceneNode.Create(outline, null, lineMat);                
+                if (entity is null) return;
+                entity.SetPickable(false);
+                plot2Model.AddNode(entity);
             }
             render.ShowSceneNode(plot2Model);
         }

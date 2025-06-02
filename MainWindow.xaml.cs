@@ -223,7 +223,7 @@ namespace MViewer
                 string line = reader.ReadLine();
                 while (line != null && line.Length != 0)
                 {
-                    Circle cir = new Circle(line);
+                    Circle cir = Circle.CreateCircle(line);
                     Graphic_Lines.DrawCircle(mRenderCtrl, cir);
                     line = reader.ReadLine();
                 }
