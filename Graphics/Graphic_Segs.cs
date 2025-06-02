@@ -27,6 +27,7 @@ namespace MViewer.Graphics
 
         RenderControl render;
         LineMaterial lineMat;
+        LineMaterial polyMat;
         List<Segment2D> seg2s;
         List<Segment> seg3s;
         List<Arc2D> arc2s;
@@ -40,7 +41,10 @@ namespace MViewer.Graphics
             arc2s = new List<Arc2D>();
             lineMat = LineMaterial.Create("MatSeg2");
             lineMat.SetColor(ColorTable.Crimson);
-            lineMat.SetLineWidth(4);
+            lineMat.SetLineWidth(2);
+            polyMat = LineMaterial.Create("MatPoly2");
+            polyMat.SetColor(ColorTable.Orange);
+            polyMat.SetLineWidth(2);
         }
 
         public bool ReadSeg2(string Filename)
@@ -104,14 +108,15 @@ namespace MViewer.Graphics
             }
             foreach (var arc in arc2s)
             {
-                GPnt s = new GPnt(arc.Start.X, arc.Start.Y, 0);
-                GPnt e = new GPnt(arc.Destination.X, arc.Destination.Y, 0);
-                //V2 m = arc.Slerp(0.5f);
-                //GPnt c = new GPnt(m.X, m.Y, 0);
-                GPnt c = new GPnt(arc.Center.X, arc.Center.Y, 0);
-                TopoShape outline = SketchBuilder.MakeArcOfCircle(s, e, c);
+                var arcpts = arc.ToPoints(8);
+                GPntList list = new GPntList();
+                foreach (var pt in arcpts)
+                {
+                    list.Add(new GPnt(pt.X, pt.Y, 0));
+                }
+                TopoShape outline = SketchBuilder.MakePolyline(list);
                 BrepSceneNode entity;
-                entity = BrepSceneNode.Create(outline, null, lineMat);                
+                entity = BrepSceneNode.Create(outline, null, polyMat);
                 if (entity is null) return;
                 entity.SetPickable(false);
                 plot2Model.AddNode(entity);
