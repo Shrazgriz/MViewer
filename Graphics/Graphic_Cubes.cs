@@ -2,12 +2,6 @@
 using AnyCAD.WPF;
 using MVUnity;
 using MVUnity.PointCloud;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Media3D;
 
 namespace MViewer.Graphics
 {
@@ -17,21 +11,21 @@ namespace MViewer.Graphics
         RenderControl render;
         LineMaterial lineMat;
         MeshStandardMaterial CubeDiff;
-        GroupSceneNode plotModel;        
+        GroupSceneNode plotModel;
         public CubicMap MapValue { get; set; }
 
         public Graphic_CMTX(RenderControl control, CubicMap Value)
         {
-            render = control;            
+            render = control;
             lineMat = LineMaterial.Create("MatCubeLine");
             lineMat.SetColor(ColorTable.Crimson);
             lineMat.SetLineWidth(4);
             CubeDiff = MeshStandardMaterial.Create("MatCubeDiff");
-            CubeDiff.SetColor(ColorTable.Crimson);            
+            CubeDiff.SetColor(ColorTable.Crimson);
             MapValue = Value;
-            
+
             var node = render.Scene.FindNodeByUserId(CubicMapID);
-            if(node != null) { render.Scene.RemoveNode(node); }
+            if (node != null) { render.Scene.RemoveNode(node); }
             plotModel = new GroupSceneNode();
             plotModel.SetUserId(CubicMapID);
             render.ShowSceneNode(plotModel);
@@ -42,23 +36,23 @@ namespace MViewer.Graphics
             CubicRLMtx mtx = MapValue.GetResults(Threshold);
             var ll = MapValue.LowLimit;
             var rslZ = MapValue.RSLZ;
-            var rslY= MapValue.RSLY;
-            var rslX= MapValue.RSLX;
+            var rslY = MapValue.RSLY;
+            var rslX = MapValue.RSLX;
             foreach (var lPair in mtx.GetAllLayers())
             {
                 var lay = lPair.Value;
-                double zll = ll.Z+ lPair.Key*rslZ;
+                double zll = ll.Z + lPair.Key * rslZ;
                 double zul = zll + rslZ;
                 foreach (var cPair in lay.GetRLColumns())
                 {
-                    var col= cPair.Value;
+                    var col = cPair.Value;
                     double xll = ll.X + cPair.Key * rslX;
                     double xul = xll + rslX;
                     foreach (var rl in col.GetRunLengths())
                     {
                         double yll = ll.Y + rl.Start * rslY;
                         double yul = ll.Y + (rl.End + 1) * rslY;
-                        DrawBoxSolid(xll,xul,yll,yul,zll,zul);
+                        DrawBoxSolid(xll, xul, yll, yul, zll, zul);
                     }
                 }
             }
@@ -132,12 +126,12 @@ namespace MViewer.Graphics
                 plotModel.AddNode(lineNode);
             }
         }
-        private void DrawBoxSolid(double xll,double xul,double yll, double yul, double zll,double zul)
+        private void DrawBoxSolid(double xll, double xul, double yll, double yul, double zll, double zul)
         {
-            GAx2 ax =new GAx2();
-            ax.SetLocation(new GPnt(xll,yll, zll));
-            ax.SetXDirection(new GDir(1,0,0));
-            ax.SetYDirection(new GDir(0,1,0));
+            GAx2 ax = new GAx2();
+            ax.SetLocation(new GPnt(xll, yll, zll));
+            ax.SetXDirection(new GDir(1, 0, 0));
+            ax.SetYDirection(new GDir(0, 1, 0));
             TopoShape box = ShapeBuilder.MakeBox(ax, xul - xll, yul - yll, zul - zll);
             BrepSceneNode node = BrepSceneNode.Create(box, CubeDiff, lineMat);
             node.SetPickable(false);

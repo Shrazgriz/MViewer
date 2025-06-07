@@ -1,6 +1,6 @@
-﻿using System.Configuration;
+﻿using MVUnity;
+using System.Configuration;
 using System.Windows;
-using MVUnity;
 
 namespace MViewer
 {
@@ -9,7 +9,7 @@ namespace MViewer
     /// </summary>
     public partial class WROI : Window
     {
-        public V3 UL {  get; set; }
+        public V3 UL { get; set; }
         public V3 LL { get; set; }
         public WROI()
         {

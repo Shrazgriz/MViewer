@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AnyCAD.Foundation;
+﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
-using MVUnity.Geometry3D;
 using MVUnity;
+using System.Collections.Generic;
 using System.IO;
-using System.Windows.Interop;
-using System.Windows.Media;
 
 namespace MViewer.Graphics
 {
@@ -35,7 +28,7 @@ namespace MViewer.Graphics
         GroupSceneNode plot3Model;
         public Graphic_Segs(RenderControl control)
         {
-            render=control;
+            render = control;
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
             arc2s = new List<Arc2D>();
@@ -53,7 +46,7 @@ namespace MViewer.Graphics
             seg2s.Clear();
             arc2s.Clear();
             string line = reader.ReadLine();
-            while (line != null && line.Length!=0)
+            while (line != null && line.Length != 0)
             {
                 var split = line.Split(';');
                 switch (split[0])
@@ -89,19 +82,19 @@ namespace MViewer.Graphics
         public void DrawSeg2()
         {
             var prev = render.Scene.FindNodeByUserId(Seg2ID);
-            if(prev != null)
+            if (prev != null)
             {
                 render.Scene.RemoveNode(prev);
             }
             plot2Model = new GroupSceneNode();
             plot2Model.SetUserId(Seg2ID);
-            
+
             GPntList pts = new GPntList();
             foreach (var seg in seg2s)
             {
                 GPnt s = new GPnt(seg.Start.X, seg.Start.Y, 0);
                 GPnt e = new GPnt(seg.Destination.X, seg.Destination.Y, 0);
-                TopoShape line = SketchBuilder.MakeLine(s,e);
+                TopoShape line = SketchBuilder.MakeLine(s, e);
                 BrepSceneNode lineNode = BrepSceneNode.Create(line, null, lineMat);
                 lineNode.SetPickable(false);
                 plot2Model.AddNode(lineNode);
@@ -148,7 +141,7 @@ namespace MViewer.Graphics
         }
         public void Run2(string filename)
         {
-            if(ReadSeg2(filename))
+            if (ReadSeg2(filename))
             {
                 DrawSeg2();
             }

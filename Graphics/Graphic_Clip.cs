@@ -1,16 +1,11 @@
 ﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
-using MVUnity.Geometry3D;
 using MVUnity;
+using MVUnity.Geometry3D;
+using MVUnity.PointCloud;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using MVUnity.PointCloud;
-using System.Runtime.CompilerServices;
-using static System.Windows.Forms.AxHost;
-using System.Security.Cryptography;
-using System.Windows.Forms;
 
 namespace MViewer.Graphics
 {
@@ -249,7 +244,7 @@ namespace MViewer.Graphics
         /// <returns></returns>
         public List<V3> SelectNeighbours(IEnumerable<V3> Coords, SelectionPara Para)
         {
-            Dictionary<int,bool> IDPairs = new Dictionary<int,bool>();
+            Dictionary<int, bool> IDPairs = new Dictionary<int, bool>();
             for (int i = 0; i < ClipPoints.Count; i++)
             {
                 IDPairs.Add(i, false);
@@ -338,7 +333,7 @@ namespace MViewer.Graphics
                 }
                 if (para.HDiffCheck)
                 {
-                    if(triDot.Max()- triDot.Min()> para.HDiff) { return false;}
+                    if (triDot.Max() - triDot.Min() > para.HDiff) { return false; }
                 }
                 return true;
             };

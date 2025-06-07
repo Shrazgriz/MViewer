@@ -1,19 +1,17 @@
-﻿using System;
+﻿using AnyCAD.Foundation;
+using Microsoft.Win32;
+using MViewer.Graphics;
+using MVUnity;
+using MVUnity.Exchange;
+using MVUnity.Geometry3D;
+using MVUnity.PointCloud;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using System.Linq;
-using Microsoft.Win32;
-using AnyCAD.Foundation;
-using MVUnity;
-using MVUnity.PointCloud;
-using MVUnity.Exchange;
-using MVUnity.Geometry3D;
-using MViewer.Graphics;
-using System.Windows.Documents;
 
 namespace MViewer
 {

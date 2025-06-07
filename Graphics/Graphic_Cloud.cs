@@ -1,11 +1,11 @@
 ﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
-using MVUnity.PointCloud;
 using MVUnity;
+using MVUnity.Geometry3D;
+using MVUnity.PointCloud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MVUnity.Geometry3D;
 
 namespace MViewer.Graphics
 {
@@ -90,7 +90,7 @@ namespace MViewer.Graphics
                                     int f = 256;
                                     foreach (Vertex vertex in row.Vertices)
                                     {
-                                        if(!ROI.Cover(vertex)) continue;
+                                        if (!ROI.Cover(vertex)) continue;
                                         mPositions.Append((float)vertex.X);
                                         mPositions.Append((float)vertex.Y);
                                         mPositions.Append((float)vertex.Z);
@@ -165,7 +165,7 @@ namespace MViewer.Graphics
                     }
                     break;
                 case ColorMode.Contour:
-                    if(UseROI)
+                    if (UseROI)
                     {
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
                         ColorLookupTable mColorTable = new ColorLookupTable();
@@ -174,7 +174,7 @@ namespace MViewer.Graphics
                         mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
                         foreach (Point3D pt in points)
                         {
-                            if(!ROI.Cover(pt)) continue;
+                            if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
@@ -204,13 +204,13 @@ namespace MViewer.Graphics
                     }
                     break;
                 case ColorMode.Texture:
-                    if(UseROI)
+                    if (UseROI)
                     {
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
                         for (int i = 0; i < points.Length; i++)
                         {
                             Point3D pt = points[i];
-                            if(!ROI.Cover(pt)) continue;
+                            if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
@@ -235,7 +235,7 @@ namespace MViewer.Graphics
                     }
                     break;
             }
-            
+
             return true;
         }
         private bool ReadASC()
@@ -249,7 +249,7 @@ namespace MViewer.Graphics
             {
                 foreach (V3 pt in points)
                 {
-                    if(!ROI.Cover(pt)) continue;
+                    if (!ROI.Cover(pt)) continue;
                     mPositions.Append((float)pt.X);
                     mPositions.Append((float)pt.Y);
                     mPositions.Append((float)pt.Z);
@@ -373,7 +373,8 @@ namespace MViewer.Graphics
             }
             return true;
         }
-        private bool ReadPLY() {
+        private bool ReadPLY()
+        {
             List<V3> verts = filereader.ReadPLY(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetMinValue((float)filereader.Min.Z);
@@ -400,7 +401,7 @@ namespace MViewer.Graphics
                         for (int i = 0; i < verts.Count; i++)
                         {
                             V3 pt = verts[i];
-                            if(!ROI.Cover(pt)) continue;
+                            if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
@@ -491,7 +492,7 @@ namespace MViewer.Graphics
                 mPositions.Append((float)pt.X);
                 mPositions.Append((float)pt.Y);
                 mPositions.Append((float)pt.Z);
-                
+
                 mColors.Append(PColor.R);
                 mColors.Append(PColor.G);
                 mColors.Append(PColor.B);
@@ -505,7 +506,7 @@ namespace MViewer.Graphics
             if (!ReadData())
                 return;
             var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
-            if(prevNode != null)
+            if (prevNode != null)
             {
                 prevNode.Clear();
             }
@@ -524,7 +525,7 @@ namespace MViewer.Graphics
             if (!ReadData())
                 return;
             var prevNode = GroupSceneNode.Cast(render.Scene.FindNodeByUserId(CloudID));
-            if(prevNode == null)
+            if (prevNode == null)
             {
                 prevNode = new GroupSceneNode();
                 prevNode.SetUserId(CloudID);

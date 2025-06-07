@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using MVUnity;
 using System.ComponentModel;
 using System.Configuration;
 using System.Windows.Media;
-using MVUnity;
-using MVUnity.Geometry3D;
 
 namespace MViewer
 {
     /// <summary>
     /// 着色方式
     /// </summary>
-    public enum ColorMode { 
+    public enum ColorMode
+    {
         /// <summary>
         /// 单色
         /// </summary>
@@ -18,11 +17,11 @@ namespace MViewer
         /// <summary>
         /// 云图
         /// </summary>
-    Contour,
-    /// <summary>
-    /// 点云纹理
-    /// </summary>
-    Texture
+        Contour,
+        /// <summary>
+        /// 点云纹理
+        /// </summary>
+        Texture
     }
     public class CloudPara : INotifyPropertyChanged
     {
@@ -31,7 +30,7 @@ namespace MViewer
         private string[] cloudFilePath;
         private Color pointColor;
         private int pointSize;
-        
+
         public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
         public string[] CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
@@ -74,7 +73,7 @@ namespace MViewer
             CloudFilePath = filename;
             Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
             Cloudscale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
-            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode),ConfigurationManager.AppSettings["ColorMode"]);
+            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
             LL = new V3(ConfigurationManager.AppSettings["LL"], ',');
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
             string burshString = ConfigurationManager.AppSettings["PointBrush"];
@@ -120,7 +119,7 @@ namespace MViewer
         /// <summary>
         /// 用户指定法向
         /// </summary>
-        public V3 UserNormal { get; set;}
+        public V3 UserNormal { get; set; }
         /// <summary>
         /// 法向点乘容差
         /// </summary>

@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace MViewer
 {
@@ -62,13 +51,13 @@ namespace MViewer
             cfa.AppSettings.Settings["PointBrush"].Value = Para.PointBrush.ToString();
             cfa.AppSettings.Settings["UL"].Value = Para.UL.ToString();
             cfa.AppSettings.Settings["UseROI"].Value = Para.UseROI.ToString();
-            cfa.AppSettings.Settings["VertSkip"].Value=Para.VertSkip.ToString();
+            cfa.AppSettings.Settings["VertSkip"].Value = Para.VertSkip.ToString();
             cfa.Save();
         }
 
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(Para!=null)
+            if (Para != null)
             {
                 Para.ColorMode = (ColorMode)LB_ColorMode.SelectedIndex;
             }

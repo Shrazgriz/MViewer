@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using MVUnity;
+using MVUnity.Exchange;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Microsoft.Win32;
-using MVUnity;
-using MVUnity.Exchange;
 
 namespace MViewer
 {
@@ -40,7 +40,7 @@ namespace MViewer
 
         private void BN_Calculation_Click(object sender, RoutedEventArgs e)
         {
-            List<V3> input0 = inputPts.Select(p=>new V3(p.Value)).ToList();
+            List<V3> input0 = inputPts.Select(p => new V3(p.Value)).ToList();
             List<V3> target0 = new List<V3>();
             for (int i = 0; i < targetPts.Count; i++)
             {
@@ -61,8 +61,8 @@ namespace MViewer
 
         private void BN_Export_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter= "文本文件|*.txt"};
-            if(saveFileDialog.ShowDialog()== true)
+            SaveFileDialog saveFileDialog = new SaveFileDialog() { Filter = "文本文件|*.txt" };
+            if (saveFileDialog.ShowDialog() == true)
             {
                 string fn = saveFileDialog.FileName;
                 StreamWriter writer = new StreamWriter(fn);
@@ -98,7 +98,7 @@ namespace MViewer
         private void BN_ImportInput_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
-            if(openFile.ShowDialog()== true)
+            if (openFile.ShowDialog() == true)
             {
                 var filereader = new CloudReader
                 {

@@ -1,9 +1,9 @@
-﻿using AnyCAD.WPF;
-using AnyCAD.Foundation;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AnyCAD.Foundation;
+using AnyCAD.WPF;
 using MVUnity;
 using MVUnity.Geometry3D;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MViewer.Graphics
 {
@@ -98,7 +98,7 @@ namespace MViewer.Graphics
                 mPositions.Append((float)edge.Destination.X);
                 mPositions.Append((float)edge.Destination.Y);
                 mPositions.Append((float)edge.Destination.Z);
-                
+
                 mColors.Append(Color.x);
                 mColors.Append(Color.y);
                 mColors.Append(Color.z);
@@ -152,7 +152,7 @@ namespace MViewer.Graphics
                 mPositions.Append((float)edge.Start.Z);
                 mPositions.Append((float)edge.Destination.X);
                 mPositions.Append((float)edge.Destination.Y);
-                mPositions.Append((float)edge.Destination.Z);                
+                mPositions.Append((float)edge.Destination.Z);
                 mColors.Append(color.x);
                 mColors.Append(color.y);
                 mColors.Append(color.z);
@@ -177,7 +177,7 @@ namespace MViewer.Graphics
                 Vector3 s = new Vector3((float)item.Start.X, (float)item.Start.Y, 0);
                 Vector3 e = new Vector3((float)item.Destination.X, (float)item.Destination.Y, 0);
                 BufferGeometry shape = GeometryBuilder.CreateArc(c, s, e, 0);
-                if(shape != null )
+                if (shape != null)
                 {
                     PrimitiveSceneNode wireNode = new PrimitiveSceneNode(shape, mat);
                     root.AddNode(wireNode);
@@ -188,9 +188,10 @@ namespace MViewer.Graphics
         public static void DrawCircle(RenderControl renderControl, Circle cir)
         {
             GroupSceneNode prevNode = GroupSceneNode.Cast(renderControl.Scene.FindNodeByUserId(LineObjID));
-            if (prevNode != null) { 
+            if (prevNode != null)
+            {
                 //prevNode.Clear();
-                }
+            }
             else
             {
                 prevNode = new GroupSceneNode();

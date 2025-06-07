@@ -43,9 +43,9 @@ namespace MViewer.Graphics
                 var pts = tri.Vertices;
                 Vector3 color;
                 //var color = mColorTable.GetColor(Math.Log(Values[i]));
-                if (Values[i]> MaxValue) { color = ColorTable.Red; }
-                else if (Values[i]< MinValue) { color = ColorTable.Blue; }
-                else { color= ColorTable.Green; }
+                if (Values[i] > MaxValue) { color = ColorTable.Red; }
+                else if (Values[i] < MinValue) { color = ColorTable.Blue; }
+                else { color = ColorTable.Green; }
                 for (int j = 0; j < 3; j++)
                 {
                     mPositions.Append((float)pts[j].X);
@@ -97,7 +97,7 @@ namespace MViewer.Graphics
             PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
             root.AddNode(geoNode);
             var prev = renderControl.Scene.FindNodeByUserId(MeshObjID);
-            if(!(prev is null))
+            if (!(prev is null))
             {
                 renderControl.Scene.RemoveNode(prev);
             }
@@ -129,7 +129,7 @@ namespace MViewer.Graphics
                     }
                 }
             }
-            
+
             BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
             buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
             buff.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, mColors);
