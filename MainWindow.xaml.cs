@@ -85,7 +85,7 @@ namespace MViewer
                     var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(CloudID));
                     if (prevNode != null)
                     {
-                        prevNode.Clear();
+                        //prevNode.Clear();
                     }
                     else
                     {
@@ -105,7 +105,8 @@ namespace MViewer
                         Graphic_Cloud cloud = new Graphic_Cloud(filereader)
                         {
                             ColorMode = readCloud.Para.ColorMode,
-                            Size = readCloud.Para.PointSize
+                            Size = readCloud.Para.PointSize,
+                            PColor = readCloud.Para.PointColor
                         };
                         if (readCloud.Para.UseROI)
                         {

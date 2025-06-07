@@ -16,7 +16,7 @@ namespace MViewer.Graphics
         static Float32Buffer mPositions;
         static Float32Buffer mColors;
         MVUnity.Exchange.CloudReader filereader;
-        System.Windows.Media.Color pColor;
+        public System.Windows.Media.Color PColor;
         public int Size;
         public int IntervalX;
         public int IntervalY;
@@ -27,7 +27,7 @@ namespace MViewer.Graphics
         public Graphic_Cloud(MVUnity.Exchange.CloudReader cloud)
         {
             filereader = cloud;
-            pColor = System.Windows.Media.Colors.Red;
+            PColor = System.Windows.Media.Colors.Red;
             Size = 2;
             IntervalX = 100;
             IntervalY = 100;
@@ -37,7 +37,7 @@ namespace MViewer.Graphics
         }
         public Graphic_Cloud()
         {
-            pColor = System.Windows.Media.Colors.Red;
+            PColor = System.Windows.Media.Colors.Red;
             Size = 2;
         }
         bool ReadData()
@@ -94,9 +94,9 @@ namespace MViewer.Graphics
                                         mPositions.Append((float)vertex.X);
                                         mPositions.Append((float)vertex.Y);
                                         mPositions.Append((float)vertex.Z);
-                                        mColors.Append(pColor.R * f / 65535f);
-                                        mColors.Append(pColor.G * f / 65535f);
-                                        mColors.Append(pColor.B * f / 65535f);
+                                        mColors.Append(PColor.R * f / 65535f);
+                                        mColors.Append(PColor.G * f / 65535f);
+                                        mColors.Append(PColor.B * f / 65535f);
                                         f--;
                                         if (f == 127) f = 256;
                                     }
@@ -114,9 +114,9 @@ namespace MViewer.Graphics
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
                                 mPositions.Append((float)pt.Z);
-                                mColors.Append(pColor.R);
-                                mColors.Append(pColor.G);
-                                mColors.Append(pColor.B);
+                                mColors.Append(PColor.R);
+                                mColors.Append(PColor.G);
+                                mColors.Append(PColor.B);
                             }
                             #endregion
                         }
@@ -137,9 +137,9 @@ namespace MViewer.Graphics
                                         mPositions.Append((float)vertex.X);
                                         mPositions.Append((float)vertex.Y);
                                         mPositions.Append((float)vertex.Z);
-                                        mColors.Append(pColor.R * f / 65535f);
-                                        mColors.Append(pColor.G * f / 65535f);
-                                        mColors.Append(pColor.B * f / 65535f);
+                                        mColors.Append(PColor.R * f / 65535f);
+                                        mColors.Append(PColor.G * f / 65535f);
+                                        mColors.Append(PColor.B * f / 65535f);
                                         f--;
                                         if (f == 127) f = 256;
                                     }
@@ -156,9 +156,9 @@ namespace MViewer.Graphics
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
                                 mPositions.Append((float)pt.Z);
-                                mColors.Append(pColor.R);
-                                mColors.Append(pColor.G);
-                                mColors.Append(pColor.B);
+                                mColors.Append(PColor.R);
+                                mColors.Append(PColor.G);
+                                mColors.Append(PColor.B);
                             }
                             #endregion
                         }
@@ -321,9 +321,9 @@ namespace MViewer.Graphics
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            mColors.Append(pColor.R);
-                            mColors.Append(pColor.G);
-                            mColors.Append(pColor.B);
+                            mColors.Append(PColor.R);
+                            mColors.Append(PColor.G);
+                            mColors.Append(PColor.B);
                         }
                         break;
                 }
@@ -364,9 +364,9 @@ namespace MViewer.Graphics
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            mColors.Append(pColor.R);
-                            mColors.Append(pColor.G);
-                            mColors.Append(pColor.B);
+                            mColors.Append(PColor.R);
+                            mColors.Append(PColor.G);
+                            mColors.Append(PColor.B);
                         }
                         break;
                 }
@@ -418,9 +418,9 @@ namespace MViewer.Graphics
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            mColors.Append(pColor.R);
-                            mColors.Append(pColor.G);
-                            mColors.Append(pColor.B);
+                            mColors.Append(PColor.R);
+                            mColors.Append(PColor.G);
+                            mColors.Append(PColor.B);
                         }
                         break;
                 }
@@ -461,9 +461,9 @@ namespace MViewer.Graphics
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            mColors.Append(pColor.R);
-                            mColors.Append(pColor.G);
-                            mColors.Append(pColor.B);
+                            mColors.Append(PColor.R);
+                            mColors.Append(PColor.G);
+                            mColors.Append(PColor.B);
                             //pts.Add(pt);
                         }
                         break;
@@ -492,9 +492,9 @@ namespace MViewer.Graphics
                 mPositions.Append((float)pt.Y);
                 mPositions.Append((float)pt.Z);
                 
-                mColors.Append(pColor.R);
-                mColors.Append(pColor.G);
-                mColors.Append(pColor.B);
+                mColors.Append(PColor.R);
+                mColors.Append(PColor.G);
+                mColors.Append(PColor.B);
             }
             PointCloud node = PointCloud.Create(mPositions, mColors, null, Size);
             prevNode.AddNode(node);
