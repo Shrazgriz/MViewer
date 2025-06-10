@@ -24,11 +24,32 @@ namespace MViewer.Graphics
             MinValue = min;
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
-            mat = BasicMaterial.Create("matTris");
-            mat.SetVertexColors(true);
+            mat = MeshPhongMaterial.Create("matTris");
+            mat.SetVertexColors(false);
+            mat.SetColor(ColorTable.RoyalBlue);
+            mat.SetFaceSide(EnumFaceSide.DoubleSide);
             mat.SetLineWidth(2);
         }
-
+        public void Run(RenderControl renderControl, List<V3> tris)
+        {
+            Vector3 color = ColorTable.RoyalBlue;
+            for (int i = 0; i < tris.Count; i++)
+            {
+                    mPositions.Append((float)tris[i].X);
+                    mPositions.Append((float)tris[i].Y);
+                    mPositions.Append((float)tris[i].Z);
+                    mColors.Append(color.x);
+                    mColors.Append(color.y);
+                    mColors.Append(color.z);                
+            }
+            BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
+            buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
+            //buff.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, mColors);
+            NormalCalculator.ComputeVertexNormals(buff);
+            PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
+            renderControl.ShowSceneNode(geoNode);
+            renderControl.RequestDraw(EnumUpdateFlags.Scene);
+        }
         public void Run(RenderControl renderControl, GroupSceneNode root, List<Triangle2D> tris, List<double> Values)
         {
             //double minR = Math.Log(2f);

@@ -21,6 +21,7 @@
                 <MenuItem    Header="读取" >
                     <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
                     <MenuItem   Header="模型并离散" Name="menuM2C" Command="{Binding Path=M2CloudCommand}"/>
+                    <MenuItem Header="三角网格" Command="{Binding Path=MeshCommand}"/>
                     <Separator/>
                     <MenuItem      Header="点云" x:Name="menuXYZ"  Command="{Binding Path=PCDCommand}"/>
                     <Separator/>

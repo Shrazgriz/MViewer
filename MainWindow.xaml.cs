@@ -38,6 +38,7 @@ namespace MViewer
         public ICommand SeleByNBCommand { get; set; }
         public ICommand SeleByROICommand { get; set; }
         public ICommand FitCirCommand { get; set; }
+        public ICommand MeshCommand { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
@@ -64,6 +65,7 @@ namespace MViewer
             SeleByNBCommand = new Command(param => SelectByNorm());
             SeleByROICommand = new Command(param => SelectByROI());
             FitCirCommand = new Command(param => FitCircle());
+            MeshCommand = new Command(param=>ReadMesh());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -211,6 +213,17 @@ namespace MViewer
             {
                 Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
                 seg.Run3(openfile.FileName);
+            }
+        }
+        private void ReadMesh()
+        {
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "网格数据|*.txt" };
+            if (openfile.ShowDialog() == true)
+            {
+                CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
+                var verts = reader.ReadXYZ();
+                Graphic_Tris tris = new Graphic_Tris(0,100);
+                tris.Run(mRenderCtrl,verts);
             }
         }
         private void ReadCir()
