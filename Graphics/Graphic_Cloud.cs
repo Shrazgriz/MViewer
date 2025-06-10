@@ -169,8 +169,8 @@ namespace MViewer.Graphics
                     {
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
                         ColorLookupTable mColorTable = new ColorLookupTable();
-                        mColorTable.SetMinValue((float)filereader.Min.Z);
-                        mColorTable.SetMaxValue((float)filereader.Max.Z);
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                         mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
                         foreach (Point3D pt in points)
                         {
@@ -247,6 +247,8 @@ namespace MViewer.Graphics
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
             {
+                mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                 foreach (V3 pt in points)
                 {
                     if (!ROI.Cover(pt)) continue;
@@ -287,6 +289,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.Contour:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -382,6 +386,8 @@ namespace MViewer.Graphics
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
             {
+                mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                 switch (ColorMode)
                 {
                     case ColorMode.Contour:
