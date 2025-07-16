@@ -39,6 +39,7 @@ namespace MViewer
         public ICommand SeleByROICommand { get; set; }
         public ICommand FitCirCommand { get; set; }
         public ICommand MeshCommand { get; set; }
+        public ICommand SeleByCirCommand { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong CubicMapID = 12;
@@ -64,8 +65,9 @@ namespace MViewer
             CalibCommand = new Command(param => Calib());
             SeleByNBCommand = new Command(param => SelectByNorm());
             SeleByROICommand = new Command(param => SelectByROI());
+            SeleByCirCommand = new Command(param => SelectByCir());
             FitCirCommand = new Command(param => FitCircle());
-            MeshCommand = new Command(param=>ReadMesh());
+            MeshCommand = new Command(param => ReadMesh());
             showPoints = true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -222,8 +224,8 @@ namespace MViewer
             {
                 CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
                 var verts = reader.ReadXYZ();
-                Graphic_Tris tris = new Graphic_Tris(0,100);
-                tris.Run(mRenderCtrl,verts);
+                Graphic_Tris tris = new Graphic_Tris(0, 100);
+                tris.Run(mRenderCtrl, verts);
             }
         }
         private void ReadCir()
@@ -453,21 +455,6 @@ namespace MViewer
                     var group = GroupSceneNode.Cast(node);
                     var citer = group.CreateIterator();
                     PointCloud cloud = PointCloud.Cast(citer.Current());
-                    //List<V3> selePts = new List<V3>();
-                    //foreach (var pt in points)
-                    //{
-                    //    clip = new Graphic_Clip(mRenderCtrl, cloud, pt);
-                    //    var selectedPts2 = new List<V3>();
-                    //    if (spara.RadiusCheck)
-                    //    {
-                    //        selectedPts2 = clip.SelectByNorm(spara.NormDotTol, spara.AlphaRadius); 
-                    //    }
-                    //    else
-                    //    {
-                    //        selectedPts2 = clip.SelectByNorm(spara.NormDotTol);
-                    //    }
-                    //    selePts.AddRange(selectedPts2);
-                    //}
                     clip = new Graphic_Clip(mRenderCtrl, cloud);
                     var selePts = clip.SelectNeighbours(points, wSelection.Para);
                     clip.ShowPoints(selePts);
@@ -478,6 +465,42 @@ namespace MViewer
         private void SelectByROI()
         {
             WROI wROI = new WROI();
+        }
+        private void SelectByCir()
+        {
+            List<V3> points = new List<V3>();
+            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+            var selection = mng.GetSelection();
+            var iter = selection.CreateIterator();
+            while (iter.More())
+            {
+                var item = iter.Current();
+                var value = item.GetPosition();
+                points.Add(ConvertVector3.ToV3(value));
+                iter.Next();
+            }
+
+            if (points.Count > 3)
+            {
+                SelectionPara spara = new SelectionPara();
+                WSelection wSelection = new WSelection(spara);
+                if (wSelection.ShowDialog() == true)
+                {
+                    SceneNode node = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
+                    if (node == null)
+                    {
+                        return;
+                    }
+                    //Circle cir = Circle.CreateCircle(points);
+                    Circle fitted = Circle.MinimumEnclosingCircle(points);
+                    var group = GroupSceneNode.Cast(node);
+                    var citer = group.CreateIterator();
+                    PointCloud cloud = PointCloud.Cast(citer.Current());
+                    clip = new Graphic_Clip(mRenderCtrl, cloud);
+                    var selePts = clip.SelectInCir(fitted, wSelection.Para);
+                    clip.ShowPoints(selePts);
+                }
+            }
         }
         private void FitCircle()
         {

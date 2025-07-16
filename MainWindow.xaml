@@ -35,6 +35,7 @@
                 <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}">
                 </MenuItem>
                 <MenuItem Header="选择点...">
+                    <MenuItem Header="圆盘" Command="{Binding Path=SeleByCirCommand}"/>
                     <MenuItem Header="邻接点" Command="{Binding Path=SeleByNBCommand}"/>
                     <MenuItem Header="ROI" Command="{Binding Path=SeleByROICommand}"/>
                 </MenuItem>

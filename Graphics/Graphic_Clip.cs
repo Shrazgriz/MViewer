@@ -6,6 +6,7 @@ using MVUnity.PointCloud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace MViewer.Graphics
 {
@@ -261,6 +262,72 @@ namespace MViewer.Graphics
             for (int i = 0; i < ClipPoints.Count; i++)
             {
                 if (IDPairs[i]) result.Add(ClipPoints[i]);
+            }
+            return result;
+        }
+        /// <summary>
+        /// 根据参数选择邻接点
+        /// </summary>
+        /// <param name="Coords"></param>
+        /// <param name="Para"></param>
+        /// <returns></returns>
+        public List<V3> SelectInCir(Circle Cir, SelectionPara Para)
+        {
+            var pts = Cir.ToPoints(V3.Up, Math.PI / 2f);
+            CatersianSys lsys = CatersianSys.CreateSysO2P(Cir.Center, pts[0], pts[1]);
+            var lpts = ClipPoints.Select(p => lsys.ToLocalCoord(p)).ToList();
+            var lpts2 = lpts.Select(p => new V2(p.X, p.Y)).ToList();
+            var lInpts = new List<V3>();
+            for (int i = 0; i < lpts.Count; i++)
+            {
+                V2 pt = lpts2[i];
+                if (pt.Mod < Cir.R) lInpts.Add(lpts[i]);
+            }
+            var lInpts2 = lInpts.Select(p => new V2(p.X, p.Y)).ToList();
+            Dictionary<int, bool> IDPairs = new Dictionary<int, bool>();
+            for (int i = 0; i < lInpts.Count; i++)
+            {
+                IDPairs.Add(i, false);
+            }
+            Delaunator dt = new Delaunator(lInpts2);
+            V3 norm = V3.Up;
+            double dotValue = 0;
+            var triNum = dt.TriangleIndex().Count() / 3;
+            for (int i = 0; i < triNum; i++)
+            {
+                var triP = dt.PointsOfTriangle(i);
+                var triP3 = triP.Select(p => lInpts[p]).ToArray();
+                var triDot = triP3.Select(p => p.Dot(norm)).ToList();
+                bool check = true;
+                if (Para.NormCheck)
+                {
+                    V3 tNorm = (triP3[1] - triP3[0]).Cross(triP3[2] - triP3[1]).Normalized();
+                    if (Math.Abs(norm.Dot(tNorm)) < Para.NormDotTol) { check = false; }
+                }
+                if (Para.NLCheck)
+                {
+                    if (triDot.Min() < dotValue + Para.NLowLimit) { check = false; }
+                }
+                if (Para.NUCheck)
+                {
+                    if (triDot.Max() > dotValue + Para.NUpLimit) { check = false; }
+                }
+                if (Para.HDiffCheck)
+                {
+                    if (triDot.Max() - triDot.Min() > Para.HDiff) { check = false; }
+                }
+                if (check)
+                {
+                    foreach (var p in triP)
+                    {
+                        IDPairs[p] = true;
+                    }
+                }
+            }
+            List<V3> result = new List<V3>();
+            for (int i = 0; i < lInpts.Count; i++)
+            {
+                if (IDPairs[i]) result.Add(lsys.ToWorldCoord(lInpts[i]));
             }
             return result;
         }
