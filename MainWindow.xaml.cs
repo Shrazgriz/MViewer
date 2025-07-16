@@ -491,13 +491,12 @@ namespace MViewer
                     {
                         return;
                     }
-                    //Circle cir = Circle.CreateCircle(points);
-                    Circle fitted = Circle.MinimumEnclosingCircle(points);
+                    Circle cir = Circle.CreateCircle(points);
                     var group = GroupSceneNode.Cast(node);
                     var citer = group.CreateIterator();
                     PointCloud cloud = PointCloud.Cast(citer.Current());
                     clip = new Graphic_Clip(mRenderCtrl, cloud);
-                    var selePts = clip.SelectInCir(fitted, wSelection.Para);
+                    var selePts = clip.SelectInCir(cir, wSelection.Para);
                     clip.ShowPoints(selePts);
                 }
             }
