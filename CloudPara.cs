@@ -15,9 +15,17 @@ namespace MViewer
         /// </summary>
         Mono,
         /// <summary>
-        /// 云图
+        /// X坐标
         /// </summary>
-        Contour,
+        X,
+        /// <summary>
+        /// Y坐标
+        /// </summary>
+        Y,
+        /// <summary>
+        /// Z坐标
+        /// </summary>
+        Z,
         /// <summary>
         /// 点云纹理
         /// </summary>

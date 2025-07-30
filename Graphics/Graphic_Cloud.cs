@@ -44,7 +44,6 @@ namespace MViewer.Graphics
         {
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
-            //pts = new List<V3>();
             var ext = Path.Extension(filereader.FileName);
             switch (ext)
             {
@@ -73,6 +72,8 @@ namespace MViewer.Graphics
         {
             bool structed = false;
             if (filereader.Format.Contains('r') & filereader.Format.Contains('c')) { structed = true; }
+            ColorLookupTable mColorTable = new ColorLookupTable();
+            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             switch (ColorMode)
             {
                 default:
@@ -164,42 +165,113 @@ namespace MViewer.Graphics
                         }
                     }
                     break;
-                case ColorMode.Contour:
-                    if (UseROI)
+                case ColorMode.X:
                     {
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
-                        ColorLookupTable mColorTable = new ColorLookupTable();
-                        mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
-                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
-                        mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
-                        foreach (Point3D pt in points)
+                        if (UseROI)
                         {
-                            if (!ROI.Cover(pt)) continue;
-                            mPositions.Append((float)pt.X);
-                            mPositions.Append((float)pt.Y);
-                            mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            mColorTable.SetMinValue((float)ROI.LowerLimit.X);
+                            mColorTable.SetMaxValue((float)ROI.UpperLimit.X);
+                            foreach (Point3D pt in points)
+                            {
+                                if (!ROI.Cover(pt)) continue;
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.X);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
+                        }
+                        else
+                        {
+                            mColorTable.SetMinValue((float)filereader.Min.X);
+                            mColorTable.SetMaxValue((float)filereader.Max.X);
+                            foreach (Point3D pt in points)
+                            {
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.X);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
                         }
                     }
-                    else
+                    break;
+                case ColorMode.Y:
                     {
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
-                        ColorLookupTable mColorTable = new ColorLookupTable();
-                        mColorTable.SetMinValue((float)filereader.Min.Z);
-                        mColorTable.SetMaxValue((float)filereader.Max.Z);
-                        mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
-                        foreach (Point3D pt in points)
+                        if (UseROI)
                         {
-                            mPositions.Append((float)pt.X);
-                            mPositions.Append((float)pt.Y);
-                            mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            
+                            mColorTable.SetMinValue((float)ROI.LowerLimit.Y);
+                            mColorTable.SetMaxValue((float)ROI.UpperLimit.Y);
+                            foreach (Point3D pt in points)
+                            {
+                                if (!ROI.Cover(pt)) continue;
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.Y);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
+                        }
+                        else
+                        {
+                            mColorTable.SetMinValue((float)filereader.Min.Y);
+                            mColorTable.SetMaxValue((float)filereader.Max.Y);
+                            foreach (Point3D pt in points)
+                            {
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.Y);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
+                        }
+                    }
+                    break;
+                case ColorMode.Z:
+                    {
+                        Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
+                        if (UseROI)
+                        {
+
+                            mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                            mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
+                            foreach (Point3D pt in points)
+                            {
+                                if (!ROI.Cover(pt)) continue;
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.Z);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
+                        }
+                        else
+                        {
+                            mColorTable.SetMinValue((float)filereader.Min.Z);
+                            mColorTable.SetMaxValue((float)filereader.Max.Z);
+                            foreach (Point3D pt in points)
+                            {
+                                mPositions.Append((float)pt.X);
+                                mPositions.Append((float)pt.Y);
+                                mPositions.Append((float)pt.Z);
+                                var color = mColorTable.GetColor((float)pt.Z);
+                                mColors.Append(color.x);
+                                mColors.Append(color.y);
+                                mColors.Append(color.z);
+                            }
                         }
                     }
                     break;
@@ -235,15 +307,12 @@ namespace MViewer.Graphics
                     }
                     break;
             }
-
             return true;
         }
         private bool ReadASC()
         {
             var points = filereader.ReadASC(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetMinValue((float)filereader.Min.Z);
-            mColorTable.SetMaxValue((float)filereader.Max.Z);
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
             {
@@ -263,6 +332,8 @@ namespace MViewer.Graphics
             }
             else
             {
+                mColorTable.SetMinValue((float)filereader.Min.Z);
+                mColorTable.SetMaxValue((float)filereader.Max.Z);
                 foreach (V3 pt in points)
                 {
                     mPositions.Append((float)pt.X);
@@ -281,14 +352,42 @@ namespace MViewer.Graphics
         {
             List<V3> verts = filereader.ReadPCD(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetMinValue((float)filereader.Min.Z);
-            mColorTable.SetMaxValue((float)filereader.Max.Z);
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
             {
                 switch (ColorMode)
                 {
-                    case ColorMode.Contour:
+                    case ColorMode.X:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.X);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.X);
+                        foreach (V3 pt in verts)
+                        {
+                            if (!ROI.Cover(pt)) continue;
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.X);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Y:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.Y);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Y);
+                        foreach (V3 pt in verts)
+                        {
+                            if (!ROI.Cover(pt)) continue;
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.Y);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Z:
                         mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
                         mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                         foreach (V3 pt in verts)
@@ -336,7 +435,37 @@ namespace MViewer.Graphics
             {
                 switch (ColorMode)
                 {
-                    case ColorMode.Contour:
+                    case ColorMode.X:
+                        mColorTable.SetMinValue((float)filereader.Min.X);
+                        mColorTable.SetMaxValue((float)filereader.Max.X);
+                        foreach (V3 pt in verts)
+                        {
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.X);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Y:
+                        mColorTable.SetMinValue((float)filereader.Min.Y);
+                        mColorTable.SetMaxValue((float)filereader.Max.Y);
+                        foreach (V3 pt in verts)
+                        {
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.Y);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Z:
+                        mColorTable.SetMinValue((float)filereader.Min.Z);
+                        mColorTable.SetMaxValue((float)filereader.Max.Z);
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -381,16 +510,44 @@ namespace MViewer.Graphics
         {
             List<V3> verts = filereader.ReadPLY(filereader.VertSkip);
             ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetMinValue((float)filereader.Min.Z);
-            mColorTable.SetMaxValue((float)filereader.Max.Z);
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
             {
-                mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
-                mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                 switch (ColorMode)
                 {
-                    case ColorMode.Contour:
+                    case ColorMode.X:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.X);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.X);
+                        foreach (V3 pt in verts)
+                        {
+                            if (!ROI.Cover(pt)) continue;
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.X);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Y:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.Y);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Y);
+                        foreach (V3 pt in verts)
+                        {
+                            if (!ROI.Cover(pt)) continue;
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.Y);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Z:
+                        mColorTable.SetMinValue((float)ROI.LowerLimit.Z);
+                        mColorTable.SetMaxValue((float)ROI.UpperLimit.Z);
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -436,7 +593,37 @@ namespace MViewer.Graphics
             {
                 switch (ColorMode)
                 {
-                    case ColorMode.Contour:
+                    case ColorMode.X:
+                        mColorTable.SetMinValue((float)filereader.Min.X);
+                        mColorTable.SetMaxValue((float)filereader.Max.X);
+                        foreach (V3 pt in verts)
+                        {
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.X);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Y:
+                        mColorTable.SetMinValue((float)filereader.Min.Y);
+                        mColorTable.SetMaxValue((float)filereader.Max.Y);
+                        foreach (V3 pt in verts)
+                        {
+                            mPositions.Append((float)pt.X);
+                            mPositions.Append((float)pt.Y);
+                            mPositions.Append((float)pt.Z);
+                            var color = mColorTable.GetColor((float)pt.Y);
+                            mColors.Append(color.x);
+                            mColors.Append(color.y);
+                            mColors.Append(color.z);
+                        }
+                        break;
+                    case ColorMode.Z:
+                        mColorTable.SetMinValue((float)filereader.Min.Z);
+                        mColorTable.SetMaxValue((float)filereader.Max.Z);
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -471,7 +658,6 @@ namespace MViewer.Graphics
                             mColors.Append(PColor.R / 255f);
                             mColors.Append(PColor.G / 255f);
                             mColors.Append(PColor.B / 255f);
-                            //pts.Add(pt);
                         }
                         break;
                 }

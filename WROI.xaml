@@ -20,12 +20,12 @@
             <TextBlock Margin="4">ROI角点坐标</TextBlock>
             <TextBox Margin="4" Text="{Binding Path= LL,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" 
                     Click="BN_OK_Click">
                 确 定
             </Button>
-            <Button x:Name="BN_Cancel" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
+            <Button x:Name="BN_Cancel" Margin="18 0" MinWidth="120" 
                     Click="BN_Cancel_Click">
                 取 消
             </Button>
