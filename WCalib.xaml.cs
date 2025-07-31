@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MViewer
 {
@@ -55,6 +56,22 @@ namespace MViewer
             }
             int num = Math.Min(input0.Count, target0.Count);
             EuclideanTransform et = EuclideanTransform.SVD(input0, target0);
+            var trans = input0.Select(p=>et.Transform(p)).ToList();
+            var errors = new List<double>();
+            for (int i = 0;i< num; i++)
+            {
+                double dis = trans[i].Distance(target0[i]);
+                errors.Add(dis);
+            }
+            TB_MaxError.Text = errors.Max().ToString("F3");
+            if (errors.Max() > 20)
+            {
+                TB_MaxError.Foreground = new SolidColorBrush(Colors.Red);                
+            }
+            else
+            {
+                TB_MaxError.Foreground = new SolidColorBrush(Colors.Black);
+            }
             TB_RotaM.Text = et.R.ToString();
             TB_DispV.Text = et.T.ToString();
         }

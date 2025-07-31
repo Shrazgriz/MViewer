@@ -84,6 +84,8 @@
             <TextBlock x:Name="TB_RotaM" Margin="4"></TextBlock>
             <Button x:Name="BN_ClipM" Margin="4" FontSize="18" Background="LightGreen" MinHeight="36"
                     Click="BN_ClipM_Click">复制到剪贴板</Button>
+            <Label HorizontalAlignment="Center">最大偏差</Label>
+            <TextBlock x:Name="TB_MaxError" FontSize="18" HorizontalAlignment="Center"></TextBlock>
         </StackPanel>
     </Grid>
 </Window>
