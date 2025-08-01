@@ -18,32 +18,65 @@
             <RowDefinition/>
             <RowDefinition MaxHeight="60"/>
         </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
-            <ComboBox x:Name="LB_ColorMode" SelectedIndex="0" SelectionChanged="LB_ColorMode_SelectionChanged">
+        <Expander Header="高级选项" IsExpanded="False" Grid.Row="0" Grid.Column="1" >
+            <StackPanel Orientation="Vertical">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">字段格式</Label>
+                    <TextBox Grid.Column="1" x:Name="TB_Format" Margin="2" 
+                         Text="{Binding Path= Cloudformat, Mode=TwoWay}"/>
+                </Grid>
+                <CheckBox Margin="2" IsChecked="{Binding Path= Append, Mode=TwoWay}">保留已有数据</CheckBox>
+                <CheckBox Margin="2" IsChecked="{Binding Path=UseROI, Mode=TwoWay}">设定ROI</CheckBox>
+                <TextBox Margin="2" Text="{Binding Path= UL, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+                <TextBox Margin="2" Text="{Binding Path= LL,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+                <Label>各向异性缩放</Label>
+                <TextBox x:Name="TB_Scale" Margin="2"
+                         Text="{Binding Path= CloudScale, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+            </StackPanel>
+        </Expander>
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0">缩放比</Label>
+                <TextBox Grid.Column="1" x:Name="TB_UniScale" Margin="2" HorizontalAlignment="Stretch"
+                         Text="{Binding Path= UniformScale, Mode=TwoWay}"/>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0">点尺寸</Label>
+                <TextBox Grid.Column="1" x:Name="TB_PointSize" Margin="2" HorizontalAlignment="Stretch"
+                     Text="{Binding Path=PointSize, Mode=TwoWay}"/>
+            </Grid>
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0">下采样</Label>
+                <TextBox Grid.Column="1" x:Name="TB_VertSkip" Margin="2" HorizontalAlignment="Stretch"
+                         Text="{Binding Path= VertSkip, Mode=TwoWay}"/>
+            </Grid>
+            <ComboBox Margin="2" x:Name="LB_ColorMode" SelectedIndex="0" SelectionChanged="LB_ColorMode_SelectionChanged">
                 <ComboBoxItem>单色</ComboBoxItem>
                 <ComboBoxItem>X坐标</ComboBoxItem>
                 <ComboBoxItem>Y坐标</ComboBoxItem>
                 <ComboBoxItem>Z坐标</ComboBoxItem>
                 <ComboBoxItem>纹理</ComboBoxItem>
             </ComboBox>
-            <Button Margin="4" Click="BN_Color_Click" Height="30" Background="{Binding Path=PointBrush}">
+            <Button Margin="2" Click="BN_Color_Click" Height="30" Background="{Binding Path=PointBrush}">
                 调色板
             </Button>
-            <TextBox x:Name="TB_PointSize" Margin="4"
-                     Text="{Binding Path=PointSize, Mode=TwoWay}"/>
-            <CheckBox IsChecked="{Binding Path= Append, Mode=TwoWay}">保留已有数据</CheckBox> 
-        </StackPanel>
-        <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
-            <TextBox x:Name="TB_Scale" Margin="4" 
-                         Text="{Binding Path= Cloudscale, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
-            <TextBox x:Name="TB_Format" Margin="4" 
-                         Text="{Binding Path= Cloudformat, Mode=TwoWay}"/>
-            <TextBox x:Name="TB_VertSkip" Margin="4" 
-                         Text="{Binding Path= VertSkip, Mode=TwoWay}"/>
-            <CheckBox Margin="4" IsChecked="{Binding Path=UseROI, Mode=TwoWay}">设定ROI</CheckBox>
-            <TextBox Margin="4" Text="{Binding Path= UL, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
-            <TextBox Margin="4" Text="{Binding Path= LL,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"

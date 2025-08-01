@@ -38,7 +38,13 @@ namespace MViewer
         private string[] cloudFilePath;
         private Color pointColor;
         private int pointSize;
-
+        private int uniscale;
+        public int UniformScale { get => uniscale;set {
+                uniscale = value;
+                cloudscale = value * V3.Identity;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cloudscale"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("UniformScale"));
+            } }
         public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
         public string[] CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
@@ -68,12 +74,9 @@ namespace MViewer
         /// 点云着色方式
         /// </summary>
         public ColorMode ColorMode { get; set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         public bool UseROI { get; set; }
         public V3 UL { get; set; }
-
         public V3 LL { get; set; }
         public bool Append { get; set; }
 
@@ -90,7 +93,8 @@ namespace MViewer
             UL = new V3(ConfigurationManager.AppSettings["UL"], ',');
             UseROI = bool.Parse(ConfigurationManager.AppSettings["UseROI"]);
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
-            Append = false;
+            UniformScale = int.Parse(ConfigurationManager.AppSettings["UniformScale"]);
+            Append = bool.Parse(ConfigurationManager.AppSettings["Append"]);
         }
         public CloudPara(string filename)
         {
@@ -105,7 +109,8 @@ namespace MViewer
             UL = new V3(ConfigurationManager.AppSettings["UL"], ',');
             UseROI = bool.Parse(ConfigurationManager.AppSettings["UseROI"]);
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
-            Append = false;
+            UniformScale = int.Parse(ConfigurationManager.AppSettings["UniformScale"]);
+            Append = bool.Parse(ConfigurationManager.AppSettings["Append"]);
         }
     }
 
