@@ -52,6 +52,7 @@ namespace MViewer
             cfa.AppSettings.Settings["UL"].Value = Para.UL.ToString();
             cfa.AppSettings.Settings["UseROI"].Value = Para.UseROI.ToString();
             cfa.AppSettings.Settings["VertSkip"].Value = Para.VertSkip.ToString();
+            cfa.AppSettings.Settings["Append"].Value = Para.Append.ToString();
             cfa.Save();
         }
 

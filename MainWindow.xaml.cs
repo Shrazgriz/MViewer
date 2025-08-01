@@ -87,7 +87,10 @@ namespace MViewer
                     var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(CloudID));
                     if (prevNode != null)
                     {
-                        //prevNode.Clear();
+                        if (!readCloud.Para.Append)
+                        {
+                            prevNode.Clear();
+                        }
                     }
                     else
                     {

@@ -75,6 +75,7 @@ namespace MViewer
         public V3 UL { get; set; }
 
         public V3 LL { get; set; }
+        public bool Append { get; set; }
 
         public CloudPara(string[] filename)
         {
@@ -89,6 +90,7 @@ namespace MViewer
             UL = new V3(ConfigurationManager.AppSettings["UL"], ',');
             UseROI = bool.Parse(ConfigurationManager.AppSettings["UseROI"]);
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
+            Append = false;
         }
         public CloudPara(string filename)
         {
@@ -103,6 +105,7 @@ namespace MViewer
             UL = new V3(ConfigurationManager.AppSettings["UL"], ',');
             UseROI = bool.Parse(ConfigurationManager.AppSettings["UseROI"]);
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
+            Append = false;
         }
     }
 

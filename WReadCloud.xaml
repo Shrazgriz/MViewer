@@ -32,6 +32,7 @@
             </Button>
             <TextBox x:Name="TB_PointSize" Margin="4"
                      Text="{Binding Path=PointSize, Mode=TwoWay}"/>
+            <CheckBox IsChecked="{Binding Path= Append, Mode=TwoWay}">保留已有数据</CheckBox> 
         </StackPanel>
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
             <TextBox x:Name="TB_Scale" Margin="4" 
