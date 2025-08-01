@@ -157,8 +157,8 @@ namespace MViewer.Graphics
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
                                 mPositions.Append((float)pt.Z);
-                                mColors.Append(PColor.R/255f);
-                                mColors.Append(PColor.G/255f);
+                                mColors.Append(PColor.R / 255f);
+                                mColors.Append(PColor.G / 255f);
                                 mColors.Append(PColor.B / 255f);
                             }
                             #endregion
@@ -206,7 +206,7 @@ namespace MViewer.Graphics
                         Point3D[] points = filereader.ReadCloud(filereader.VertSkip);
                         if (UseROI)
                         {
-                            
+
                             mColorTable.SetMinValue((float)ROI.LowerLimit.Y);
                             mColorTable.SetMaxValue((float)ROI.UpperLimit.Y);
                             foreach (Point3D pt in points)

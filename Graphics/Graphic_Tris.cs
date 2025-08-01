@@ -35,12 +35,12 @@ namespace MViewer.Graphics
             Vector3 color = ColorTable.RoyalBlue;
             for (int i = 0; i < tris.Count; i++)
             {
-                    mPositions.Append((float)tris[i].X);
-                    mPositions.Append((float)tris[i].Y);
-                    mPositions.Append((float)tris[i].Z);
-                    mColors.Append(color.x);
-                    mColors.Append(color.y);
-                    mColors.Append(color.z);                
+                mPositions.Append((float)tris[i].X);
+                mPositions.Append((float)tris[i].Y);
+                mPositions.Append((float)tris[i].Z);
+                mColors.Append(color.x);
+                mColors.Append(color.y);
+                mColors.Append(color.z);
             }
             BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
             buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);

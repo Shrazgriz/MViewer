@@ -1,6 +1,7 @@
 ﻿using MVUnity;
 using System.ComponentModel;
 using System.Configuration;
+using System.Text;
 using System.Windows.Media;
 
 namespace MViewer
@@ -39,15 +40,32 @@ namespace MViewer
         private Color pointColor;
         private int pointSize;
         private int uniscale;
-        public int UniformScale { get => uniscale;set {
+        public int UniformScale
+        {
+            get => uniscale; set
+            {
                 uniscale = value;
                 cloudscale = value * V3.Identity;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Cloudscale"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("UniformScale"));
-            } }
+            }
+        }
         public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
         public string[] CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
+        public string WindowTitle
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in cloudFilePath)
+                {
+                    sb.Append(item);
+                    sb.Append(';');
+                }
+                return sb.ToString();
+            }
+        }
         public int PointSize { get => pointSize; set => pointSize = value; }
         public int VertSkip { get; set; }
         public SolidColorBrush PointBrush

@@ -56,9 +56,9 @@ namespace MViewer
             }
             int num = Math.Min(input0.Count, target0.Count);
             EuclideanTransform et = EuclideanTransform.SVD(input0, target0);
-            var trans = input0.Select(p=>et.Transform(p)).ToList();
+            var trans = input0.Select(p => et.Transform(p)).ToList();
             var errors = new List<double>();
-            for (int i = 0;i< num; i++)
+            for (int i = 0; i < num; i++)
             {
                 double dis = trans[i].Distance(target0[i]);
                 errors.Add(dis);
@@ -66,7 +66,7 @@ namespace MViewer
             TB_MaxError.Text = errors.Max().ToString("F3");
             if (errors.Max() > 20)
             {
-                TB_MaxError.Foreground = new SolidColorBrush(Colors.Red);                
+                TB_MaxError.Foreground = new SolidColorBrush(Colors.Red);
             }
             else
             {
