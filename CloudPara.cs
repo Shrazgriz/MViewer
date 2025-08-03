@@ -50,7 +50,7 @@ namespace MViewer
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("UniformScale"));
             }
         }
-        public V3 Cloudscale { get => cloudscale; set => cloudscale = value; }
+        public V3 CloudScale { get => cloudscale; set => cloudscale = value; }
         public string Cloudformat { get => cloudformat; set => cloudformat = value; }
         public string[] CloudFilePath { get => cloudFilePath; set => cloudFilePath = value; }
         public string WindowTitle
@@ -102,7 +102,7 @@ namespace MViewer
         {
             CloudFilePath = filename;
             Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
-            Cloudscale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
+            CloudScale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
             ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
             LL = new V3(ConfigurationManager.AppSettings["LL"], ',');
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
@@ -118,7 +118,7 @@ namespace MViewer
         {
             CloudFilePath = new string[] { filename };
             Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
-            Cloudscale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
+            CloudScale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
             ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
             LL = new V3(ConfigurationManager.AppSettings["LL"], ',');
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);

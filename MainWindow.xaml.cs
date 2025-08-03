@@ -102,7 +102,7 @@ namespace MViewer
                     {
                         var filereader = new CloudReader
                         {
-                            Scale = readCloud.Para.Cloudscale,
+                            Scale = readCloud.Para.CloudScale,
                             FileName = fn,
                             Format = readCloud.Para.Cloudformat,
                             VertSkip = readCloud.Para.VertSkip

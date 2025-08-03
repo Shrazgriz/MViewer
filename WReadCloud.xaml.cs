@@ -44,7 +44,7 @@ namespace MViewer
         {
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["CloudFormat"].Value = Para.Cloudformat;
-            cfa.AppSettings.Settings["CloudScale"].Value = Para.Cloudscale.ToString();
+            cfa.AppSettings.Settings["CloudScale"].Value = Para.CloudScale.ToString();
             cfa.AppSettings.Settings["ColorMode"].Value = Para.ColorMode.ToString();
             cfa.AppSettings.Settings["LL"].Value = Para.LL.ToString();
             cfa.AppSettings.Settings["PointSize"].Value = Para.PointSize.ToString();
