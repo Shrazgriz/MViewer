@@ -50,6 +50,7 @@ namespace MViewer
             cfa.AppSettings.Settings["PointSize"].Value = Para.PointSize.ToString();
             cfa.AppSettings.Settings["PointBrush"].Value = Para.PointBrush.ToString();
             cfa.AppSettings.Settings["UL"].Value = Para.UL.ToString();
+            cfa.AppSettings.Settings["UniformScale"].Value = Para.UniformScale.ToString();
             cfa.AppSettings.Settings["UseROI"].Value = Para.UseROI.ToString();
             cfa.AppSettings.Settings["VertSkip"].Value = Para.VertSkip.ToString();
             cfa.AppSettings.Settings["Append"].Value = Para.Append.ToString();
