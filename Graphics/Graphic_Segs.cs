@@ -88,8 +88,6 @@ namespace MViewer.Graphics
             }
             plot2Model = new GroupSceneNode();
             plot2Model.SetUserId(Seg2ID);
-
-            GPntList pts = new GPntList();
             foreach (var seg in seg2s)
             {
                 GPnt s = new GPnt(seg.Start.X, seg.Start.Y, 0);
@@ -101,13 +99,10 @@ namespace MViewer.Graphics
             }
             foreach (var arc in arc2s)
             {
-                var arcpts = arc.ToPoints(8);
-                GPntList list = new GPntList();
-                foreach (var pt in arcpts)
-                {
-                    list.Add(new GPnt(pt.X, pt.Y, 0));
-                }
-                TopoShape outline = SketchBuilder.MakePolyline(list);
+                GPnt s = new GPnt(arc.Start.X, arc.Start.Y, 0);
+                GPnt d = new GPnt(arc.Destination.X, arc.Destination.Y, 0);
+                GPnt m = new GPnt(arc.Mid.X, arc.Mid.Y, 0);
+                TopoShape outline = SketchBuilder.MakeArcOfCircle(s, d, m);
                 BrepSceneNode entity;
                 entity = BrepSceneNode.Create(outline, null, polyMat);
                 if (entity is null) return;
