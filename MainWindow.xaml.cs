@@ -12,6 +12,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace MViewer
 {
@@ -126,6 +127,27 @@ namespace MViewer
                 }
             }
         }
+        private TopoShape readTopo(string fileName)
+        {
+            switch (System.IO.Path.GetExtension(fileName))
+            {
+                case ".stp":
+                case ".step":
+                case ".STEP":
+                    {
+                        var shape = StepIO.Open(fileName);
+                        return shape;
+                    }
+                case ".iges":
+                case ".igs":
+                    {
+                        var shape = IgesIO.Open(fileName);
+                        return shape;
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+        }
         private void ReadCAD()
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -137,15 +159,11 @@ namespace MViewer
             {
                 case ".stp":
                 case ".step":
-                    {
-                        var shape = StepIO.Open(dlg.FileName);
-                        node = BrepSceneNode.Create(shape, null, null, 0, false);
-                    }
-                    break;
+                case ".STEP":
                 case ".iges":
                 case ".igs":
                     {
-                        var shape = IgesIO.Open(dlg.FileName);
+                        var shape = readTopo(dlg.FileName);
                         node = BrepSceneNode.Create(shape, null, null, 0, false);
                     }
                     break;
@@ -162,44 +180,52 @@ namespace MViewer
         }
         private void Model2Cloud()
         {
-            OpenFileDialog dlg = new OpenFileDialog() { Filter = "stl模型|*.stl" };
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP|*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP" };
             if (dlg.ShowDialog() != true)
                 return;
             SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
             if (dlg2.ShowDialog() != true) return;
             WReadCloud wRead = new WReadCloud(new CloudPara(dlg2.FileName));
             wRead.ShowDialog();
-            var node = SceneIO.Load(dlg.FileName);
-            if (node == null)
-                return;
-            var para = wRead.Para;
-            int step = para.VertSkip + 1;
-            TopoShape shape = StlIO.Open(dlg.FileName);
+            //var mTargetNode = SceneIO.Load(dlg.FileName);
+            //if (mTargetNode == null)
+            //    return;
+            TopoShape shape = readTopo(dlg.FileName);
+            SceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
             ShapeExplor sExp = new ShapeExplor();
             sExp.AddShape(shape);
-            var count = sExp.GetFaceCount();
-            List<V3> pts = new List<V3>();
-            StreamWriter w = new StreamWriter(dlg2.FileName);
-            for (uint i = 0; i < count; i++)
+            GBBox mBBox = sExp.GetBoundingBox();
+            var mMinCorner = mBBox.CornerMin();
+            var mMaxCorner = mBBox.CornerMax();
+            V3 min = new V3(mMinCorner.X(),mMinCorner.Y(),mMinCorner.Z());
+            V3 max = new V3(mMaxCorner.X(),mMaxCorner.Y(),mMaxCorner.Z());
+            V3 center = 0.5f * (min + max);
+            V3 size = max - min;
+            V3 camZero = new V3(center.X, center.Y, center.Z + size.Z);
+            var camera = new Camera(100, 100, new Vector3((float)camZero.X, (float)camZero.Y, (float)camZero.Z), 
+                new Vector3((float)center.X,(float)center.Y,(float)center.Z), Vector3.UNIT_Z);
+            camera.SetNear(0.1f);
+            camera.SetFar(2 * (float)size.Z);
+            camera.SetProjectionType(EnumProjectionType.Orthographic);
+            camera.UpdateProjectionMatrix();
+            var ray = new Ray(new Vector3(0, 100, 0), -Vector3.UNIT_Y);
+            List<V3> mVerts = new List<V3>();
+            Raycaster mCaster = new Raycaster(camera, (uint)EnumShapeFilter.Face, ray, 0, 0);
+            for (int i = (int)min.X; i < max.X; i++)
             {
-                var face = sExp.GetFace(i);
-                var u0 = face.FirstUParameter();
-                var v0 = face.FirstVParameter();
-                var u1 = face.LastUParameter();
-                var v1 = face.LastVParameter();
-                for (int m = (int)Math.Ceiling(u0); m < u1; m += step)
+                for (int j = (int)min.Y; j < max.Y; j++)
                 {
-                    for (int n = (int)Math.Ceiling(v0); n < v1; n += step)
+                    ray = new Ray(new Vector3(i, j, (float)camZero.Z), new Vector3(0, 0, -1));
+                    mCaster.SetRay(ray);
+                    if (mCaster.HitTest(mTargetNode) > 0)
                     {
-                        var p = face.D0(m, n);
-                        pts.Add(new V3(p.x, p.y, p.z));
-                        w.WriteLine(string.Format("{0},{1},{2}", p.x, p.y, p.z));
+                        Vector3 end = mCaster.GetTopItem().GetPosition();
+                        mVerts.Add(new V3(end.x, end.y, end.z));
                     }
                 }
             }
-            w.Close();
             Graphic_Cloud cloud = new Graphic_Cloud();
-            cloud.ShowCloud(pts, mRenderCtrl);
+            cloud.ShowCloud(mVerts, mRenderCtrl);
             mRenderCtrl.ZoomAll();
         }
         private void ReadSeg2()
