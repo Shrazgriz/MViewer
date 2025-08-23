@@ -1,6 +1,7 @@
 ﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
 using MVUnity;
+using MVUnity.Geometry3D;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -52,12 +53,6 @@ namespace MViewer.Graphics
         }
         public void Run(RenderControl renderControl, GroupSceneNode root, List<Triangle2D> tris, List<double> Values)
         {
-            //double minR = Math.Log(2f);
-            //double maxR = Math.Log(100f);
-            //ColorLookupTable mColorTable = new ColorLookupTable();
-            //mColorTable.SetMinValue(minR);
-            //mColorTable.SetMaxValue(maxR);
-            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             for (int i = 0; i < tris.Count; i++)
             {
                 var tri = tris[i];
@@ -158,6 +153,43 @@ namespace MViewer.Graphics
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
             root.AddNode(wireNode);
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
+        }
+
+        public static List<Triangle> DecomposeFace(TopoShape face)
+        {
+            ShapeExplor fexp = new ShapeExplor();
+            fexp.AddShape(face);
+            fexp.Build();
+            var vnum = fexp.GetVertexCount();
+            List<Triangle> facets = new List<Triangle>();
+            List<V3> fverts = new List<V3>();
+            var fp0 = fexp.GetVertex(0).GetPoint();
+            var fp1 = fexp.GetVertex(1).GetPoint();
+            var pv0 = new V3(fp0.x, fp0.y, fp0.z);
+            var pv1 = new V3(fp1.x, fp1.y, fp1.z);
+            fverts.Add(pv0);
+            fverts.Add(pv1);
+            V3 fp = pv0;
+            for (uint i = 2; i < vnum/2; i++)
+            {
+                var gp0 = fexp.GetVertex(2*i).GetPoint();
+                var gp1 = fexp.GetVertex(2 * i + 1).GetPoint();
+                var v0 = new V3(gp0.x, gp0.y, gp0.z);
+                var v1 = new V3(gp1.x, gp1.y, gp1.z);
+                bool containV0 = (pv0.Distance(v0) < 0.01f) | (pv1.Distance(v0) < 0.01f) | (fp.Distance(v0) < 0.01f);
+                bool containV1 = (pv0.Distance(v1) < 0.01f) | (pv1.Distance(v1) < 0.01f) | (fp.Distance(v1) < 0.01f);
+                if (!containV0) fverts.Add(v0);
+                if (!containV1) fverts.Add(v1);
+                pv0 = v0;
+                pv1 = v1;
+            }
+            
+            for (int i = 1; i < fverts.Count-1; i++)
+            {
+                Triangle tri = new Triangle(new V3[3] { fp, fverts[i], fverts[i + 1] });
+                facets.Add(tri);
+            }
+            return facets;
         }
     }
 }

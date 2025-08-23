@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -183,49 +184,67 @@ namespace MViewer
             OpenFileDialog dlg = new OpenFileDialog() { Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP|*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP" };
             if (dlg.ShowDialog() != true)
                 return;
-            SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
-            if (dlg2.ShowDialog() != true) return;
-            WReadCloud wRead = new WReadCloud(new CloudPara(dlg2.FileName));
-            wRead.ShowDialog();
+            //SaveFileDialog dlg2 = new SaveFileDialog() { Filter = "xyz文件|*.xyz" };
+            //if (dlg2.ShowDialog() != true) return;
+            //WReadCloud wRead = new WReadCloud(new CloudPara(dlg2.FileName));
+            //wRead.ShowDialog();
             //var mTargetNode = SceneIO.Load(dlg.FileName);
             //if (mTargetNode == null)
             //    return;
             TopoShape shape = readTopo(dlg.FileName);
+            
             SceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
             ShapeExplor sExp = new ShapeExplor();
             sExp.AddShape(shape);
+            sExp.Build();
             GBBox mBBox = sExp.GetBoundingBox();
             var mMinCorner = mBBox.CornerMin();
             var mMaxCorner = mBBox.CornerMax();
-            V3 min = new V3(mMinCorner.X(),mMinCorner.Y(),mMinCorner.Z());
-            V3 max = new V3(mMaxCorner.X(),mMaxCorner.Y(),mMaxCorner.Z());
-            V3 center = 0.5f * (min + max);
-            V3 size = max - min;
-            V3 camZero = new V3(center.X, center.Y, center.Z + size.Z);
-            var camera = new Camera(100, 100, new Vector3((float)camZero.X, (float)camZero.Y, (float)camZero.Z), 
-                new Vector3((float)center.X,(float)center.Y,(float)center.Z), Vector3.UNIT_Z);
-            camera.SetNear(0.1f);
-            camera.SetFar(2 * (float)size.Z);
-            camera.SetProjectionType(EnumProjectionType.Orthographic);
-            camera.UpdateProjectionMatrix();
-            var ray = new Ray(new Vector3(0, 100, 0), -Vector3.UNIT_Y);
-            List<V3> mVerts = new List<V3>();
-            Raycaster mCaster = new Raycaster(camera, (uint)EnumShapeFilter.Face, ray, 0, 0);
+            V3 min = new V3(mMinCorner.X(), mMinCorner.Y(), mMinCorner.Z());
+            V3 max = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
+            V3 rayDir = V3.Right;
+            List<Line> rayList = new List<Line>();
+            List<Triangle> facets = new List<Triangle>();
             for (int i = (int)min.X; i < max.X; i++)
             {
-                for (int j = (int)min.Y; j < max.Y; j++)
+                for (int j = (int)min.Z; j < max.Z; j++)
                 {
-                    ray = new Ray(new Vector3(i, j, (float)camZero.Z), new Vector3(0, 0, -1));
-                    mCaster.SetRay(ray);
-                    if (mCaster.HitTest(mTargetNode) > 0)
-                    {
-                        Vector3 end = mCaster.GetTopItem().GetPosition();
-                        mVerts.Add(new V3(end.x, end.y, end.z));
-                    }
+                    V3 ptOnLine = new V3(i, 0, j);
+                    Line ray = new Line(rayDir, ptOnLine);
+                    rayList.Add(ray);
                 }
             }
+
+            var faces = shape.GetChildren(EnumTopoShapeType.Topo_FACE);
+            var fenum = faces.GetEnumerator();
+            while (fenum.MoveNext())
+            {
+                var face = fenum.Current;
+                var tris = Graphic_Tris.DecomposeFace(face);
+                facets.AddRange(tris);
+            }
+            List<V3> hitPts = new List<V3>();
+            foreach (var ray in rayList)
+            {
+                List<V3> xPts = new List<V3>();
+                foreach (var face in facets)
+                {
+                    MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
+                    if (Math.Abs(triBase.Norm.Dot(rayDir)) < 0.001f) continue;
+                    var xpt = triBase.IntersectPoint(ray);
+                    if (face.IsPointInside(xpt)) xPts.Add(xpt);
+                }
+                if(xPts.Count > 0)
+                {
+                    var dotsvalue = xPts.Select(p=>p.Dot(rayDir)).ToList();
+                    var maxid = dotsvalue.IndexOf(dotsvalue.Max());
+                    hitPts.Add(xPts[maxid]);
+                }
+            }
+
+            mRenderCtrl.ShowSceneNode(mTargetNode);
             Graphic_Cloud cloud = new Graphic_Cloud();
-            cloud.ShowCloud(mVerts, mRenderCtrl);
+            cloud.ShowCloud(hitPts, mRenderCtrl);
             mRenderCtrl.ZoomAll();
         }
         private void ReadSeg2()
