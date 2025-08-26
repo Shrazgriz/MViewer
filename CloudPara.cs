@@ -180,4 +180,78 @@ namespace MViewer
             NUpLimit = double.Parse(ConfigurationManager.AppSettings["NUpLimit"]);
         }
     }
+
+    public enum RayDirection
+    {
+        /// <summary>
+        /// x正向
+        /// </summary>
+        PX,
+        /// <summary>
+        /// x负向
+        /// </summary>
+        NX,
+        /// <summary>
+        /// y正向
+        /// </summary>
+        PY,
+        /// <summary>
+        /// y负向
+        /// </summary>
+        NY,
+        /// <summary>
+        /// z正向
+        /// </summary>
+        PZ,
+        /// <summary>
+        /// z负向
+        /// </summary>
+        NZ
+    }
+    public class RayHitsPara
+    {
+        internal RayDirection _rayDir;
+        /// <summary>
+        /// 射线方向
+        /// </summary>
+        public RayDirection RayDirection
+        {
+            get => _rayDir;
+            set { _rayDir = value;
+                switch (value)
+                {
+                    case RayDirection.PX:
+                        Direction = V3.Forward;
+                        break;
+                    case RayDirection.NX:
+                        Direction = -1f * V3.Forward;
+                        break;
+                    case RayDirection.PY:
+                        Direction = V3.Right;
+                        break;
+                    case RayDirection.NY:
+                        Direction = -1f * V3.Right;
+                        break;
+                    case RayDirection.PZ:
+                        Direction = V3.Up;
+                        break;
+                    case RayDirection.NZ:
+                        Direction = 1f * V3.Up;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        /// <summary>
+        /// 方向矢量
+        /// </summary>
+        public V3 Direction { get; set; }
+
+        public RayHitsPara()
+        {
+            _rayDir = (RayDirection)System.Enum.Parse(typeof(RayDirection), ConfigurationManager.AppSettings["_rayDir"]);
+            Direction = new V3(ConfigurationManager.AppSettings["Direction"], ',');
+        }
+    }
 }
