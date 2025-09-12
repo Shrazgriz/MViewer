@@ -184,6 +184,8 @@ namespace MViewer
             OpenFileDialog dlg = new OpenFileDialog() { Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP|*.igs;*.iges;*.stp;*.step;*.brep;*.stl;*.STEP" };
             if (dlg.ShowDialog() != true)
                 return;
+            WRayHits wRay = new WRayHits(new RayHitsPara());
+            if (wRay.ShowDialog() != true) return;
             TopoShape shape = readTopo(dlg.FileName);
             
             SceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);

@@ -1,6 +1,7 @@
 ﻿using MVUnity;
 using System.ComponentModel;
 using System.Configuration;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Media;
 
@@ -208,8 +209,16 @@ namespace MViewer
         /// </summary>
         NZ
     }
-    public class RayHitsPara
+    public class RayHitsPara: INotifyPropertyChanged
     {
+        // 实现接口的事件
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        // 触发事件的辅助方法
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
         internal RayDirection _rayDir;
         /// <summary>
         /// 射线方向
@@ -241,17 +250,19 @@ namespace MViewer
                     default:
                         break;
                 }
+                OnPropertyChanged();
             }
         }
         /// <summary>
         /// 方向矢量
         /// </summary>
         public V3 Direction { get; set; }
-
+        public bool AlignZ { get; set; }
         public RayHitsPara()
         {
             _rayDir = (RayDirection)System.Enum.Parse(typeof(RayDirection), ConfigurationManager.AppSettings["_rayDir"]);
             Direction = new V3(ConfigurationManager.AppSettings["Direction"], ',');
+            AlignZ = bool.Parse(ConfigurationManager.AppSettings["AlignZ"]);
         }
     }
 }

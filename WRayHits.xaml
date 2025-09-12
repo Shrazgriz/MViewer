@@ -6,6 +6,9 @@
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
         Title="模型离散" Height="280" Width="400">
+    <Window.Resources>
+        <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -15,6 +18,22 @@
             <RowDefinition/>
             <RowDefinition MaxHeight="60"/>
         </Grid.RowDefinitions>
+        <StackPanel Margin="10"  Grid.Row="0" Grid.Column="0" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <Label >射线方向</Label>
+            <ComboBox x:Name="CB_RayDir" Margin="2" SelectionChanged="CB_RayDir_SelectionChanged">
+                <ComboBoxItem>X+</ComboBoxItem>
+                <ComboBoxItem>X-</ComboBoxItem>
+                <ComboBoxItem>Y+</ComboBoxItem>
+                <ComboBoxItem>Y-</ComboBoxItem>
+                <ComboBoxItem>Z+</ComboBoxItem>
+                <ComboBoxItem>Z-</ComboBoxItem>
+            </ComboBox>
+            <Label >方向矢量</Label>
+            <TextBox x:Name="TB_Dir" Margin="2" ></TextBox>
+        </StackPanel>
+        <StackPanel Margin="10"  Grid.Row="0" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <CheckBox IsChecked="{Binding Path=AlignZ,Mode=TwoWay}">旋转转至Z轴</CheckBox>
+        </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
                     Click="BN_OK_Click">

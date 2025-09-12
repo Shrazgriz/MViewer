@@ -9,9 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using MVUnity;
 
 namespace MViewer
 {
@@ -26,6 +24,7 @@ namespace MViewer
             InitializeComponent();
             Para = value;
             DataContext = Para;
+            CB_RayDir.SelectedIndex = (int)value.RayDirection;
         }
 
         private void BN_OK_Click(object sender, RoutedEventArgs e)
@@ -43,7 +42,37 @@ namespace MViewer
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["Direction"].Value = Para.Direction.ToString();
             cfa.AppSettings.Settings["_rayDir"].Value = Para._rayDir.ToString();
+            cfa.AppSettings.Settings["AlignZ"].Value = Para.AlignZ.ToString();
             cfa.Save();
+        }
+
+        private void CB_RayDir_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {            
+            Para.RayDirection = (RayDirection)CB_RayDir.SelectedIndex;
+            switch (Para.RayDirection)
+            {
+                case RayDirection.PX:
+                    Para.Direction = V3.Forward;
+                    break;
+                case RayDirection.NX:
+                    Para.Direction = -1f * V3.Forward;
+                    break;
+                case RayDirection.PY:
+                    Para.Direction = V3.Right;
+                    break;
+                case RayDirection.NY:
+                    Para.Direction = -1f * V3.Right;
+                    break;
+                case RayDirection.PZ:
+                    Para.Direction = V3.Up;
+                    break;
+                case RayDirection.NZ:
+                    Para.Direction = -1f * V3.Up;
+                    break;
+                default:
+                    break;
+            }
+            TB_Dir.Text = Para.Direction.ToString();
         }
     }
 }
