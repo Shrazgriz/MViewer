@@ -223,34 +223,35 @@ namespace MViewer
         /// <summary>
         /// 射线方向
         /// </summary>
-        public RayDirection RayDirection
+        public int RayDirection
         {
-            get => _rayDir;
-            set { _rayDir = value;
+            get =>(int)_rayDir;
+            set {
+                _rayDir = (RayDirection)value;
                 switch (value)
                 {
-                    case RayDirection.PX:
+                    case 0:
                         Direction = V3.Forward;
                         break;
-                    case RayDirection.NX:
+                    case 1:
                         Direction = -1f * V3.Forward;
                         break;
-                    case RayDirection.PY:
+                    case 2:
                         Direction = V3.Right;
                         break;
-                    case RayDirection.NY:
+                    case 3:
                         Direction = -1f * V3.Right;
                         break;
-                    case RayDirection.PZ:
+                    case 4:
                         Direction = V3.Up;
                         break;
-                    case RayDirection.NZ:
+                    case 5:
                         Direction = 1f * V3.Up;
                         break;
                     default:
                         break;
                 }
-                OnPropertyChanged();
+                OnPropertyChanged("Direction");
             }
         }
         /// <summary>
@@ -258,11 +259,13 @@ namespace MViewer
         /// </summary>
         public V3 Direction { get; set; }
         public bool AlignZ { get; set; }
+        public bool ShowModel { get; set; }
         public RayHitsPara()
         {
             _rayDir = (RayDirection)System.Enum.Parse(typeof(RayDirection), ConfigurationManager.AppSettings["_rayDir"]);
             Direction = new V3(ConfigurationManager.AppSettings["Direction"], ',');
             AlignZ = bool.Parse(ConfigurationManager.AppSettings["AlignZ"]);
+            ShowModel = bool.Parse(ConfigurationManager.AppSettings["ShowModel"]);
         }
     }
 }

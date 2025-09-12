@@ -187,7 +187,13 @@ namespace MViewer
             WRayHits wRay = new WRayHits(new RayHitsPara());
             if (wRay.ShowDialog() != true) return;
             TopoShape shape = readTopo(dlg.FileName);
-            
+            var w = wRay.Para.Direction;
+            #region 估算射线范围
+            List<V3> axis = new List<V3>() { V3.Forward, V3.Right, V3.Up };
+            List<double> axisDot = axis.Select(a => Math.Abs(a.Dot(w))).ToList();
+            int minId = axisDot.IndexOf(axisDot.Min());
+            V3 v = w.Cross(axis[minId]).Normalized();
+            V3 u = v.Cross(w).Normalized();
             SceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
             ShapeExplor sExp = new ShapeExplor();
             sExp.AddShape(shape);
@@ -195,17 +201,29 @@ namespace MViewer
             GBBox mBBox = sExp.GetBoundingBox();
             var mMinCorner = mBBox.CornerMin();
             var mMaxCorner = mBBox.CornerMax();
-            V3 min = new V3(mMinCorner.X(), mMinCorner.Y(), mMinCorner.Z());
-            V3 max = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
-            V3 rayDir = V3.Right;
+            V3 p0 = new V3(mMinCorner.X(), mMinCorner.Y(), mMinCorner.Z());
+            V3 p1 = new V3(mMinCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
+            V3 p2 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
+            V3 p3 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
+            V3 p4 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMinCorner.Z());
+            V3 p5 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
+            V3 p6 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
+            V3 p7 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
+            var mid = 0.5f * (p0 + p7);
+            List<V3> boxPts=new List<V3>() { p0, p1, p2, p3, p4, p5, p6, p7 };
+            List<double> uValues = boxPts.Select(e => e.Dot(u)).ToList();
+            List<double> vValues = boxPts.Select(e => e.Dot(v)).ToList();
+            CatersianSys raySys = CatersianSys.CreateSysOAN(mid, u, w);
+            #endregion
+            #region 射线检测
             List<Line> rayList = new List<Line>();
             List<Triangle> facets = new List<Triangle>();
-            for (int i = (int)min.X; i < max.X; i++)
+            for (int i = (int)uValues.Min(); i < uValues.Max(); i++)
             {
-                for (int j = (int)min.Z; j < max.Z; j++)
+                for (int j = (int)vValues.Min(); j <vValues.Max(); j++)
                 {
-                    V3 ptOnLine = new V3(i, 0, j);
-                    Line ray = new Line(rayDir, ptOnLine);
+                    V3 ptOnLine = i * u + j * v;
+                    Line ray = new Line(w, ptOnLine);
                     rayList.Add(ray);
                 }
             }
@@ -225,21 +243,26 @@ namespace MViewer
                 foreach (var face in facets)
                 {
                     MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
-                    if (Math.Abs(triBase.Norm.Dot(rayDir)) < 0.001f) continue;
+                    if (Math.Abs(triBase.Norm.Dot(w)) < 0.001f) continue;
                     var xpt = triBase.IntersectPoint(ray);
                     if (face.IsPointInside(xpt)) xPts.Add(xpt);
                 }
                 if(xPts.Count > 0)
                 {
-                    var dotsvalue = xPts.Select(p=>p.Dot(rayDir)).ToList();
+                    var dotsvalue = xPts.Select(p=>p.Dot(w)).ToList();
                     var maxid = dotsvalue.IndexOf(dotsvalue.Max());
                     hitPts.Add(xPts[maxid]);
                 }
             }
-
-            mRenderCtrl.ShowSceneNode(mTargetNode);
+            #endregion
+            List<V3> pts;
+            if (wRay.Para.AlignZ)
+            {
+                pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList();
+            }else { pts= hitPts; }
+            if(wRay.Para.ShowModel) mRenderCtrl.ShowSceneNode(mTargetNode);
             Graphic_Cloud cloud = new Graphic_Cloud();
-            cloud.ShowCloud(hitPts, mRenderCtrl);
+            cloud.ShowCloud(pts, mRenderCtrl);
             mRenderCtrl.ZoomAll();
         }
         private void ReadSeg2()
