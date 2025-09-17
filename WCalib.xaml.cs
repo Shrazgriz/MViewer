@@ -114,7 +114,7 @@ namespace MViewer
 
         private void BN_ImportInput_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "txt文件|*.txt;xyz文件|*.xyz" };
             if (openFile.ShowDialog() == true)
             {
                 var filereader = new CloudReader
