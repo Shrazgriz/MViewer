@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
@@ -58,12 +59,15 @@ namespace MViewer
             EuclideanTransform et = EuclideanTransform.SVD(input0, target0);
             var trans = input0.Select(p => et.Transform(p)).ToList();
             var errors = new List<double>();
+            StringBuilder sb =new StringBuilder();
             for (int i = 0; i < num; i++)
             {
                 double dis = trans[i].Distance(target0[i]);
+                sb.AppendLine(dis.ToString("F4"));
                 errors.Add(dis);
             }
-            TB_MaxError.Text = errors.Max().ToString("F3");
+            //TB_MaxError.Text = errors.Max().ToString("F3");
+            TB_MaxError.Text = sb.ToString();
             if (errors.Max() > 20)
             {
                 TB_MaxError.Foreground = new SolidColorBrush(Colors.Red);
@@ -114,7 +118,7 @@ namespace MViewer
 
         private void BN_ImportInput_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog() { Filter = "txt文件|*.txt;xyz文件|*.xyz" };
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "文本文件|*.xyz;*.txt" };
             if (openFile.ShowDialog() == true)
             {
                 var filereader = new CloudReader
@@ -134,7 +138,7 @@ namespace MViewer
 
         private void BN_ImportTarget_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog() { Filter = "xyz文件|*.xyz" };
+            OpenFileDialog openFile = new OpenFileDialog() { Filter = "文本文件|*.xyz;*.txt" };
             if (openFile.ShowDialog() == true)
             {
                 var filereader = new CloudReader
