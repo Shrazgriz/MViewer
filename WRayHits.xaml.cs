@@ -40,6 +40,7 @@ namespace MViewer
             cfa.AppSettings.Settings["_rayDir"].Value = Para._rayDir.ToString();
             cfa.AppSettings.Settings["AlignZ"].Value = Para.AlignZ.ToString();
             cfa.AppSettings.Settings["ShowModel"].Value = Para.ShowModel.ToString();
+            cfa.AppSettings.Settings["RayResolution"].Value = Para.Resolution.ToString();
             cfa.Save();
         }
     }

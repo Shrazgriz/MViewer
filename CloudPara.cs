@@ -260,12 +260,14 @@ namespace MViewer
         public V3 Direction { get; set; }
         public bool AlignZ { get; set; }
         public bool ShowModel { get; set; }
+        public double Resolution { get; set; }
         public RayHitsPara()
         {
             _rayDir = (RayDirection)System.Enum.Parse(typeof(RayDirection), ConfigurationManager.AppSettings["_rayDir"]);
             Direction = new V3(ConfigurationManager.AppSettings["Direction"], ',');
             AlignZ = bool.Parse(ConfigurationManager.AppSettings["AlignZ"]);
             ShowModel = bool.Parse(ConfigurationManager.AppSettings["ShowModel"]);
+            Resolution = double.Parse(ConfigurationManager.AppSettings["RayResolution"]);
         }
     }
 }

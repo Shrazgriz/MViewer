@@ -32,6 +32,8 @@
             <TextBox x:Name="TB_Dir" Margin="4" Text="{Binding Path= Direction,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"></TextBox>
         </StackPanel>
         <StackPanel Margin="10"  Grid.Row="0" Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Stretch">
+            <Label Margin="4">射线密度</Label>
+            <TextBox x:Name="TB_Resolution" Margin="4" Text="{Binding Path= Resolution, Mode=TwoWay}"></TextBox>
             <CheckBox Margin="4" IsChecked="{Binding Path=AlignZ,Mode=TwoWay}">旋转转至Z轴</CheckBox>
             <CheckBox Margin="4" IsChecked="{Binding Path=ShowModel,Mode=TwoWay}">显示模型</CheckBox>
         </StackPanel>

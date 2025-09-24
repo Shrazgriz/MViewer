@@ -188,6 +188,7 @@ namespace MViewer
             if (wRay.ShowDialog() != true) return;
             TopoShape shape = readTopo(dlg.FileName);
             var w = wRay.Para.Direction;
+            var d = wRay.Para.Resolution;
             #region 估算射线范围
             List<V3> axis = new List<V3>() { V3.Forward, V3.Right, V3.Up };
             List<double> axisDot = axis.Select(a => Math.Abs(a.Dot(w))).ToList();
@@ -218,9 +219,9 @@ namespace MViewer
             #region 射线检测
             List<Line> rayList = new List<Line>();
             List<Triangle> facets = new List<Triangle>();
-            for (int i = (int)uValues.Min(); i < uValues.Max(); i++)
+            for (double i = uValues.Min(); i < uValues.Max(); i+=d)
             {
-                for (int j = (int)vValues.Min(); j <vValues.Max(); j++)
+                for (double j = vValues.Min(); j <vValues.Max(); j+=d)
                 {
                     V3 ptOnLine = i * u + j * v;
                     Line ray = new Line(w, ptOnLine);
