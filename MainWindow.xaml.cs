@@ -570,34 +570,37 @@ namespace MViewer
         }
         private void FitCircle()
         {
-            //var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ClipID));
-            //if (prevNode != null)
-            //{
-            //    var selectedPts2 = clip.ClipPoints;
-            //    Circle fitted = Circle.MinimumEnclosingCircle(selectedPts2);
-            //    MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(selectedPts2);
-            //    V3 prjCenter = plane.Projection(fitted.Center);
-            //    Circle prjCir = new Circle(prjCenter, fitted.Normal, fitted.R);
-            //    Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
-            //    WriteLine(prjCenter.ToString());
-            //}
-            List<V3> points = new List<V3>();
-            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
-            var selection = mng.GetSelection();
-            var iter = selection.CreateIterator();
-            while (iter.More())
+            var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ClipID));
+            if (prevNode != null)
             {
-                var item = iter.Current();
-                var value = item.GetPosition();
-                points.Add(ConvertVector3.ToV3(value));
-                iter.Next();
+                var selectedPts2 = clip.ClipPoints;
+                Circle fitted = Circle.MinimumEnclosingCircle(selectedPts2);
+                MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(selectedPts2);
+                V3 prjCenter = plane.Projection(fitted.Center);
+                Circle prjCir = new Circle(prjCenter, fitted.Normal, fitted.R);
+                Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
+                WriteLine(prjCir.ToString());
             }
-            MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(points);
-            V3 cirCenter = GeometryTool3D.LeastSquareFitting_Circle(points);
-            double disAve = points.Average(e=>cirCenter.Distance(e));
-            Circle prjCir = new Circle(cirCenter, plane.Norm, disAve);
-            Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
-            WriteLine(prjCir.ToString());
+            else
+            {
+                List<V3> points = new List<V3>();
+                var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+                var selection = mng.GetSelection();
+                var iter = selection.CreateIterator();
+                while (iter.More())
+                {
+                    var item = iter.Current();
+                    var value = item.GetPosition();
+                    points.Add(ConvertVector3.ToV3(value));
+                    iter.Next();
+                }
+                MVUnity.Plane plane = MVUnity.Plane.CreatePlanePCA(points);
+                V3 cirCenter = GeometryTool3D.LeastSquareFitting_Circle(points);
+                double disAve = points.Average(e => cirCenter.Distance(e));
+                Circle prjCir = new Circle(cirCenter, plane.Norm, disAve);
+                Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
+                WriteLine(prjCir.ToString());
+            }
             //WriteLine(string.Format("法向" plane.Norm.ToString());
         }
     }
