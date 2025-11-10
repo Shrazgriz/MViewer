@@ -35,6 +35,7 @@ namespace MViewer
             cfa.AppSettings.Settings["NLowLimit"].Value = Para.NLowLimit.ToString();
             cfa.AppSettings.Settings["NUCheck"].Value = Para.NUCheck.ToString();
             cfa.AppSettings.Settings["NUpLimit"].Value = Para.NUpLimit.ToString();
+            cfa.AppSettings.Settings["RadiusCheck"].Value = Para.RadiusCheck.ToString();
             cfa.AppSettings.Settings["UserNormal"].Value = Para.UserNormal.ToString();
             cfa.AppSettings.Settings["UseUserNorm"].Value = Para.UseUserNorm.ToString();
             cfa.AppSettings.Settings["NormDotTol"].Value = Para.NormDotTol.ToString();

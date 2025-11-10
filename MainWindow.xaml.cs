@@ -80,7 +80,7 @@ namespace MViewer
         }
         private void ReadPCD()
         {
-            OpenFileDialog dlg = new OpenFileDialog() { Filter = "点云文件|*.pcd;*.asc;*.xyz;*.ply", Multiselect = true };
+            OpenFileDialog dlg = new OpenFileDialog() { Filter = "点云文件|*.pcd;*.asc;*.xyz;*.ply;*.txt", Multiselect = true };
             if (dlg.ShowDialog() == true)
             {
                 WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileNames));

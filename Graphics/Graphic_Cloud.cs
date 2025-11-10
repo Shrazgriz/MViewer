@@ -48,8 +48,6 @@ namespace MViewer.Graphics
             switch (ext)
             {
                 case ".xyz":
-                    ReadXYZ();
-                    break;
                 case ".txt":
                     ReadXYZ();
                     break;
