@@ -42,6 +42,7 @@ namespace MViewer
         }
         private void SavePara()
         {
+            CheckUL();
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["CloudFormat"].Value = Para.Cloudformat;
             cfa.AppSettings.Settings["CloudScale"].Value = Para.CloudScale.ToString();
@@ -56,7 +57,30 @@ namespace MViewer
             cfa.AppSettings.Settings["Append"].Value = Para.Append.ToString();
             cfa.Save();
         }
-
+        private void CheckUL()
+        {
+            bool xRevert = Para.UL.X < Para.LL.X;
+            if (xRevert)
+            {
+                double tmp = Para.UL.X;
+                Para.UL.X = Para.LL.X;
+                Para.LL.X = tmp;
+            }
+            bool yRevert = Para.UL.Y < Para.LL.Y;
+            if (yRevert)
+            {
+                double tmp = Para.UL.Y;
+                Para.UL.Y = Para.LL.Y;
+                Para.LL.Y = tmp;
+            }
+            bool zRevert = Para.UL.Z < Para.LL.Z;
+            if (zRevert)
+            {
+                double tmp = Para.UL.Z;
+                Para.UL.Z = Para.LL.Z;
+                Para.LL.Z = tmp;
+            }
+        }
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Para != null)
