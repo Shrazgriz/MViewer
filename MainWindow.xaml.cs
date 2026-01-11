@@ -603,6 +603,31 @@ namespace MViewer
             }
             //WriteLine(string.Format("法向" plane.Norm.ToString());
         }
+
+        private void BN_MidPoint_Click(object sender, RoutedEventArgs e)
+        {
+            List<V3> points = new List<V3>();
+            var mng = mRenderCtrl.ViewContext.GetSelectionManager();
+            var selection = mng.GetSelection();
+            var iter = selection.CreateIterator();
+            while (iter.More())
+            {
+                var item = iter.Current();
+                var value = item.GetPosition();
+                points.Add(ConvertVector3.ToV3(value));
+                iter.Next();
+            }
+            if (points.Count > 1)
+            {
+                V3 sum = V3.Zero;
+                foreach (var pt in points)
+                {
+                    sum += pt;
+                }
+                V3 mid = sum * (1f / points.Count);
+                WriteLine(mid.ToString());
+            }
+        }
     }
 
     public class Command : ICommand
