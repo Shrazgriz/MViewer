@@ -72,16 +72,12 @@ namespace MViewer
         public SolidColorBrush PointBrush
         {
             get
-            {
-                return new SolidColorBrush(pointColor);
-            }
+            { return new SolidColorBrush(pointColor);}
         }
         public Color PointColor
         {
             get
-            {
-                return pointColor;
-            }
+            { return pointColor;}
             set
             {
                 pointColor = value;
@@ -98,7 +94,9 @@ namespace MViewer
         public V3 UL { get; set; }
         public V3 LL { get; set; }
         public bool Append { get; set; }
-
+        public bool Transform { get; set; }
+        public V3 ETT { get; set; }
+        public M3 ETR { get; set; }
         public CloudPara(string[] filename)
         {
             CloudFilePath = filename;
@@ -114,6 +112,9 @@ namespace MViewer
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
             UniformScale = int.Parse(ConfigurationManager.AppSettings["UniformScale"]);
             Append = bool.Parse(ConfigurationManager.AppSettings["Append"]);
+            Transform = bool.Parse(ConfigurationManager.AppSettings["Transform"]);
+            ETT = V3.Zero;
+            ETR = M3.Identity;
         }
         public CloudPara(string filename)
         {
@@ -130,6 +131,9 @@ namespace MViewer
             VertSkip = int.Parse(ConfigurationManager.AppSettings["VertSkip"]);
             UniformScale = int.Parse(ConfigurationManager.AppSettings["UniformScale"]);
             Append = bool.Parse(ConfigurationManager.AppSettings["Append"]);
+            Transform = bool.Parse(ConfigurationManager.AppSettings["Transform"]);
+            ETT = V3.Zero;
+            ETR = M3.Identity;
         }
     }
 

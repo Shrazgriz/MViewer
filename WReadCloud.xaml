@@ -5,21 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="{Binding Path=WindowTitle}" Height="280" Width="400">
+        Title="{Binding Path=WindowTitle}" Height="280" Width="480">
     <Window.Resources>
         <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
     </Window.Resources>
     <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition MaxHeight="60"/>
         </Grid.RowDefinitions>
         <Expander Header="高级选项" IsExpanded="False" Grid.Row="0" Grid.Column="1" >
-            <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>            
+            <StackPanel Orientation="Vertical" Margin="2 0" Grid.Column="0">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -34,9 +39,22 @@
                 <TextBox Margin="2" Text="{Binding Path= UL, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
                 <TextBox Margin="2" Text="{Binding Path= LL,Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
                 <Label>各向异性缩放</Label>
-                <TextBox x:Name="TB_Scale" Margin="2"
-                         Text="{Binding Path= CloudScale, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
-            </StackPanel>
+                    <TextBox x:Name="TB_Scale" Margin="2"
+                        Text="{Binding Path= CloudScale, Converter={StaticResource V3ToStringConverter}, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="2 0" Grid.Column="1">
+                    <CheckBox Margin="2" IsChecked="{Binding Path=Transform, Mode=TwoWay}">坐标转换</CheckBox>
+                    <Label>位移矢量</Label>
+                    <TextBox Margin="2" Name="TB_ETT"/>
+                    <Label>旋转矩阵</Label>
+                    <TextBox Margin="2" Name="TB_ETR" AcceptsReturn="True" 
+                        VerticalScrollBarVisibility="Auto" 
+                        HorizontalScrollBarVisibility="Disabled"
+                        MinLines="3"
+                        MaxLines="10"
+                        IsReadOnly="False"/>
+                </StackPanel>
+            </Grid>
         </Expander>
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="8" Orientation="Vertical">
             <Grid HorizontalAlignment="Stretch">

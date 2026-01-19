@@ -20,13 +20,6 @@ namespace MViewer.Graphics
             _material.SetLineWidth(2);
             _material.SetDashSize(12);
         }
-        public Graphic_AABox(V3 UpperLimit, V3 LowerLimit):base(UpperLimit, LowerLimit)
-        {
-            _material = LineDashedMaterial.Create("AABoxMat");
-            _material.SetColor(ColorTable.Black);
-            _material.SetLineWidth(2);
-            _material.SetDashSize(12);
-        }
         public void ShowBox(RenderControl render , GroupSceneNode root)
         {
             var edges = this.Get12Edges();

@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using MVUnity;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -43,6 +44,11 @@ namespace MViewer
         private void SavePara()
         {
             CheckUL();
+            if (Para.Transform)
+            {
+                Para.ETR = new M3(TB_ETR.Text);
+                Para.ETT = new V3(TB_ETT.Text);
+            }
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["CloudFormat"].Value = Para.Cloudformat;
             cfa.AppSettings.Settings["CloudScale"].Value = Para.CloudScale.ToString();

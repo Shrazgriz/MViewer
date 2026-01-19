@@ -117,9 +117,15 @@ namespace MViewer
                         };
                         if (readCloud.Para.UseROI)
                         {
-                            ABB roi = new ABB(readCloud.Para.UL, readCloud.Para.LL);
+                            ABB roi = ABB.Create(readCloud.Para.UL, readCloud.Para.LL);
                             cloud.ROI = roi;
                             cloud.UseROI = true;
+                        }
+                        if (readCloud.Para.Transform)
+                        {
+                            cloud.Transform = true;
+                            cloud.T = readCloud.Para.ETT;
+                            cloud.R = readCloud.Para.ETR;
                         }
                         cloud.Append(mRenderCtrl);
                     }
@@ -214,7 +220,7 @@ namespace MViewer
             List<V3> boxPts=new List<V3>() { p0, p1, p2, p3, p4, p5, p6, p7 };
             List<double> uValues = boxPts.Select(e => e.Dot(u)).ToList();
             List<double> vValues = boxPts.Select(e => e.Dot(v)).ToList();
-            CatersianSys raySys = CatersianSys.CreateSysOAN(mid, u, w);
+            CatersianSys raySys = CatersianSys.CreateSysOXN(mid, u, w);
             #endregion
             #region 射线检测
             List<Line> rayList = new List<Line>();
