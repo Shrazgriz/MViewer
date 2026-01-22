@@ -159,17 +159,17 @@ namespace MViewer.Graphics
                 }
                 else
                 { verts = points; }
-                List<V3> verts1;
+                List<V3> verts0;
+                if (UseROI)
+                {
+                    verts0 = verts.FindAll(e => ROI.Cover(e));
+                }
+                else verts0 = verts;
                 switch (ColorMode)
                 {
                     default:
                     case ColorMode.Mono:
-                        if (UseROI)
-                        {
-                            verts1 = verts.FindAll(e => ROI.Cover(e));
-                        }
-                        else verts1 = verts;
-                        foreach (var pt in verts1)
+                        foreach (var pt in verts0)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
@@ -183,17 +183,15 @@ namespace MViewer.Graphics
                         {
                             if (UseROI)
                             {
-                                verts1 = verts.FindAll(e => ROI.Cover(e));
-                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, filereader.Min.X));
-                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, filereader.Max.X));
+                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
+                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
                             }
                             else
                             {
-                                verts1 = verts;
-                                mColorTable.SetMinValue((float)filereader.Min.X);
-                                mColorTable.SetMaxValue((float)filereader.Max.X);
+                                mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                                mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
                             }
-                            foreach (var pt in verts1)
+                            foreach (var pt in verts0)
                             {
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
@@ -209,18 +207,16 @@ namespace MViewer.Graphics
                         {
                             if (UseROI)
                             {
-                                verts1 = verts.FindAll(e => ROI.Cover(e));
-                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, filereader.Min.Y));
-                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, filereader.Max.Y));
+                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
+                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
                             }
                             else
                             {
-                                verts1 = verts;
-                                mColorTable.SetMinValue((float)filereader.Min.Y);
-                                mColorTable.SetMaxValue((float)filereader.Max.Y);
+                                mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
+                                mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
                             }
 
-                            foreach (var pt in verts1)
+                            foreach (var pt in verts0)
                             {
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
@@ -236,17 +232,15 @@ namespace MViewer.Graphics
                         {
                             if (UseROI)
                             {
-                                verts1 = verts.FindAll(e => ROI.Cover(e));
-                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, filereader.Min.Z));
-                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, filereader.Max.Z));
+                                mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
+                                mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
                             }
                             else
                             {
-                                verts1 = verts;
-                                mColorTable.SetMinValue((float)filereader.Min.Z);
-                                mColorTable.SetMaxValue((float)filereader.Max.Z);
+                                mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
+                                mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
                             }
-                            foreach (var pt in verts1)
+                            foreach (var pt in verts0)
                             {
                                 mPositions.Append((float)pt.X);
                                 mPositions.Append((float)pt.Y);
@@ -314,8 +308,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, filereader.Min.X));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, filereader.Max.X));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -329,8 +323,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, filereader.Min.Y));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, filereader.Max.Y));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -344,8 +338,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, filereader.Min.Z));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, filereader.Max.Z));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -392,8 +386,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)filereader.Min.X);
-                        mColorTable.SetMaxValue((float)filereader.Max.X);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -406,8 +400,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)filereader.Min.Y);
-                        mColorTable.SetMaxValue((float)filereader.Max.Y);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -420,8 +414,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)filereader.Min.Z);
-                        mColorTable.SetMaxValue((float)filereader.Max.Z);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -483,8 +477,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, filereader.Min.X));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, filereader.Max.X));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -498,8 +492,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, filereader.Min.Y));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, filereader.Max.Y));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -513,8 +507,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, filereader.Min.Z));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, filereader.Max.Z));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -561,8 +555,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)filereader.Min.X);
-                        mColorTable.SetMaxValue((float)filereader.Max.X);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -575,8 +569,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)filereader.Min.Y);
-                        mColorTable.SetMaxValue((float)filereader.Max.Y);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -589,8 +583,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)filereader.Min.Z);
-                        mColorTable.SetMaxValue((float)filereader.Max.Z);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -651,8 +645,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, filereader.Min.X));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, filereader.Max.X));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -666,8 +660,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, filereader.Min.Y));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, filereader.Max.Y));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -681,8 +675,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, filereader.Min.Z));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, filereader.Max.Z));
+                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Max(e => e.Z)));
+                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
@@ -729,8 +723,8 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)filereader.Min.X);
-                        mColorTable.SetMaxValue((float)filereader.Max.X);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -743,8 +737,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)filereader.Min.Y);
-                        mColorTable.SetMaxValue((float)filereader.Max.Y);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
@@ -757,8 +751,8 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)filereader.Min.Z);
-                        mColorTable.SetMaxValue((float)filereader.Max.Z);
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
