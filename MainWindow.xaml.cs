@@ -86,6 +86,7 @@ namespace MViewer
                 WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileNames));
                 if (readCloud.ShowDialog() == true)
                 {
+                    GC.Collect();
                     var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(CloudID));
                     if (prevNode != null)
                     {
