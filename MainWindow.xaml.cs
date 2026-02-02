@@ -86,7 +86,6 @@ namespace MViewer
                 WReadCloud readCloud = new WReadCloud(new CloudPara(dlg.FileNames));
                 if (readCloud.ShowDialog() == true)
                 {
-                    GC.Collect();
                     var prevNode = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(CloudID));
                     if (prevNode != null)
                     {
@@ -101,6 +100,7 @@ namespace MViewer
                         prevNode.SetUserId(CloudID);
                         mRenderCtrl.Scene.AddNode(prevNode);
                     }
+                    GC.Collect();
                     foreach (var fn in readCloud.Para.CloudFilePath)
                     {
                         var filereader = new CloudReader
