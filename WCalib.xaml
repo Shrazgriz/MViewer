@@ -17,6 +17,8 @@
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
+        <CheckBox x:Name="CB_AllowReflect" Grid.Column="0" Grid.Row="1" Margin="4" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"
+                  ToolTip="坐标系手性相反时勾选">允许镜像</CheckBox>
         <Button x:Name="BN_Calculation" Click="BN_Calculation_Click"  Grid.Row="1" Grid.Column="1" FontSize="24" Margin="4">计算</Button>
         <Button x:Name="BN_Export" Click="BN_Export_Click" Grid.Row="1" Grid.Column="2" FontSize="24" Margin="4">输出</Button>
         <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="0" Margin="4">

@@ -56,7 +56,9 @@ namespace MViewer
                 target0.Add(value);
             }
             int num = Math.Min(input0.Count, target0.Count);
-            EuclideanTransform et = EuclideanTransform.SVD(input0, target0, 0.00001f);
+            bool noreflect = false;
+            if(CB_AllowReflect.IsChecked == true) {noreflect = false;}
+            EuclideanTransform et = EuclideanTransform.SVD(input0, target0, 0.00001f, noreflect);
             var trans = input0.Select(p => et.Transform(p)).ToList();
             var errors = new List<double>();
             StringBuilder sb =new StringBuilder();
