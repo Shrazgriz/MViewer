@@ -806,6 +806,7 @@ namespace MViewer.Graphics
                 prevNode.SetUserId(CloudID);
                 render.Scene.AddNode(prevNode);
             }
+            GC.Collect();
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
             foreach (V3 pt in verts)

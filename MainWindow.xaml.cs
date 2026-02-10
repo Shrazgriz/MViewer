@@ -13,7 +13,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml.Linq;
 
 namespace MViewer
 {
@@ -44,7 +43,7 @@ namespace MViewer
         public ICommand SeleByCirCommand { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
-        const ulong CubicMapID = 12;
+        const ulong ModelID = 2;
         const ulong TestObjID = 3;
         const ulong ColorCloudID = 4;
         const ulong ClipID = 5;
@@ -152,7 +151,14 @@ namespace MViewer
                         var shape = IgesIO.Open(fileName);
                         return shape;
                     }
+                case ".stl":
+                case ".STL":
+                    {
+                        var shape = StlIO.Open(fileName);
+                        return shape;
+                    }
                 default:
+                    
                     throw new NotImplementedException();
             }
         }
@@ -162,7 +168,16 @@ namespace MViewer
             dlg.Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl|*.igs;*.iges;*.stp;*.step;*.brep;*.stl";
             if (dlg.ShowDialog() != true)
                 return;
-            SceneNode node;
+            GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
+            if (modelRoot != null) modelRoot.Clear();
+            else
+            {
+                modelRoot = new GroupSceneNode();
+                modelRoot.SetUserId(ModelID);
+                mRenderCtrl.Scene.AddNode(modelRoot);
+            }
+            GC.Collect();
+            SceneNode node = null;
             switch (System.IO.Path.GetExtension(dlg.FileName))
             {
                 case ".stp":
@@ -170,21 +185,24 @@ namespace MViewer
                 case ".STEP":
                 case ".iges":
                 case ".igs":
+                case ".stl":
+                case ".STL":
                     {
                         var shape = readTopo(dlg.FileName);
                         node = BrepSceneNode.Create(shape, null, null, 0, false);
                     }
                     break;
                 default:
-                    node = SceneIO.Load(dlg.FileName);
+                    {
+                        node = SceneIO.Load(dlg.FileName);
+                    }
                     break;
             }
-
             if (node == null)
                 return;
-
-            mRenderCtrl.ShowSceneNode(node);
-            mRenderCtrl.ZoomAll();
+            
+            modelRoot.AddNode(node);
+            mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
         }
         private void Model2Cloud()
         {
@@ -263,15 +281,26 @@ namespace MViewer
                 }
             }
             #endregion
+            #region 可视化
             List<V3> pts;
             if (wRay.Para.AlignZ)
-            {
-                pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList();
-            }else { pts= hitPts; }
-            if(wRay.Para.ShowModel) mRenderCtrl.ShowSceneNode(mTargetNode);
+            { pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList(); }
+            else { pts= hitPts; }
+            if (wRay.Para.ShowModel) {
+                GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
+                if (modelRoot != null) modelRoot.Clear();
+                else
+                {
+                    modelRoot = new GroupSceneNode();
+                    modelRoot.SetUserId(ModelID);
+                    mRenderCtrl.Scene.AddNode(modelRoot);
+                }
+                GC.Collect();
+                modelRoot.AddNode(mTargetNode);
+            }
             Graphic_Cloud cloud = new Graphic_Cloud();
             cloud.ShowCloud(pts, mRenderCtrl);
-            mRenderCtrl.ZoomAll();
+            #endregion
         }
         private void ReadSeg2()
         {
