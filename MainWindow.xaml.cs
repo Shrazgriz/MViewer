@@ -213,103 +213,12 @@ namespace MViewer
                 return;
             WRayHits wRay = new WRayHits(new RayHitsPara());
             if (wRay.ShowDialog() != true) return;
-            TopoShape shape = readTopo(dlg.FileName);
             var w = wRay.Para.Direction;
             var d = wRay.Para.Resolution;
-            #region 估算射线范围
-            List<V3> axis = new List<V3>() { V3.Forward, V3.Right, V3.Up };
-            List<double> axisDot = axis.Select(a => Math.Abs(a.Dot(w))).ToList();
-            int minId = axisDot.IndexOf(axisDot.Min());
-            V3 v = w.Cross(axis[minId]).Normalized();
-            V3 u = v.Cross(w).Normalized();
-            ShapeExplor sExp = new ShapeExplor();
-            sExp.AddShape(shape);
-            sExp.Build();
-            GBBox mBBox = sExp.GetBoundingBox();
-            var mMinCorner = mBBox.CornerMin();
-            var mMaxCorner = mBBox.CornerMax();
-            V3 p0 = new V3(mMinCorner.X(), mMinCorner.Y(), mMinCorner.Z());
-            V3 p1 = new V3(mMinCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
-            V3 p2 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
-            V3 p3 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
-            V3 p4 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMinCorner.Z());
-            V3 p5 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
-            V3 p6 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
-            V3 p7 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
-            var mid = 0.5f * (p0 + p7);
-            List<V3> boxPts=new List<V3>() { p0, p1, p2, p3, p4, p5, p6, p7 };
-            List<double> uValues = boxPts.Select(e => e.Dot(u)).ToList();
-            List<double> vValues = boxPts.Select(e => e.Dot(v)).ToList();
-            CatersianSys raySys = CatersianSys.CreateSysOXN(mid, u, w);
-            #endregion
-            #region 射线检测
-            List<Line> rayList = new List<Line>();
-            List<Triangle> facets = new List<Triangle>();
-            for (double i = uValues.Min(); i < uValues.Max(); i+=d)
-            {
-                for (double j = vValues.Min(); j <vValues.Max(); j+=d)
-                {
-                    V3 ptOnLine = i * u + j * v;
-                    Line ray = new Line(w, ptOnLine);
-                    rayList.Add(ray);
-                }
-            }
-            var gshape = GRepShape.Create(shape, matFace, matLine, 0, false);
-            var success = gshape.Build();
-            GRepIterator iter = new GRepIterator();
-            for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
-            {
-                var postions = iter.GetPositions();
-                var idx = iter.GetIndex();
-                uint pnum = postions.GetItemCount();
-                uint idnum = idx.GetItemCount();
-                List<V3> verts = new List<V3>();
-                for (uint i = 0; i < pnum/3; i++) {
-                    var vert = postions.GetVec3(i * 3);
-                    verts.Add(ConvertVector3.ToV3(vert));
-                }
-                for (uint i = 0; i < idnum / 3; i++)
-                {
-                    uint id0 = idx.GetValue(i * 3);
-                    uint id1 = idx.GetValue(i * 3 + 1);
-                    uint id2 = idx.GetValue(i * 3 + 2);
-                    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
-                    facets.Add(tri);
-                }
-            }
-            //var faces = shape.GetChildren(EnumTopoShapeType.Topo_FACE);
-            //var texp = TopoExplor.GetSubShapes(shape);
-            //var fenum = faces.GetEnumerator();
-            //while (fenum.MoveNext())
-            //{
-            //    var face = fenum.Current;
-            //    var tris = Graphic_Tris.DecomposeFace(face);
-            //    facets.AddRange(tris);
-            //}
-            List<V3> hitPts = new List<V3>();
-            foreach (var ray in rayList)
-            {
-                List<V3> xPts = new List<V3>();
-                foreach (var face in facets)
-                {
-                    MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
-                    if (Math.Abs(triBase.Norm.Dot(w)) < 0.001f) continue;
-                    var xpt = triBase.IntersectPoint(ray);
-                    if (face.IsPointInside(xpt)) xPts.Add(xpt);
-                }
-                if(xPts.Count > 0)
-                {
-                    var dotsvalue = xPts.Select(p=>p.Dot(w)).ToList();
-                    var maxid = dotsvalue.IndexOf(dotsvalue.Max());
-                    hitPts.Add(xPts[maxid]);
-                }
-            }
-            #endregion
+            TopoShape shape = readTopo(dlg.FileName);
+
             #region 可视化
-            List<V3> pts;
-            if (wRay.Para.AlignCenter)
-            { pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList(); }
-            else { pts= hitPts; }
+            List<V3> pts = rayCastModel(shape, w, d, wRay.Para.AlignCenter);            
             if (wRay.Para.ShowModel) 
             {
                 BrepSceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
@@ -328,28 +237,121 @@ namespace MViewer
             cloud.ShowCloud(pts, mRenderCtrl);
             #endregion
         }
+        private List<V3> rayCastModel(TopoShape shape, V3 rayDir, double rayDense, bool AlignCenter)
+        {
+            #region 估算射线范围
+            List<V3> axis = new List<V3>() { V3.Forward, V3.Right, V3.Up };
+            List<double> axisDot = axis.Select(a => Math.Abs(a.Dot(rayDir))).ToList();
+            int minId = axisDot.IndexOf(axisDot.Min());
+            V3 v = rayDir.Cross(axis[minId]).Normalized();
+            V3 u = v.Cross(rayDir).Normalized();
+            ShapeExplor sExp = new ShapeExplor();
+            sExp.AddShape(shape);
+            sExp.Build();
+            GBBox mBBox = sExp.GetBoundingBox();
+            var mMinCorner = mBBox.CornerMin();
+            var mMaxCorner = mBBox.CornerMax();
+            V3 p0 = new V3(mMinCorner.X(), mMinCorner.Y(), mMinCorner.Z());
+            V3 p1 = new V3(mMinCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
+            V3 p2 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
+            V3 p3 = new V3(mMinCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
+            V3 p4 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMinCorner.Z());
+            V3 p5 = new V3(mMaxCorner.X(), mMinCorner.Y(), mMaxCorner.Z());
+            V3 p6 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMinCorner.Z());
+            V3 p7 = new V3(mMaxCorner.X(), mMaxCorner.Y(), mMaxCorner.Z());
+            var mid = 0.5f * (p0 + p7);
+            List<V3> boxPts = new List<V3>() { p0, p1, p2, p3, p4, p5, p6, p7 };
+            List<double> uValues = boxPts.Select(e => e.Dot(u)).ToList();
+            List<double> vValues = boxPts.Select(e => e.Dot(v)).ToList();
+            CatersianSys raySys = CatersianSys.CreateSysOXN(mid, u, rayDir);
+            #endregion
+            #region 射线检测
+            List<Line> rayList = new List<Line>();
+            List<Triangle> facets = new List<Triangle>();
+            for (double i = uValues.Min(); i < uValues.Max(); i += rayDense)
+            {
+                for (double j = vValues.Min(); j < vValues.Max(); j += rayDense)
+                {
+                    V3 ptOnLine = i * u + j * v;
+                    Line ray = new Line(rayDir, ptOnLine);
+                    rayList.Add(ray);
+                }
+            }
+            var gshape = GRepShape.Create(shape, matFace, matLine, 0, false);
+            var success = gshape.Build();
+            GRepIterator iter = new GRepIterator();
+            for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
+            {
+                var postions = iter.GetPositions();
+                var idx = iter.GetIndex();
+                uint pnum = postions.GetItemCount();
+                uint idnum = idx.GetItemCount();
+                List<V3> verts = new List<V3>();
+                for (uint i = 0; i < pnum / 3; i++)
+                {
+                    var vert = postions.GetVec3(i * 3);
+                    verts.Add(ConvertVector3.ToV3(vert));
+                }
+                for (uint i = 0; i < idnum / 3; i++)
+                {
+                    uint id0 = idx.GetValue(i * 3);
+                    uint id1 = idx.GetValue(i * 3 + 1);
+                    uint id2 = idx.GetValue(i * 3 + 2);
+                    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
+                    facets.Add(tri);
+                }
+            }
+            List<V3> hitPts = new List<V3>();
+            foreach (var ray in rayList)
+            {
+                List<V3> xPts = new List<V3>();
+                foreach (var face in facets)
+                {
+                    MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
+                    if (Math.Abs(triBase.Norm.Dot(rayDir)) < 0.001f) continue;
+                    var xpt = triBase.IntersectPoint(ray);
+                    if (face.IsPointInside(xpt)) xPts.Add(xpt);
+                }
+                if (xPts.Count > 0)
+                {
+                    var dotsvalue = xPts.Select(p => p.Dot(rayDir)).ToList();
+                    var maxid = dotsvalue.IndexOf(dotsvalue.Max());
+                    hitPts.Add(xPts[maxid]);
+                }
+            }
+            if (AlignCenter) { return hitPts.Select(p => raySys.ToLocalCoord(p)).ToList(); }
+            else { return hitPts; }
+            #endregion
+        }
         private void ConvertModel()
         {
             bool findModel = false;
-            GRepShape mshape = null;
+            TopoShape mshape = null;
             GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
             if (modelRoot != null)
             {
                 var iter = modelRoot.CreateIterator();
-                if (iter.More()) { 
-                    iter.Next();
+                if (iter.More()) {
                     var child = BrepSceneNode.Cast(iter.Current());
                     if (child != null) {
                         findModel = true;
-                        mshape = child.GetShape();
+                        mshape = child.GetTopoShape();
                     }
                 }
             }
             if (findModel)
-            {
+            {                
+                WRayHits wRay = new WRayHits(new RayHitsPara());
+                if (wRay.ShowDialog() != true) return;
+                var w = wRay.Para.Direction;
+                var d = wRay.Para.Resolution;
 
+                #region 可视化
+                List<V3> pts = rayCastModel(mshape, w, d, wRay.Para.AlignCenter);
+                Graphic_Cloud cloud = new Graphic_Cloud();
+                cloud.ShowCloud(pts, mRenderCtrl);
+                #endregion
             }
-            else Model2Cloud();
         }
         private void ReadSeg2()
         {
@@ -547,23 +549,6 @@ namespace MViewer
                 default:
                     break;
             }
-        }
-
-        private void BN_CubicMtx_Click(object sender, RoutedEventArgs e)
-        {
-            var cloud = mRenderCtrl.Scene.FindNodeByUserId(CloudID);
-            if (cloud == null) return;
-            PointCloud pcn = PointCloud.Cast(cloud);
-            var n = pcn.GetPointCount();
-            List<V3> points = new List<V3>();
-            for (uint i = 0; i < n; i++)
-            {
-                var value = pcn.GetPosition(i);
-                points.Add(ConvertVector3.ToV3(value));
-            }
-            CubicMap cMap = CubicMap.CreateCubicMap(points, 5);
-            Graphic_CMTX cmtx = new Graphic_CMTX(mRenderCtrl, cMap);
-            cmtx.DrawCubicRLMtx(2);
         }
 
         private void AppendLine(string text)

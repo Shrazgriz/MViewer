@@ -17,7 +17,6 @@ namespace MViewer.Graphics
         public double MinValue;
         MaterialInstance mat;
         const ulong MeshObjID = 10;
-        const ulong LineObjID = 100;
 
         public Graphic_Tris(double min, double max)
         {

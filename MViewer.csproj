@@ -75,8 +75,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CloudPara.cs" />
-    <Compile Include="Graphics\Graphic_AABox.cs" />
-    <Compile Include="Graphics\Graphic_Cubes.cs" />
     <Compile Include="Graphics\Graphic_Lines.cs" />
     <Compile Include="Graphics\Graphic_Segs.cs" />
     <Compile Include="Graphics\Graphic_Tris.cs" />
