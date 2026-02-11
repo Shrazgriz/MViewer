@@ -21,13 +21,6 @@ namespace MViewer
     /// </summary>
     public partial class MainWindow : Window
     {
-        public int StartAngle { get; set; } = 0;
-        public int LastAngle { get; set; } = 120;
-        public int AngleStep { get; set; } = 10;
-        public int Thickness { get; set; } = 10;
-        public double Radius { get; set; } = 150;
-        public int PointCount { get; set; } = 200;
-
         public ICommand CADCommand { get; set; }
         public ICommand PCDCommand { get; set; }
         public ICommand Seg2Command { get; set; }
@@ -44,14 +37,11 @@ namespace MViewer
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong ModelID = 2;
-        const ulong TestObjID = 3;
-        const ulong ColorCloudID = 4;
         const ulong ClipID = 5;
-        const ulong OBBID = 6;
-        const ulong MeshObjID = 10;
-        const ulong LineObjID = 100;
         bool showPoints;
         Graphic_Clip clip;
+        static MaterialInstance matLine;
+        static MaterialInstance matFace;
         public MainWindow()
         {
             InitializeComponent();
@@ -70,6 +60,16 @@ namespace MViewer
             FitCirCommand = new Command(param => FitCircle());
             MeshCommand = new Command(param => ReadMesh());
             showPoints = true;
+
+            matLine = LineMaterial.Create("matLine");
+            matLine.SetVertexColors(false);
+            matLine.SetLineWidth(1);
+            matLine.SetColor(ColorTable.Black);
+            matFace = MeshStandardMaterial.Create("matFace");
+            matFace.SetVertexColors(false);
+            matFace.SetColor(ColorTable.RoyalBlue);
+            matFace.SetFaceSide(EnumFaceSide.DoubleSide);
+            matFace.SetLineWidth(2);
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -154,7 +154,7 @@ namespace MViewer
                 case ".stl":
                 case ".STL":
                     {
-                        var shape = StlIO.Open(fileName);
+                        var shape = StepIO.Open(fileName);
                         return shape;
                     }
                 default:
@@ -188,8 +188,7 @@ namespace MViewer
                 case ".stl":
                 case ".STL":
                     {
-                        var shape = readTopo(dlg.FileName);
-                        node = BrepSceneNode.Create(shape, null, null, 0, false);
+                        var shape = readTopo(dlg.FileName);                       
                     }
                     break;
                 default:
@@ -220,7 +219,6 @@ namespace MViewer
             int minId = axisDot.IndexOf(axisDot.Min());
             V3 v = w.Cross(axis[minId]).Normalized();
             V3 u = v.Cross(w).Normalized();
-            SceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
             ShapeExplor sExp = new ShapeExplor();
             sExp.AddShape(shape);
             sExp.Build();
@@ -253,15 +251,38 @@ namespace MViewer
                     rayList.Add(ray);
                 }
             }
-
-            var faces = shape.GetChildren(EnumTopoShapeType.Topo_FACE);
-            var fenum = faces.GetEnumerator();
-            while (fenum.MoveNext())
+            var gshape = GRepShape.Create(shape, matFace, matLine, 0, false);
+            var success = gshape.Build();
+            GRepIterator iter = new GRepIterator();
+            for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
             {
-                var face = fenum.Current;
-                var tris = Graphic_Tris.DecomposeFace(face);
-                facets.AddRange(tris);
+                var postions = iter.GetPositions();
+                var idx = iter.GetIndex();
+                uint pnum = postions.GetItemCount();
+                uint idnum = idx.GetItemCount();
+                List<V3> verts = new List<V3>();
+                for (uint i = 0; i < pnum/3; i++) {
+                    var vert = postions.GetVec3(i * 3);
+                    verts.Add(ConvertVector3.ToV3(vert));
+                }
+                for (uint i = 0; i < idnum / 3; i++)
+                {
+                    uint id0 = idx.GetValue(i * 3);
+                    uint id1 = idx.GetValue(i * 3 + 1);
+                    uint id2 = idx.GetValue(i * 3 + 2);
+                    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
+                    facets.Add(tri);
+                }
             }
+            //var faces = shape.GetChildren(EnumTopoShapeType.Topo_FACE);
+            //var texp = TopoExplor.GetSubShapes(shape);
+            //var fenum = faces.GetEnumerator();
+            //while (fenum.MoveNext())
+            //{
+            //    var face = fenum.Current;
+            //    var tris = Graphic_Tris.DecomposeFace(face);
+            //    facets.AddRange(tris);
+            //}
             List<V3> hitPts = new List<V3>();
             foreach (var ray in rayList)
             {
@@ -286,7 +307,9 @@ namespace MViewer
             if (wRay.Para.AlignZ)
             { pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList(); }
             else { pts= hitPts; }
-            if (wRay.Para.ShowModel) {
+            if (wRay.Para.ShowModel) 
+            {
+                BrepSceneNode mTargetNode = BrepSceneNode.Create(shape, null, null, 0, false);
                 GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
                 if (modelRoot != null) modelRoot.Clear();
                 else

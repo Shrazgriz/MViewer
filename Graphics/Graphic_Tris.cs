@@ -45,7 +45,6 @@ namespace MViewer.Graphics
             }
             BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
             buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
-            //buff.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, mColors);
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
             renderControl.ShowSceneNode(geoNode);
@@ -78,9 +77,6 @@ namespace MViewer.Graphics
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
             root.AddNode(geoNode);
-            //PaletteWidget pw = new PaletteWidget();
-            //pw.Update(mColorTable);
-            //renderControl.ShowSceneNode(pw);
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }
 
@@ -155,39 +151,32 @@ namespace MViewer.Graphics
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }
 
-        public static List<Triangle> DecomposeFace(TopoShape face)
+        public static List<Triangle> DecomposeFace(TopoShape Shape)
         {
-            ShapeExplor fexp = new ShapeExplor();
-            fexp.AddShape(face);
-            fexp.Build();
-            var vnum = fexp.GetVertexCount();
             List<Triangle> facets = new List<Triangle>();
-            List<V3> fverts = new List<V3>();
-            var fp0 = fexp.GetVertex(0).GetPoint();
-            var fp1 = fexp.GetVertex(1).GetPoint();
-            var pv0 = new V3(fp0.x, fp0.y, fp0.z);
-            var pv1 = new V3(fp1.x, fp1.y, fp1.z);
-            fverts.Add(pv0);
-            fverts.Add(pv1);
-            V3 fp = pv0;
-            for (uint i = 2; i < vnum/2; i++)
+            var gshape = GRepShape.Create(Shape, null, null, 0, false);
+            var success = gshape.Build();
+            GRepIterator iter = new GRepIterator();
+            for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
             {
-                var gp0 = fexp.GetVertex(2*i).GetPoint();
-                var gp1 = fexp.GetVertex(2 * i + 1).GetPoint();
-                var v0 = new V3(gp0.x, gp0.y, gp0.z);
-                var v1 = new V3(gp1.x, gp1.y, gp1.z);
-                bool containV0 = (pv0.Distance(v0) < 0.01f) | (pv1.Distance(v0) < 0.01f) | (fp.Distance(v0) < 0.01f);
-                bool containV1 = (pv0.Distance(v1) < 0.01f) | (pv1.Distance(v1) < 0.01f) | (fp.Distance(v1) < 0.01f);
-                if (!containV0) fverts.Add(v0);
-                if (!containV1) fverts.Add(v1);
-                pv0 = v0;
-                pv1 = v1;
-            }
-            
-            for (int i = 1; i < fverts.Count-1; i++)
-            {
-                Triangle tri = new Triangle(new V3[3] { fp, fverts[i], fverts[i + 1] });
-                facets.Add(tri);
+                var postions = iter.GetPositions();
+                var idx = iter.GetIndex();
+                uint pnum = postions.GetItemCount();
+                uint idnum = idx.GetItemCount();
+                List<V3> verts = new List<V3>();
+                for (uint i = 0; i < pnum / 3; i++)
+                {
+                    var vert = postions.GetVec3(i * 3);
+                    verts.Add(ConvertVector3.ToV3(vert));
+                }
+                for (uint i = 0; i < idnum / 3; i++)
+                {
+                    uint id0 = idx.GetValue(i * 3);
+                    uint id1 = idx.GetValue(i * 3 + 1);
+                    uint id2 = idx.GetValue(i * 3 + 2);
+                    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
+                    facets.Add(tri);
+                }
             }
             return facets;
         }
