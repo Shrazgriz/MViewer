@@ -38,7 +38,7 @@ namespace MViewer
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["Direction"].Value = Para.Direction.ToString();
             cfa.AppSettings.Settings["_rayDir"].Value = Para._rayDir.ToString();
-            cfa.AppSettings.Settings["AlignZ"].Value = Para.AlignZ.ToString();
+            cfa.AppSettings.Settings["AlignCenter"].Value = Para.AlignCenter.ToString();
             cfa.AppSettings.Settings["ShowModel"].Value = Para.ShowModel.ToString();
             cfa.AppSettings.Settings["RayResolution"].Value = Para.Resolution.ToString();
             cfa.Save();

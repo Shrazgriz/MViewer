@@ -19,8 +19,8 @@
         <DockPanel VerticalAlignment="Top"  Grid.ColumnSpan="2">
             <Menu  IsMainMenu="True">
                 <MenuItem    Header="读取" >
-                    <MenuItem      Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
-                    <MenuItem   Header="模型并离散" Name="menuM2C" Command="{Binding Path=M2CloudCommand}"/>
+                    <MenuItem Header="模型" x:Name="menuModel" Command="{Binding Path=CADCommand}"/>
+                    <MenuItem Header="模型并离散" Name="menuM2C" Command="{Binding Path=M2CloudCommand}"/>
                     <MenuItem Header="三角网格" Command="{Binding Path=MeshCommand}"/>
                     <Separator/>
                     <MenuItem      Header="点云" x:Name="menuXYZ"  Command="{Binding Path=PCDCommand}"/>
@@ -29,6 +29,7 @@
                     <MenuItem Header="空间线段" x:Name="menuSeg3D" Command="{Binding Path=Seg3Command}"/>
                     <MenuItem Header="圆" Command="{Binding Path=CirCommand}"/>
                 </MenuItem>
+                <MenuItem Header="模型转点云" x:Name="menuModel2Cloud" Command="{Binding Path=M2CCommand}"></MenuItem>
                 <MenuItem Header="输出">
                     <MenuItem Header="点集" x:Name="menuExpPts" Command="{Binding Path=ExpPtsCommand}"/>
                 </MenuItem>

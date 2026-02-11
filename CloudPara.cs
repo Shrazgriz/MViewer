@@ -262,14 +262,16 @@ namespace MViewer
         /// 方向矢量
         /// </summary>
         public V3 Direction { get; set; }
-        public bool AlignZ { get; set; }
+        public bool AlignCenter { get; set; }
         public bool ShowModel { get; set; }
         public double Resolution { get; set; }
+        public string BoxMax { get; set; }
+        public string BoxMin { get; set; }
         public RayHitsPara()
         {
             _rayDir = (RayDirection)System.Enum.Parse(typeof(RayDirection), ConfigurationManager.AppSettings["_rayDir"]);
             Direction = new V3(ConfigurationManager.AppSettings["Direction"], ',');
-            AlignZ = bool.Parse(ConfigurationManager.AppSettings["AlignZ"]);
+            AlignCenter = bool.Parse(ConfigurationManager.AppSettings["AlignCenter"]);
             ShowModel = bool.Parse(ConfigurationManager.AppSettings["ShowModel"]);
             Resolution = double.Parse(ConfigurationManager.AppSettings["RayResolution"]);
         }

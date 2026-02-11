@@ -152,9 +152,14 @@ namespace MViewer.Graphics
         }
 
         public static List<Triangle> DecomposeFace(TopoShape Shape)
+        {            
+            var gshape = GRepShape.Create(Shape, null, null, 0, false);            
+            return DecomposeFace(gshape);
+        }
+
+        public static List<Triangle> DecomposeFace(GRepShape gshape)
         {
             List<Triangle> facets = new List<Triangle>();
-            var gshape = GRepShape.Create(Shape, null, null, 0, false);
             var success = gshape.Build();
             GRepIterator iter = new GRepIterator();
             for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())

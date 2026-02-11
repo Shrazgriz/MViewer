@@ -28,6 +28,7 @@ namespace MViewer
         public ICommand CirCommand { get; set; }
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CloudCommand { get; set; }
+        public ICommand M2CCommand { get; set; }
         public ICommand CalibCommand { get; set; }
         public ICommand SeleByNBCommand { get; set; }
         public ICommand SeleByROICommand { get; set; }
@@ -48,6 +49,7 @@ namespace MViewer
             DataContext = this;
             CADCommand = new Command(param => ReadCAD());
             M2CloudCommand = new Command(param => Model2Cloud());
+            M2CCommand = new Command(param => ConvertModel());
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
             CirCommand = new Command(param => ReadCir());
@@ -67,7 +69,7 @@ namespace MViewer
             matLine.SetColor(ColorTable.Black);
             matFace = MeshStandardMaterial.Create("matFace");
             matFace.SetVertexColors(false);
-            matFace.SetColor(ColorTable.RoyalBlue);
+            matFace.SetColor(ColorTable.WhiteSmoke);
             matFace.SetFaceSide(EnumFaceSide.DoubleSide);
             matFace.SetLineWidth(2);
         }
@@ -188,7 +190,8 @@ namespace MViewer
                 case ".stl":
                 case ".STL":
                     {
-                        var shape = readTopo(dlg.FileName);                       
+                        var shape = readTopo(dlg.FileName);
+                        node = BrepSceneNode.Create(shape, matFace, matLine);
                     }
                     break;
                 default:
@@ -304,7 +307,7 @@ namespace MViewer
             #endregion
             #region 可视化
             List<V3> pts;
-            if (wRay.Para.AlignZ)
+            if (wRay.Para.AlignCenter)
             { pts= hitPts.Select(p=>raySys.ToLocalCoord(p)).ToList(); }
             else { pts= hitPts; }
             if (wRay.Para.ShowModel) 
@@ -324,6 +327,29 @@ namespace MViewer
             Graphic_Cloud cloud = new Graphic_Cloud();
             cloud.ShowCloud(pts, mRenderCtrl);
             #endregion
+        }
+        private void ConvertModel()
+        {
+            bool findModel = false;
+            GRepShape mshape = null;
+            GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
+            if (modelRoot != null)
+            {
+                var iter = modelRoot.CreateIterator();
+                if (iter.More()) { 
+                    iter.Next();
+                    var child = BrepSceneNode.Cast(iter.Current());
+                    if (child != null) {
+                        findModel = true;
+                        mshape = child.GetShape();
+                    }
+                }
+            }
+            if (findModel)
+            {
+
+            }
+            else Model2Cloud();
         }
         private void ReadSeg2()
         {
