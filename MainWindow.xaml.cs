@@ -39,6 +39,7 @@ namespace MViewer
         const ulong CloudID = 1;
         const ulong ModelID = 2;
         const ulong ClipID = 5;
+        const double rayJit = 0.1f;
         bool showPoints;
         Graphic_Clip clip;
         static MaterialInstance matLine;
@@ -210,16 +211,18 @@ namespace MViewer
             V3 rayDir = raySys.ZAxis;
             V3 u = raySys.XAxis;
             V3 v = raySys.YAxis;
-            List<Line> rayList = new List<Line>();
+            List<Line> rayList = new List<Line>();            
+            int vjit = -1;
             #region 生成射线
             for (double i = umin; i < umax; i += rayDense)
             {
                 for (double j = vmin; j < vmax; j += rayDense)
                 {
-                    V3 ptOnLine = i * u + j * v;
+                    V3 ptOnLine = (i) * u + (j + vjit * rayJit) * v;
                     Line ray = new Line(rayDir, ptOnLine);
-                    rayList.Add(ray);
+                    rayList.Add(ray);                    
                 }
+                vjit *= -1;
             }            
             #endregion
             #region 射线检测
