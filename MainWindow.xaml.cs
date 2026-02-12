@@ -298,6 +298,7 @@ namespace MViewer
                     uint id1 = idx.GetValue(i * 3 + 1);
                     uint id2 = idx.GetValue(i * 3 + 2);
                     Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
+                    if (Math.Abs(tri.Norm.Dot(rayDir)) < 0.001f) continue;
                     facets.Add(tri);
                 }
             }
@@ -307,10 +308,12 @@ namespace MViewer
                 List<V3> xPts = new List<V3>();
                 foreach (var face in facets)
                 {
-                    MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
-                    if (Math.Abs(triBase.Norm.Dot(rayDir)) < 0.001f) continue;
-                    var xpt = triBase.IntersectPoint(ray);
-                    if (face.IsPointInside(xpt)) xPts.Add(xpt);
+                    if (face.IsPointInside(ray.Approach))
+                    {
+                        MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
+                        var xpt = triBase.IntersectPoint(ray);
+                        xPts.Add(xpt);
+                    }
                 }
                 if (xPts.Count > 0)
                 {
@@ -345,7 +348,6 @@ namespace MViewer
                 if (wRay.ShowDialog() != true) return;
                 var w = wRay.Para.Direction;
                 var d = wRay.Para.Resolution;
-
                 #region 可视化
                 List<V3> pts = rayCastModel(mshape, w, d, wRay.Para.AlignCenter);
                 Graphic_Cloud cloud = new Graphic_Cloud();
