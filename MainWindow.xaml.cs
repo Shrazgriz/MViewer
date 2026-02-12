@@ -233,7 +233,11 @@ namespace MViewer
                     {
                         MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
                         var xpt = triBase.IntersectPoint(ray);
-                        xPts.Add(xpt);
+                        if(Math.Abs(triBase.Norm.Dot(ray.Direction)) < 0.1f)
+                        {
+                            if(face.IsPointInside(xpt)) xPts.Add(xpt);
+                        }
+                        else xPts.Add(xpt);
                     }
                 }
                 if (xPts.Count > 0)
