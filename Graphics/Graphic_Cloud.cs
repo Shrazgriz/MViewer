@@ -737,7 +737,7 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
                         mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
                         foreach (V3 pt in verts)
                         {
@@ -751,7 +751,7 @@ namespace MViewer.Graphics
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
+                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
                         mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
                         foreach (V3 pt in verts)
                         {
