@@ -165,6 +165,8 @@ namespace MViewer.Graphics
                     verts0 = verts.FindAll(e => ROI.Cover(e));
                 }
                 else verts0 = verts;
+                mPositions.Reserve(3 * (uint)verts.Count);
+                mColors.Reserve(3 * (uint)verts.Count);
                 switch (ColorMode)
                 {
                     default:
@@ -290,7 +292,7 @@ namespace MViewer.Graphics
         }
         private bool ReadASC()
         {
-            List<V3> verts0 = filereader.ReadASC(filereader.VertSkip);
+            List<V3> verts0 = filereader.ReadASC(filereader.VertSkip);            
             List<V3> verts;
             if (Transform)
             {
@@ -301,6 +303,8 @@ namespace MViewer.Graphics
             {
                 verts = verts0;
             }
+            mPositions.Reserve(3 * (uint)verts.Count);
+            mColors.Reserve(3*(uint)verts.Count);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
@@ -470,6 +474,8 @@ namespace MViewer.Graphics
             {
                 verts = verts0;
             }
+            mPositions.Reserve(3 * (uint)verts.Count);
+            mColors.Reserve(3 * (uint)verts.Count);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
@@ -638,6 +644,8 @@ namespace MViewer.Graphics
             {
                 verts = verts0;
             }
+            mPositions.Reserve(3 * (uint)verts.Count);
+            mColors.Reserve(3 * (uint)verts.Count);
             ColorLookupTable mColorTable = new ColorLookupTable();
             mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             if (UseROI)
