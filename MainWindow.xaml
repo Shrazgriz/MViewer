@@ -32,7 +32,9 @@
                 <MenuItem Header="输出">
                     <MenuItem Header="点集" x:Name="menuExpPts" Command="{Binding Path=ExpPtsCommand}"/>
                 </MenuItem>
-                <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}">
+                <MenuItem Header="标定...">
+                    <MenuItem Header="点对求解" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}"/>
+                    <MenuItem Header="CD面修正" x:Name="menuSideCD" Command="{Binding Path=SideCDTool}" />
                 </MenuItem>
                 <MenuItem Header="选择点...">
                     <MenuItem Header="圆盘" Command="{Binding Path=SeleByCirCommand}"/>

@@ -1,0 +1,69 @@
+﻿<Window x:Class="MViewer.WSideCD"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MViewer"
+        mc:Ignorable="d"
+        Title="WSideCD" Height="450" Width="600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="BN_Import" Click="BN_Import_Click" Grid.Row="1" Grid.Column="0" FontSize="24" Margin="4">导入</Button>
+        <Button x:Name="BN_Calculation" Click="BN_Calculation_Click"  Grid.Row="1" Grid.Column="1" FontSize="24" Margin="4">计算</Button>
+        <Button x:Name="BN_Export" Click="BN_Export_Click" Grid.Row="1" Grid.Column="2" FontSize="24" Margin="4">输出</Button>
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="0" Margin="4">
+            <StackPanel >
+                <Label Margin="4" FontSize="18" Background="LightCyan" HorizontalContentAlignment="Center">端面坐标</Label>
+                <ListBox x:Name="LB_InputCoords" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightCyan" BorderThickness="1" >
+                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch"/>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="BN_newI" FontSize="18" Margin="4" Background="RoyalBlue" FontWeight="Bold"
+            Click="BN_newI_Click" >+</Button>
+            </StackPanel>
+        </ScrollViewer>
+        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Hidden" Grid.Row="0" Grid.Column="1" Margin="4">
+            <StackPanel>
+                <Label Margin="4" FontSize="18" Background="LightCoral" HorizontalContentAlignment="Center">修正量</Label>
+                <ListBox x:Name="LB_Corrections" Margin="4" FontSize="18" HorizontalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightPink" BorderThickness="1" >
+                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <Button x:Name="BN_newC" FontSize="18" Margin="4" Background="Crimson" FontWeight="Bold"
+            Click="BN_newC_Click" >+</Button>
+            </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="0" Grid.Column="2">
+            <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
+                DispCD</Label>
+            <TextBlock x:Name="TB_DispV" Margin="4"></TextBlock>
+            <Button x:Name="BN_ClipV" Margin="4" FontSize="18" Background="MediumPurple" MinHeight="36"
+            Click="BN_ClipV_Click">复制到剪贴板</Button>
+            <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
+                RotaCD</Label>
+            <TextBlock x:Name="TB_RotaM" Margin="4"></TextBlock>
+            <Button x:Name="BN_ClipM" Margin="4" FontSize="18" Background="LightGreen" MinHeight="36"
+            Click="BN_ClipM_Click">复制到剪贴板</Button>
+            <Label HorizontalAlignment="Center">偏差</Label>
+            <TextBlock x:Name="TB_MaxError" FontSize="14" HorizontalAlignment="Center"></TextBlock>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -30,6 +30,7 @@ namespace MViewer
         public ICommand ExpPtsCommand { get; set; }
         public ICommand M2CCommand { get; set; }
         public ICommand CalibCommand { get; set; }
+        public ICommand SideCDTool { get; set; }
         public ICommand SeleByNBCommand { get; set; }
         public ICommand SeleByROICommand { get; set; }
         public ICommand FitCirCommand { get; set; }
@@ -56,6 +57,7 @@ namespace MViewer
             PCDCommand = new Command(param => ReadPCD());
             ExpPtsCommand = new Command(param => ExpPts());
             CalibCommand = new Command(param => Calib());
+            SideCDTool = new Command(param => SideCDtool());
             SeleByNBCommand = new Command(param => SelectByNorm());
             SeleByROICommand = new Command(param => SelectByROI());
             SeleByCirCommand = new Command(param => SelectByCir());
@@ -493,6 +495,11 @@ namespace MViewer
             }
             WCalib calib = new WCalib(points);
             calib.Show();
+        }
+        private void SideCDtool()
+        {
+            WSideCD sideCD = new WSideCD();
+            sideCD.Show();
         }
         private void mRenderCtrl_ViewerReady()
         {

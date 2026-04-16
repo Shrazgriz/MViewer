@@ -96,6 +96,9 @@
     <Compile Include="WSelection.xaml.cs">
       <DependentUpon>WSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WSideCD.xaml.cs">
+      <DependentUpon>WSideCD.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -132,6 +135,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WSideCD.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
