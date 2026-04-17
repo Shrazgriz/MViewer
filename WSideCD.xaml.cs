@@ -19,12 +19,12 @@ namespace MViewer
     {
         V3 sideNorm = V3.Forward;
         ObservableCollection<PointInfo> inputPts = new ObservableCollection<PointInfo>();
-        ObservableCollection<double> corrections = new ObservableCollection<double>();
+        ObservableCollection<ValueInfo> corrections = new ObservableCollection<ValueInfo>();
         public WSideCD()
         {
             InitializeComponent();
             inputPts = new ObservableCollection<PointInfo>();
-            corrections = new ObservableCollection<double>();
+            corrections = new ObservableCollection<ValueInfo>();
             LB_InputCoords.ItemsSource = inputPts;
             LB_Corrections.ItemsSource = corrections;
         }
@@ -39,13 +39,13 @@ namespace MViewer
                 V3 value = new V3(pt.Value);
                 if (i < corrections.Count)
                 {
-                    double disp = corrections[i];
+                    double disp = double.Parse(corrections[i].Value);
                     value += disp * sideNorm;
                 }
                 target0.Add(value);
             }
             int num = Math.Min(input0.Count, target0.Count);
-            EuclideanTransform et = EuclideanTransform.SVD(input0, target0, 1, 0.00001f);
+            EuclideanTransform et = EuclideanTransform.SVD(input0, target0, 0, 0.00001f);
             var trans = input0.Select(p => et.Transform(p)).ToList();
             var errors = new List<double>();
             StringBuilder sb = new StringBuilder();
@@ -100,8 +100,9 @@ namespace MViewer
         }
 
         private void BN_newC_Click(object sender, RoutedEventArgs e)
-        {            
-            corrections.Add(0);
+        {
+            ValueInfo newInfo = new ValueInfo(0);
+            corrections.Add(newInfo);
         }
 
         private void BN_Import_Click(object sender, RoutedEventArgs e)
@@ -123,7 +124,7 @@ namespace MViewer
                     double v = double.Parse(split[3]);
                     V3 pt = new V3(x, y, z);
                     inputPts.Add(new PointInfo(pt));
-                    corrections.Add(v);
+                    corrections.Add(new ValueInfo(v));
                     line = reader.ReadLine();
                 }
                 reader.Close();

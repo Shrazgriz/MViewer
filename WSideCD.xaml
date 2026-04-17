@@ -42,7 +42,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="LightPink" BorderThickness="1" >
-                                <TextBox FontSize="18" Text="{Binding Path=Value}" HorizontalAlignment="Stretch" />
+                                <TextBox FontSize="18" Text="{Binding Path= Value}" HorizontalAlignment="Stretch" />
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

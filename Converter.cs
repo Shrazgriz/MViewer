@@ -115,4 +115,18 @@ namespace MViewer
             coord = new V3(Point);
         }
     }
+
+    public class ValueInfo
+    {
+        private double _v;
+        public string Value
+        {
+            get { return _v.ToString(); }
+            set { _v = double.Parse(value); }
+        }
+        public ValueInfo(double value)
+        {
+            _v = value;
+        }
+    }
 }
