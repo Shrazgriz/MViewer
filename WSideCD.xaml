@@ -54,12 +54,12 @@
         <StackPanel Grid.Row="0" Grid.Column="2">
             <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
                 DispCD</Label>
-            <TextBlock x:Name="TB_DispV" Margin="4"></TextBlock>
+            <TextBox x:Name="TB_DispV" Margin="4"></TextBox>
             <Button x:Name="BN_ClipV" Margin="4" FontSize="18" Background="MediumPurple" MinHeight="36"
             Click="BN_ClipV_Click">复制到剪贴板</Button>
             <Label Margin="4" FontSize="18" HorizontalContentAlignment="Center">
                 RotaCD</Label>
-            <TextBlock x:Name="TB_RotaM" Margin="4"></TextBlock>
+            <TextBox x:Name="TB_RotaM" Margin="4" AcceptsReturn="True" TextWrapping="Wrap"></TextBox>
             <Button x:Name="BN_ClipM" Margin="4" FontSize="18" Background="LightGreen" MinHeight="36"
             Click="BN_ClipM_Click">复制到剪贴板</Button>
             <Label HorizontalAlignment="Center">偏差</Label>

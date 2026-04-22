@@ -17,6 +17,8 @@ namespace MViewer
     /// </summary>
     public partial class WSideCD : Window
     {
+        M3 prevR = M3.Identity;
+        V3 prevT = V3.Zero;
         V3 sideNorm = V3.Forward;
         ObservableCollection<PointInfo> inputPts = new ObservableCollection<PointInfo>();
         ObservableCollection<ValueInfo> corrections = new ObservableCollection<ValueInfo>();
@@ -27,6 +29,8 @@ namespace MViewer
             corrections = new ObservableCollection<ValueInfo>();
             LB_InputCoords.ItemsSource = inputPts;
             LB_Corrections.ItemsSource = corrections;
+            TB_RotaM.Text = prevR.ToString();
+            TB_DispV.Text = prevT.ToString();
         }
 
         private void BN_Calculation_Click(object sender, RoutedEventArgs e)
@@ -64,8 +68,12 @@ namespace MViewer
             {
                 TB_MaxError.Foreground = new SolidColorBrush(Colors.Black);
             }
-            TB_RotaM.Text = et.R.ToString();
-            TB_DispV.Text = et.T.ToString();
+            prevR = new M3(TB_RotaM.Text);
+            prevT = new V3(TB_DispV.Text);
+            EuclideanTransform prev = new EuclideanTransform(prevR, prevT);
+            EuclideanTransform curt = new EuclideanTransform(prev, et);
+            TB_RotaM.Text = curt.R.ToString();
+            TB_DispV.Text = curt.T.ToString();
         }
 
         private void BN_Export_Click(object sender, RoutedEventArgs e)
