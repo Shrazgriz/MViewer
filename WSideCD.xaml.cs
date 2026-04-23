@@ -123,7 +123,6 @@ namespace MViewer
                 while (line != null)
                 {
                     if (line.Length == 0) break;
-                    if (reader.EndOfStream) break;
                     string[] split = line.Split(new char[] { ' ', ',', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                     if (split.Length < 4) break;
                     double x = double.Parse(split[0]);
@@ -133,6 +132,7 @@ namespace MViewer
                     V3 pt = new V3(x, y, z);
                     inputPts.Add(new PointInfo(pt));
                     corrections.Add(new ValueInfo(v));
+                    if (reader.EndOfStream) break;
                     line = reader.ReadLine();
                 }
                 reader.Close();

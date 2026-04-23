@@ -49,6 +49,7 @@ namespace MViewer
                 Para.ETR = new M3(TB_ETR.Text);
                 Para.ETT = new V3(TB_ETT.Text);
             }
+            ConfigurationManager.RefreshSection("appSettings");
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             cfa.AppSettings.Settings["CloudFormat"].Value = Para.Cloudformat;
             cfa.AppSettings.Settings["CloudScale"].Value = Para.CloudScale.ToString();

@@ -98,11 +98,11 @@
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
-                    Click="BN_OK_Click">
+                    Click="BN_OK_Click" IsDefault="True">
                 确 定
             </Button>
             <Button x:Name="BN_Cancel" Margin="18 0" MinWidth="120" HorizontalAlignment="Stretch"
-                    Click="BN_Cancel_Click">
+                    Click="BN_Cancel_Click" IsCancel="True">
                 取 消
             </Button>
         </StackPanel>
