@@ -575,7 +575,7 @@ namespace MViewer
                     break;
                 case 2:
                     V3 vec0 = points[1] - points[0];
-                    WriteLine(vec0.Mod.ToString());
+                    WriteLine(vec0.Mod().ToString());
                     break;
                 case 3:
                     V3 vec1 = points[1] - points[0];

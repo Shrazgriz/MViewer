@@ -280,7 +280,7 @@ namespace MViewer.Graphics
             for (int i = 0; i < lpts.Count; i++)
             {
                 V2 pt = lpts2[i];
-                if (pt.Mod < Cir.R) { lInpts.Add(lpts[i]); }
+                if (pt.Mod() < Cir.R) { lInpts.Add(lpts[i]); }
             }
             var lInpts2 = lInpts.Select(p => new V2(p.X, p.Y)).ToList();
             Dictionary<int, bool> IDPairs = new Dictionary<int, bool>();

@@ -4,6 +4,7 @@ using MVUnity;
 using MVUnity.PointCloud;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.Linq;
 
 namespace MViewer.Graphics
@@ -46,7 +47,7 @@ namespace MViewer.Graphics
         {
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
-            var ext = Path.Extension(filereader.FileName);
+            var ext = System.IO.Path.GetExtension(filereader.FileName);
             switch (ext)
             {
                 case ".xyz":
@@ -72,9 +73,9 @@ namespace MViewer.Graphics
         {
             bool structed = false;
             if (filereader.Format.Contains('r') & filereader.Format.Contains('c')) { structed = true; }
-            ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
-
+            //ColorLookupTable mColorTable = new ColorLookupTable();
+            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            ColorMapF ColorMap = ColorMapF.Rainbow;
             var points = filereader.ReadXYZ(filereader.VertSkip);
             List<V3> verts;
             if (Transform)
@@ -108,74 +109,46 @@ namespace MViewer.Graphics
                     break;
                 case ColorMode.X:
                     {
-                        if (UseROI)
-                        {
-                            mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
-                            mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
-                        }
-                        else
-                        {
-                            mColorTable.SetMinValue((float)verts0.Min(e => e.X));
-                            mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
-                        }
+                        ColorMap.TrimOnePctRange(verts0.Select(e => e.X));
                         foreach (var pt in verts0)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                     }
                     break;
                 case ColorMode.Y:
                     {
-                        if (UseROI)
-                        {
-                            mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
-                            mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
-                        }
-                        else
-                        {
-                            mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
-                            mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
-                        }
-
+                        ColorMap.TrimOnePctRange(verts0.Select(e => e.Y));
                         foreach (var pt in verts0)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                     }
                     break;
                 case ColorMode.Z:
                     {
-                        if (UseROI)
-                        {
-                            mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
-                            mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
-                        }
-                        else
-                        {
-                            mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
-                            mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
-                        }
+                        ColorMap.TrimOnePctRange(verts0.Select(e => e.Z));
                         foreach (var pt in verts0)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                     }
                     break;
@@ -230,55 +203,53 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            //ColorLookupTable mColorTable = new ColorLookupTable();
+            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            ColorMapF colorMap = ColorMapF.Rainbow;
             if (UseROI)
             {
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
@@ -315,45 +286,42 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
@@ -401,55 +369,53 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            //ColorLookupTable mColorTable = new ColorLookupTable();
+            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            ColorMapF colorMap = ColorMapF.Rainbow;
             if (UseROI)
             {
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Min(e => e.Z)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
@@ -486,45 +452,42 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
+                        colorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = colorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
@@ -571,55 +534,53 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            ColorLookupTable mColorTable = new ColorLookupTable();
-            mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            //ColorLookupTable mColorTable = new ColorLookupTable();
+            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
+            ColorMapF ColorMap = ColorMapF.Rainbow;
             if (UseROI)
             {
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.X, verts0.Min(e => e.X)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.X, verts0.Max(e => e.X)));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Y, verts0.Min(e => e.Y)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Y, verts0.Max(e => e.Y)));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)Math.Max(ROI.LowerLimit.Z, verts0.Max(e => e.Z)));
-                        mColorTable.SetMaxValue((float)Math.Min(ROI.UpperLimit.Z, verts0.Max(e => e.Z)));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             if (!ROI.Cover(pt)) continue;
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
@@ -656,45 +617,42 @@ namespace MViewer.Graphics
                 switch (ColorMode)
                 {
                     case ColorMode.X:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.X));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.X));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.X));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.X);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.X);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Y:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Y));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Y));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.Y));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Y);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Y);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Z:
-                        mColorTable.SetMinValue((float)verts0.Min(e => e.Z));
-                        mColorTable.SetMaxValue((float)verts0.Max(e => e.Z));
+                        ColorMap.TrimOnePctRange(verts.Select(e => e.Z));
                         foreach (V3 pt in verts)
                         {
                             mPositions.Append((float)pt.X);
                             mPositions.Append((float)pt.Y);
                             mPositions.Append((float)pt.Z);
-                            var color = mColorTable.GetColor((float)pt.Z);
-                            mColors.Append(color.x);
-                            mColors.Append(color.y);
-                            mColors.Append(color.z);
+                            var color = ColorMap.GetColor(pt.Z);
+                            mColors.Append(color.Item1);
+                            mColors.Append(color.Item2);
+                            mColors.Append(color.Item3);
                         }
                         break;
                     case ColorMode.Texture:
