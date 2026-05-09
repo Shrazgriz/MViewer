@@ -36,6 +36,7 @@ namespace MViewer
         public ICommand FitCirCommand { get; set; }
         public ICommand MeshCommand { get; set; }
         public ICommand SeleByCirCommand { get; set; }
+        public ICommand CurveFaceCmd { get; set; }
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong ModelID = 2;
@@ -63,6 +64,7 @@ namespace MViewer
             SeleByCirCommand = new Command(param => SelectByCir());
             FitCirCommand = new Command(param => FitCircle());
             MeshCommand = new Command(param => ReadMesh());
+            CurveFaceCmd = new Command(param => FitCurveSurface());
             showPoints = true;
 
             matLine = LineMaterial.Create("matLine");
@@ -710,7 +712,78 @@ namespace MViewer
             }
             //WriteLine(string.Format("法向" plane.Norm.ToString());
         }
+        private void FitCurveSurface()
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            if (openFile.ShowDialog() == true)
+            {
+                StreamReader sr = new StreamReader(openFile.FileName);
+                string line;
+                line = sr.ReadLine();
+                List<CubicSpline> cslist = new List<CubicSpline>();
+                List<V3> knots= new List<V3>();
+                while (line != null)
+                {
+                    if (line == "===")
+                    {
+                        if (knots.Count < 3) continue;
+                        CubicSpline longiLine = new CubicSpline(knots);
+                        cslist.Add(longiLine);
+                        knots.Clear();
+                    }
+                    else
+                    {
+                        V3 value = new V3(line);
+                        knots.Add(value);
+                    }
+                    line = sr.ReadLine();
+                }
+                CubicSplineSurface surf = new CubicSplineSurface(cslist);
+                List<ScanRow> scanRows = new List<ScanRow>();
+                int rowid = 0;
+                int vertid = 0;
+                int rslx = 200; int rsly = 200;
+                var longtiLines = surf.GetLongtitudes(rslx);
+                foreach (var longti in longtiLines)
+                {
+                    var pts = longti.Interpolate(rsly);
+                    ScanRow row = new ScanRow(rowid++);
+                    foreach (var vert in pts)
+                    {
+                        Vertex vt = new Vertex(vert, vertid++);
+                        row.AppendVertex(vt);
+                    }
+                    scanRows.Add(row);
+                }
+                CellGrid grid = CellGrid.CompileFromAligned(scanRows);
 
+                var positions = CellGrid.ToAnyCADPosition(grid);
+                MeshPhongMaterial material = MeshPhongMaterial.Create("cae-material");
+                material.SetFaceSide(EnumFaceSide.DoubleSide);
+                material.SetColor(ColorTable.Gold);
+                //material.SetVertexColors(true);
+                var vPositions = new Float32Buffer(0);
+                var vColors = new Float32Buffer(0);
+                var color = AnyCAD.Foundation.ColorTable.Auqamarin;
+                foreach (var v in positions)
+                {
+                    vPositions.Append((float)v.X);
+                    vPositions.Append((float)v.Y);
+                    vPositions.Append((float)v.Z);
+
+                    vColors.Append(color.x);
+                    vColors.Append(color.y);
+                    vColors.Append(color.z);
+                }
+                BufferGeometry geometry = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
+                geometry.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, vPositions);
+                geometry.AddAttribute(EnumAttributeSemantic.Color, EnumAttributeComponents.Three, vColors);
+                NormalCalculator.ComputeVertexNormals(geometry);
+                var node = new PrimitiveSceneNode(geometry, material);
+                node.SetPickable(false);
+                mRenderCtrl.ShowSceneNode(node);
+            }
+        }
         private void BN_MidPoint_Click(object sender, RoutedEventArgs e)
         {
             List<V3> points = new List<V3>();

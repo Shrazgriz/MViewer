@@ -43,6 +43,7 @@
                 </MenuItem>
                 <MenuItem Header="拟合...">
                     <MenuItem Header="圆形" x:Name="menuFitCircle" Command="{Binding Path= FitCirCommand}"/>
+                    <MenuItem Header="样条曲面" x:Name="menuFitCurveFace" Command="{Binding Path= CurveFaceCmd}"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
