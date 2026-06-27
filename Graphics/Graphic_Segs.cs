@@ -26,18 +26,25 @@ namespace MViewer.Graphics
         List<Arc2D> arc2s;
         GroupSceneNode plot2Model;
         GroupSceneNode plot3Model;
-        public Graphic_Segs(RenderControl control)
+        Vector3 lineColor;
+        byte lineWidth;
+        public Graphic_Segs(RenderControl control, CloudPara args)
         {
             render = control;
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
             arc2s = new List<Arc2D>();
             lineMat = LineMaterial.Create("MatSeg2");
-            lineMat.SetColor(ColorTable.Crimson);
-            lineMat.SetLineWidth(2);
+            float r = args.PointColor.R / 255f;
+            float g = args.PointColor.G / 255f;
+            float b = args.PointColor.B / 255f;
+            lineColor = new Vector3(r, g, b);
+            lineMat.SetColor(lineColor);
+            lineWidth = (byte)args.PointSize;
+            lineMat.SetLineWidth(lineWidth);
             polyMat = LineMaterial.Create("MatPoly2");
-            polyMat.SetColor(ColorTable.Orange);
-            polyMat.SetLineWidth(2);
+            polyMat.SetColor(lineColor);
+            polyMat.SetLineWidth(lineWidth);
         }
 
         public bool ReadSeg2(string Filename)
@@ -122,7 +129,7 @@ namespace MViewer.Graphics
             plot3Model = new GroupSceneNode();
             plot3Model.SetUserId(Seg3ID);
 
-            GPntList pts = new GPntList();
+            //GPntList pts = new GPntList();
             foreach (var seg in seg3s)
             {
                 GPnt s = new GPnt(seg.Start.X, seg.Start.Y, seg.Start.Z);

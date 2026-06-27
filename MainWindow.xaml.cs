@@ -170,8 +170,10 @@ namespace MViewer
         }
         private void ReadCAD()
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl|*.igs;*.iges;*.stp;*.step;*.brep;*.stl";
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                Filter = "*.igs;*.iges;*.stp;*.step;*.brep;*.stl|*.igs;*.iges;*.stp;*.step;*.brep;*.stl"
+            };
             if (dlg.ShowDialog() != true)
                 return;
             GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
@@ -183,7 +185,7 @@ namespace MViewer
                 mRenderCtrl.Scene.AddNode(modelRoot);
             }
             GC.Collect();
-            SceneNode node = null;
+            SceneNode node;
             switch (System.IO.Path.GetExtension(dlg.FileName))
             {
                 case ".stp":
@@ -392,8 +394,12 @@ namespace MViewer
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
             if (openfile.ShowDialog() == true)
             {
-                Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
-                seg.Run2(openfile.FileName);
+                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileNames));
+                if (readCloud.ShowDialog() == true)
+                {
+                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl,readCloud.Para);
+                    seg.Run2(openfile.FileName);
+                }
             }
         }
         private void ReadSeg3()
@@ -401,8 +407,12 @@ namespace MViewer
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
             if (openfile.ShowDialog() == true)
             {
-                Graphic_Segs seg = new Graphic_Segs(mRenderCtrl);
-                seg.Run3(openfile.FileName);
+                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileNames));
+                if (readCloud.ShowDialog() == true)
+                {
+                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl, readCloud.Para);
+                    seg.Run3(openfile.FileName);
+                }
             }
         }
         private void ReadMesh()

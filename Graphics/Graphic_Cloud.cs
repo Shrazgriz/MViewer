@@ -71,8 +71,8 @@ namespace MViewer.Graphics
         }
         private bool ReadXYZ()
         {
-            bool structed = false;
-            if (filereader.Format.Contains('r') & filereader.Format.Contains('c')) { structed = true; }
+            //bool structed = false;
+            //if (filereader.Format.Contains('r') & filereader.Format.Contains('c')) { structed = true; }
             //ColorLookupTable mColorTable = new ColorLookupTable();
             //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             ColorMapF ColorMap = ColorMapF.Rainbow;
