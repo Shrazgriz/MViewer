@@ -1,6 +1,7 @@
 ﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
 using MVUnity;
+using MVUnity.Geometry3D;
 using System.Collections.Generic;
 using System.IO;
 
@@ -24,6 +25,7 @@ namespace MViewer.Graphics
         List<Segment2D> seg2s;
         List<Segment> seg3s;
         List<Arc2D> arc2s;
+        List<Arc> arc3s;
         GroupSceneNode plot2Model;
         GroupSceneNode plot3Model;
         Vector3 lineColor;
@@ -34,6 +36,7 @@ namespace MViewer.Graphics
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
             arc2s = new List<Arc2D>();
+            arc3s = new List<Arc>();
             lineMat = LineMaterial.Create("MatSeg2");
             float r = args.PointColor.R / 255f;
             float g = args.PointColor.G / 255f;
@@ -77,11 +80,23 @@ namespace MViewer.Graphics
         {
             StreamReader reader = new StreamReader(Filename);
             seg3s.Clear();
+            arc3s.Clear();
             string line = reader.ReadLine();
             while (line != null && line.Length != 0)
             {
-                Segment seg3 = Segment.CreateSegment(line);
-                seg3s.Add(seg3);
+                string[] splited = line.Split(';');
+                switch (splited[0])
+                {
+                    case "Segment":
+                        Segment seg3 = Segment.CreateSegment(line);
+                        seg3s.Add(seg3);
+                        break;
+                    case "Arc":
+                        Arc arc3 = Arc.CreateArc(line); arc3s.Add(arc3);
+                        break;
+                    default:
+                        break;
+                }                
                 line = reader.ReadLine();
             }
             return true;
@@ -136,6 +151,16 @@ namespace MViewer.Graphics
                 GPnt e = new GPnt(seg.Destination.X, seg.Destination.Y, seg.Destination.Z);
                 TopoShape line = SketchBuilder.MakeLine(s, e);
                 BrepSceneNode lineNode = BrepSceneNode.Create(line, null, lineMat);
+                lineNode.SetPickable(false);
+                plot3Model.AddNode(lineNode);
+            }
+            foreach (var arc in arc3s)
+            {
+                GPnt s = new GPnt(arc.Start.X, arc.Start.Y, arc.Start.Z);
+                GPnt e = new GPnt(arc.Destination.X, arc.Destination.Y, arc.Destination.Z);
+                GPnt m = new GPnt(arc.Mid.X,arc.Mid.Y, arc.Mid.Z);
+                TopoShape arcline = SketchBuilder.MakeArcOfCircle(s, e, m);
+                BrepSceneNode lineNode = BrepSceneNode.Create(arcline, null, lineMat);
                 lineNode.SetPickable(false);
                 plot3Model.AddNode(lineNode);
             }
