@@ -19,6 +19,7 @@ namespace MViewer.Graphics
         const ulong MeshObjID = 10;
         const ulong LineObjID = 100;
 
+        bool append;
         RenderControl render;
         LineMaterial lineMat;
         LineMaterial polyMat;
@@ -32,6 +33,7 @@ namespace MViewer.Graphics
         byte lineWidth;
         public Graphic_Segs(RenderControl control, CloudPara args)
         {
+            append = args.Append;
             render = control;
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
@@ -76,29 +78,11 @@ namespace MViewer.Graphics
             }
             return true;
         }
-        public bool ReadSeg3(string Filename)
+        public bool ReadSeg3(string FileName)
         {
-            StreamReader reader = new StreamReader(Filename);
             seg3s.Clear();
             arc3s.Clear();
-            string line = reader.ReadLine();
-            while (line != null && line.Length != 0)
-            {
-                string[] splited = line.Split(';');
-                switch (splited[0])
-                {
-                    case "Segment":
-                        Segment seg3 = Segment.CreateSegment(line);
-                        seg3s.Add(seg3);
-                        break;
-                    case "Arc":
-                        Arc arc3 = Arc.CreateArc(line); arc3s.Add(arc3);
-                        break;
-                    default:
-                        break;
-                }                
-                line = reader.ReadLine();
-            }
+            AppendSeg3(FileName);
             return true;
         }
         public void DrawSeg2()
@@ -143,8 +127,6 @@ namespace MViewer.Graphics
             }
             plot3Model = new GroupSceneNode();
             plot3Model.SetUserId(Seg3ID);
-
-            //GPntList pts = new GPntList();
             foreach (var seg in seg3s)
             {
                 GPnt s = new GPnt(seg.Start.X, seg.Start.Y, seg.Start.Z);
@@ -166,6 +148,32 @@ namespace MViewer.Graphics
             }
             render.ShowSceneNode(plot3Model);
         }
+        /// <summary>
+        /// 添加线段
+        /// </summary>
+        /// <param name="FileName"></param>
+        public void AppendSeg3(string FileName)
+        {
+            StreamReader reader = new StreamReader(FileName);
+            string line = reader.ReadLine();
+            while (line != null && line.Length != 0)
+            {
+                string[] splited = line.Split(';');
+                switch (splited[0])
+                {
+                    case "Segment":
+                        Segment seg3 = Segment.CreateSegment(line);
+                        seg3s.Add(seg3);
+                        break;
+                    case "Arc":
+                        Arc arc3 = Arc.CreateArc(line); arc3s.Add(arc3);
+                        break;
+                    default:
+                        break;
+                }
+                line = reader.ReadLine();
+            }
+        }
         public void Run2(string filename)
         {
             if (ReadSeg2(filename))
@@ -175,10 +183,9 @@ namespace MViewer.Graphics
         }
         public void Run3(string filename)
         {
-            if (ReadSeg3(filename))
-            {
-                DrawSeg3();
-            }
+            if (append) AppendSeg3(filename);
+            else ReadSeg3(filename);
+            DrawSeg3();
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using AnyCAD.Foundation;
 using AnyCAD.WPF;
 using MVUnity;
-using MVUnity.PointCloud;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Linq;
 
 namespace MViewer.Graphics
@@ -71,10 +69,6 @@ namespace MViewer.Graphics
         }
         private bool ReadXYZ()
         {
-            //bool structed = false;
-            //if (filereader.Format.Contains('r') & filereader.Format.Contains('c')) { structed = true; }
-            //ColorLookupTable mColorTable = new ColorLookupTable();
-            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             ColorMapF ColorMap = ColorMapF.Rainbow;
             var points = filereader.ReadXYZ(filereader.VertSkip);
             List<V3> verts;
@@ -203,8 +197,6 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            //ColorLookupTable mColorTable = new ColorLookupTable();
-            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             ColorMapF colorMap = ColorMapF.Rainbow;
             if (UseROI)
             {
@@ -369,8 +361,6 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            //ColorLookupTable mColorTable = new ColorLookupTable();
-            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             ColorMapF colorMap = ColorMapF.Rainbow;
             if (UseROI)
             {
@@ -534,8 +524,6 @@ namespace MViewer.Graphics
             }
             mPositions.Reserve(3 * (uint)verts.Count);
             mColors.Reserve(3 * (uint)verts.Count);
-            //ColorLookupTable mColorTable = new ColorLookupTable();
-            //mColorTable.SetColorMap(ColorMapKeyword.Create(EnumSystemColorMap.Rainbow));
             ColorMapF ColorMap = ColorMapF.Rainbow;
             if (UseROI)
             {

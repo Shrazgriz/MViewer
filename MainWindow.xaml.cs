@@ -55,7 +55,7 @@ namespace MViewer
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
             CirCommand = new Command(param => ReadCir());
-            PCDCommand = new Command(param => ReadPCD());
+            PCDCommand = new Command(param => ReadCloud());
             ExpPtsCommand = new Command(param => ExpPts());
             CalibCommand = new Command(param => Calib());
             SideCDTool = new Command(param => SideCDtool());
@@ -83,7 +83,7 @@ namespace MViewer
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        private void ReadPCD()
+        private void ReadCloud()
         {
             OpenFileDialog dlg = new OpenFileDialog() { Filter = "点云文件|*.pcd;*.asc;*.xyz;*.ply;*.txt", Multiselect = true };
             if (dlg.ShowDialog() == true)
