@@ -70,8 +70,8 @@ namespace MViewer.Graphics
         private bool ReadXYZ()
         {
             ColorMapF ColorMap = ColorMapF.Rainbow;
-            var points = filereader.ReadXYZ(filereader.VertSkip);
-            List<V3> verts;
+            var points = filereader.ReadXYZf(filereader.VertSkip);
+            List<V3f> verts;
             if (Transform)
             {
                 EuclideanTransform etT = new EuclideanTransform(R, T);
@@ -79,7 +79,7 @@ namespace MViewer.Graphics
             }
             else
             { verts = points; }
-            List<V3> verts0;
+            List<V3f> verts0;
             if (UseROI)
             {
                 verts0 = verts.FindAll(e => ROI.Cover(e));
@@ -184,8 +184,8 @@ namespace MViewer.Graphics
         }
         private bool ReadASC()
         {
-            List<V3> verts0 = filereader.ReadASC(filereader.VertSkip);
-            List<V3> verts;
+            List<V3f> verts0 = filereader.ReadASCf(filereader.VertSkip);
+            List<V3f> verts;
             if (Transform)
             {
                 EuclideanTransform etT = new EuclideanTransform(R, T);
@@ -348,8 +348,8 @@ namespace MViewer.Graphics
 
         private bool ReadPCD()
         {
-            List<V3> verts0 = filereader.ReadPCD(filereader.VertSkip);
-            List<V3> verts;
+            List<V3f> verts0 = filereader.ReadPCDf(filereader.VertSkip);
+            List<V3f> verts;
             if (Transform)
             {
                 EuclideanTransform etT = new EuclideanTransform(R, T);
@@ -511,8 +511,8 @@ namespace MViewer.Graphics
         }
         private bool ReadPLY()
         {
-            List<V3> verts0 = filereader.ReadPLY(filereader.VertSkip);
-            List<V3> verts;
+            List<V3f> verts0 = filereader.ReadPLYf(filereader.VertSkip);
+            List<V3f> verts;
             if (Transform)
             {
                 EuclideanTransform etT = new EuclideanTransform(R, T);
