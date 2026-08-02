@@ -69,23 +69,17 @@ namespace MViewer
             bool xRevert = Para.UL.X < Para.LL.X;
             if (xRevert)
             {
-                double tmp = Para.UL.X;
-                Para.UL.X = Para.LL.X;
-                Para.LL.X = tmp;
+                (Para.LL.X, Para.UL.X) = (Para.UL.X, Para.LL.X);
             }
             bool yRevert = Para.UL.Y < Para.LL.Y;
             if (yRevert)
             {
-                double tmp = Para.UL.Y;
-                Para.UL.Y = Para.LL.Y;
-                Para.LL.Y = tmp;
+                (Para.LL.Y, Para.UL.Y) = (Para.UL.Y, Para.LL.Y);
             }
             bool zRevert = Para.UL.Z < Para.LL.Z;
             if (zRevert)
             {
-                double tmp = Para.UL.Z;
-                Para.UL.Z = Para.LL.Z;
-                Para.LL.Z = tmp;
+                (Para.LL.Z, Para.UL.Z) = (Para.UL.Z, Para.LL.Z);
             }
         }
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)

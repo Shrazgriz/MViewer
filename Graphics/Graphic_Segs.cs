@@ -31,21 +31,21 @@ namespace MViewer.Graphics
         GroupSceneNode plot3Model;
         Vector3 lineColor;
         byte lineWidth;
-        public Graphic_Segs(RenderControl control, CloudPara args)
+        public Graphic_Segs(RenderControl control, MeshPara args)
         {
-            append = args.Append;
+            append = true;
             render = control;
             seg2s = new List<Segment2D>();
             seg3s = new List<Segment>();
             arc2s = new List<Arc2D>();
             arc3s = new List<Arc>();
             lineMat = LineMaterial.Create("MatSeg2");
-            float r = args.PointColor.R / 255f;
-            float g = args.PointColor.G / 255f;
-            float b = args.PointColor.B / 255f;
+            float r = args.MeshColor.R / 255f;
+            float g = args.MeshColor.G / 255f;
+            float b = args.MeshColor.B / 255f;
             lineColor = new Vector3(r, g, b);
             lineMat.SetColor(lineColor);
-            lineWidth = (byte)args.PointSize;
+            lineWidth = (byte)args.Thickness;
             lineMat.SetLineWidth(lineWidth);
             polyMat = LineMaterial.Create("MatPoly2");
             polyMat.SetColor(lineColor);

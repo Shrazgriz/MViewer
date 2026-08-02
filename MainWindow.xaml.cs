@@ -394,10 +394,10 @@ namespace MViewer
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
             if (openfile.ShowDialog() == true)
             {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileNames));
-                if (readCloud.ShowDialog() == true)
+                WReadMesh readMesh = new WReadMesh(new MeshPara(openfile.FileName));
+                if (readMesh.ShowDialog() == true)
                 {
-                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl,readCloud.Para);
+                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl, readMesh.Para);
                     seg.Run2(openfile.FileName);
                 }
             }
@@ -407,10 +407,10 @@ namespace MViewer
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "线段数据|*.txt" };
             if (openfile.ShowDialog() == true)
             {
-                WReadCloud readCloud = new WReadCloud(new CloudPara(openfile.FileNames));
-                if (readCloud.ShowDialog() == true)
+                WReadMesh readMesh = new WReadMesh(new MeshPara(openfile.FileName));
+                if (readMesh.ShowDialog() == true)
                 {
-                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl, readCloud.Para);
+                    Graphic_Segs seg = new Graphic_Segs(mRenderCtrl, readMesh.Para);
                     seg.Run3(openfile.FileName);
                 }
             }

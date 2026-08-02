@@ -137,6 +137,42 @@ namespace MViewer
         }
     }
 
+    public class MeshPara : INotifyPropertyChanged
+    {
+        private Color pointColor;
+        public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// 点云着色方式
+        /// </summary>
+        public ColorMode ColorMode { get; set; }
+        public int Thickness { get ; set ; }
+        public SolidColorBrush MeshBrush
+        {
+            get
+            { return new SolidColorBrush(pointColor); }
+        }
+        public Color MeshColor
+        {
+            get
+            { return pointColor; }
+            set
+            {
+                pointColor = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MeshColor"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("MeshBrush"));
+            }
+        }
+        public string MeshFilePath { get ; set ; }
+        public MeshPara(string filename)
+        {
+            MeshFilePath = filename;
+            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
+            Thickness = int.Parse(ConfigurationManager.AppSettings["Thickness"]);
+            string burshString = ConfigurationManager.AppSettings["MeshBrush"];
+            MeshColor = (Color)ColorConverter.ConvertFromString(burshString);
+        }
+    }
+
     public class SelectionPara
     {
         /// <summary>
