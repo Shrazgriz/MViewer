@@ -43,7 +43,6 @@ namespace MViewer
         }
         private void SavePara()
         {
-            CheckUL();
             if (Para.Transform)
             {
                 Para.ETR = new M3(TB_ETR.Text);
@@ -63,24 +62,6 @@ namespace MViewer
             cfa.AppSettings.Settings["VertSkip"].Value = Para.VertSkip.ToString();
             cfa.AppSettings.Settings["Append"].Value = Para.Append.ToString();
             cfa.Save();
-        }
-        private void CheckUL()
-        {
-            bool xRevert = Para.UL.X < Para.LL.X;
-            if (xRevert)
-            {
-                (Para.LL.X, Para.UL.X) = (Para.UL.X, Para.LL.X);
-            }
-            bool yRevert = Para.UL.Y < Para.LL.Y;
-            if (yRevert)
-            {
-                (Para.LL.Y, Para.UL.Y) = (Para.UL.Y, Para.LL.Y);
-            }
-            bool zRevert = Para.UL.Z < Para.LL.Z;
-            if (zRevert)
-            {
-                (Para.LL.Z, Para.UL.Z) = (Para.UL.Z, Para.LL.Z);
-            }
         }
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

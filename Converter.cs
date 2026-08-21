@@ -82,7 +82,7 @@ namespace MViewer
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            V3 v = (value as V3).Normalized();
+            V3 v = ((V3)(value)).Normalized();
             byte r = (byte)(int)(Math.Abs(v.X) * 255f);
             byte g = (byte)(int)(Math.Abs(v.Y) * 255f);
             byte b = (byte)(int)(Math.Abs(v.Z) * 255f);

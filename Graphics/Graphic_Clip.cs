@@ -448,27 +448,24 @@ namespace MViewer.Graphics
             #endregion
             #region 基于longtitudes插值, 输入longtitudes, rslx, rsly
             int rslx = 200; int rsly = 200;
-            List<ScanRow> scanRows = new List<ScanRow>();
-            int rowid = 0;
-            int vertid = 0;
+            List<List<V3>> scanRows = new List<List<V3>>();
             surf = new CubicSplineSurface(longitudes);
             var longtiLines = surf.GetLongtitudes(rslx);
             foreach (var longti in longtiLines)
             {
                 var pts = longti.Interpolate(rsly);
-                ScanRow row = new ScanRow(rowid++);
+                List<V3> row = new List<V3>();
                 foreach (var vert in pts)
                 {
-                    Vertex vt = new Vertex(vert, vertid++);
-                    row.AppendVertex(vt);
+                    row.Add(vert);
                 }
                 scanRows.Add(row);
             }
-            CellGrid grid = CellGrid.CompileFromAligned(scanRows);
+            TriangleMesh mesh = TriangleMesh.Compile(scanRows);
             #endregion
             #region cellgrid to anycad scene node
 
-            var positions = CellGrid.ToAnyCADPosition(grid);
+            var positions = mesh.ToTriangles();
             MeshStandardMaterial material = MeshStandardMaterial.Create("cae-material");
             material.SetFaceSide(EnumFaceSide.DoubleSide);
             material.SetVertexColors(true);

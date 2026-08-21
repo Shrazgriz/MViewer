@@ -749,7 +749,7 @@ namespace MViewer
                     line = sr.ReadLine();
                 }
                 CubicSplineSurface surf = new CubicSplineSurface(cslist);
-                List<ScanRow> scanRows = new List<ScanRow>();
+                List<List<V3>> scanRows = new List<List<V3>>();
                 int rowid = 0;
                 int vertid = 0;
                 int rslx = 200; int rsly = 200;
@@ -757,17 +757,16 @@ namespace MViewer
                 foreach (var longti in longtiLines)
                 {
                     var pts = longti.Interpolate(rsly);
-                    ScanRow row = new ScanRow(rowid++);
+                    List<V3> row = new List<V3>();
                     foreach (var vert in pts)
                     {
-                        Vertex vt = new Vertex(vert, vertid++);
-                        row.AppendVertex(vt);
+                        row.Add(vert);
                     }
                     scanRows.Add(row);
                 }
-                CellGrid grid = CellGrid.CompileFromAligned(scanRows);
+                TriangleMesh mesh = TriangleMesh.Compile(scanRows);
 
-                var positions = CellGrid.ToAnyCADPosition(grid);
+                var positions = mesh.ToTriangles();
                 MeshPhongMaterial material = MeshPhongMaterial.Create("cae-material");
                 material.SetFaceSide(EnumFaceSide.DoubleSide);
                 material.SetColor(ColorTable.Gold);
