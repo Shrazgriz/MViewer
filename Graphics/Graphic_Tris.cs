@@ -199,26 +199,20 @@ namespace MViewer.Graphics
             BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.LINES);
             var pts = mesh.GetPoints();
             var indices = mesh.GetTriangleIndices().Select(e=>(uint)e).ToArray();
-            mPositions = new Float32Buffer((uint)pts.Length);
-            for (int i = 0; i < pts.Length; i++)
-            {
-                mPositions.Append3(new Vector3((float)pts[i].X, (float)pts[i].Y, (float)pts[i].Z));
-            }
-            Uint32Buffer edges = new Uint32Buffer((uint)(2 * mesh.TrianglesLen));
+            mPositions = new Float32Buffer(2 * 3 * (uint)pts.Length);
             for (uint i = 0; i < mesh.TrianglesLen/3; i++)
             {
                 uint i0 = indices[i * 3];
                 uint i1 = indices[i * 3 + 1];
                 uint i2 = indices[i * 3 + 2];
-                edges.Set(i * 2 * 3, i0);
-                edges.Set(i * 2 * 3 + 1, i1);
-                edges.Set(i * 2 * 3 + 2, i1);
-                edges.Set(i * 2 * 3 + 3, i2);
-                edges.Set(i * 2 * 3 + 4, i2);
-                edges.Set(i * 2 * 3 + 5, i0);
+                mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
+                mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
+                mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
+                mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
+                mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
+                mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
             }
-            buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
-            buff.SetIndex(edges);
+            buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);            
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
             prevNode.AddNode(wireNode);
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
