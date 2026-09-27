@@ -2,8 +2,10 @@
 using AnyCAD.WPF;
 using MVUnity;
 using MVUnity.Geometry3D;
+using MVUnity.PointCloud;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 
 namespace MViewer.Graphics
 {
@@ -16,7 +18,7 @@ namespace MViewer.Graphics
         public double MaxValue;
         public double MinValue;
         MaterialInstance mat;
-        const ulong MeshObjID = 10;
+        const ulong MeshObjID = 3;
 
         public Graphic_Tris(double min, double max)
         {
@@ -24,7 +26,7 @@ namespace MViewer.Graphics
             MinValue = min;
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
-            mat = MeshPhongMaterial.Create("matTris");
+            mat = BasicMaterial.Create("matTris");
             mat.SetVertexColors(false);
             mat.SetColor(ColorTable.RoyalBlue);
             mat.SetFaceSide(EnumFaceSide.DoubleSide);
@@ -183,6 +185,43 @@ namespace MViewer.Graphics
                 }
             }
             return facets;
+        }
+        public void DisplayMesh(RenderControl renderControl, TriangleMesh mesh)
+        {
+            var prevNode = GroupSceneNode.Cast(renderControl.Scene.FindNodeByUserId(MeshObjID));
+            if (prevNode == null)
+            {
+                prevNode = new GroupSceneNode();
+                prevNode.SetUserId(MeshObjID);
+                renderControl.Scene.AddNode(prevNode);
+            }
+            prevNode.Clear();
+            BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.LINES);
+            var pts = mesh.GetPoints();
+            var indices = mesh.GetTriangleIndices().Select(e=>(uint)e).ToArray();
+            mPositions = new Float32Buffer((uint)pts.Length);
+            for (int i = 0; i < pts.Length; i++)
+            {
+                mPositions.Append3(new Vector3((float)pts[i].X, (float)pts[i].Y, (float)pts[i].Z));
+            }
+            Uint32Buffer edges = new Uint32Buffer((uint)(2 * mesh.TrianglesLen));
+            for (uint i = 0; i < mesh.TrianglesLen/3; i++)
+            {
+                uint i0 = indices[i * 3];
+                uint i1 = indices[i * 3 + 1];
+                uint i2 = indices[i * 3 + 2];
+                edges.Set(i * 2 * 3, i0);
+                edges.Set(i * 2 * 3 + 1, i1);
+                edges.Set(i * 2 * 3 + 2, i1);
+                edges.Set(i * 2 * 3 + 3, i2);
+                edges.Set(i * 2 * 3 + 4, i2);
+                edges.Set(i * 2 * 3 + 5, i0);
+            }
+            buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
+            buff.SetIndex(edges);
+            PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
+            prevNode.AddNode(wireNode);
+            renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }
     }
 }

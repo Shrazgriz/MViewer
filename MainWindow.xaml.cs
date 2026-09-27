@@ -40,6 +40,7 @@ namespace MViewer
         GroupSceneNode cloudroot;
         const ulong CloudID = 1;
         const ulong ModelID = 2;
+        const ulong MeshID = 3;
         const ulong ClipID = 5;
         const double rayJit = 0.1f;
         bool showPoints;
@@ -417,13 +418,24 @@ namespace MViewer
         }
         private void ReadMesh()
         {
-            OpenFileDialog openfile = new OpenFileDialog() { Filter = "网格数据|*.txt" };
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "*.txt;*.ply|*.txt;*.ply" };
             if (openfile.ShowDialog() == true)
             {
-                CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
-                var verts = reader.ReadXYZ();
-                Graphic_Tris tris = new Graphic_Tris(0, 100);
-                tris.Run(mRenderCtrl, verts);
+                switch (System.IO.Path.GetExtension(openfile.FileName).ToLowerInvariant())
+                {
+                    case ".ply":
+                        MeshReader mr = new MeshReader(openfile.FileName);
+                        TriangleMesh mesh = mr.ReadPly();
+                        Graphic_Tris gtmesh = new Graphic_Tris(0,100);
+                        gtmesh.DisplayMesh(mRenderCtrl, mesh);
+                        break;
+                    case ".txt":
+                        CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
+                        var verts = reader.ReadXYZ();
+                        Graphic_Tris tris = new Graphic_Tris(0, 100);
+                        tris.Run(mRenderCtrl, verts);
+                        break;
+                }
             }
         }
         private void ReadCir()
