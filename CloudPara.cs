@@ -163,6 +163,7 @@ namespace MViewer
             }
         }
         public string MeshFilePath { get ; set ; }
+        public bool Append {  get; set; }
         public MeshPara(string filename)
         {
             MeshFilePath = filename;
@@ -170,6 +171,7 @@ namespace MViewer
             Thickness = int.Parse(ConfigurationManager.AppSettings["Thickness"]);
             string burshString = ConfigurationManager.AppSettings["MeshBrush"];
             MeshColor = (Color)ColorConverter.ConvertFromString(burshString);
+            Append = bool.Parse(ConfigurationManager.AppSettings["AppendMesh"]);
         }
     }
 

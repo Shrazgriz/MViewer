@@ -421,20 +421,23 @@ namespace MViewer
             OpenFileDialog openfile = new OpenFileDialog() { Filter = "*.txt;*.ply|*.txt;*.ply" };
             if (openfile.ShowDialog() == true)
             {
-                switch (System.IO.Path.GetExtension(openfile.FileName).ToLowerInvariant())
+                WReadMesh readMesh=new WReadMesh(new MeshPara(openfile.FileName));
+                if (readMesh.ShowDialog() == true)
                 {
-                    case ".ply":
-                        MeshReader mr = new MeshReader(openfile.FileName);
-                        TriangleMesh mesh = mr.ReadPly();
-                        Graphic_Tris gtmesh = new Graphic_Tris(0,100);
-                        gtmesh.DisplayMesh(mRenderCtrl, mesh);
-                        break;
-                    case ".txt":
-                        CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
-                        var verts = reader.ReadXYZ();
-                        Graphic_Tris tris = new Graphic_Tris(0, 100);
-                        tris.Run(mRenderCtrl, verts);
-                        break;
+                    Graphic_Tris gtmesh = new Graphic_Tris(readMesh.Para);
+                    switch (System.IO.Path.GetExtension(openfile.FileName).ToLowerInvariant())
+                    {
+                        case ".ply":
+                            MeshReader mr = new MeshReader(openfile.FileName);
+                            TriangleMesh mesh = mr.ReadPly();                            
+                            gtmesh.DisplayMesh(mRenderCtrl, mesh);
+                            break;
+                        case ".txt":
+                            CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
+                            var verts = reader.ReadXYZ();
+                            gtmesh.Run(mRenderCtrl, verts);
+                            break;
+                    }
                 }
             }
         }

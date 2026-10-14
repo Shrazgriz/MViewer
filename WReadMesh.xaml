@@ -38,6 +38,7 @@
             <Button Margin="2" Click="BN_Color_Click" Height="30" Background="{Binding Path=MeshBrush}">
                 调色板
             </Button>
+            <CheckBox Margin="2" IsChecked="{Binding Path= Append, Mode=TwoWay}">保留已有数据</CheckBox>
 
         </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">

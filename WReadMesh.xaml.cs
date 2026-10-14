@@ -47,7 +47,8 @@ namespace MViewer
 
             cfa.AppSettings.Settings["ColorMode"].Value = Para.ColorMode.ToString();            
             cfa.AppSettings.Settings["Thickness"].Value = Para.Thickness.ToString();
-            cfa.AppSettings.Settings["MeshBrush"].Value = Para.MeshBrush.ToString();            
+            cfa.AppSettings.Settings["MeshBrush"].Value = Para.MeshBrush.ToString();
+            cfa.AppSettings.Settings["AppendMesh"].Value = Para.Append.ToString();
             cfa.Save();
         }
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)

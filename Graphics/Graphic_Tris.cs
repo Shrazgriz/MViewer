@@ -13,12 +13,15 @@ namespace MViewer.Graphics
     {
         static Vector3[] colortable = new Vector3[] { ColorTable.OrangeRed,ColorTable.LimeGreen,ColorTable.RoyalBlue,
         ColorTable.Gold,ColorTable.BlueViolet,ColorTable.Aqua, ColorTable.Sienna,ColorTable.Turquoise};
+        public Color PColor;
         Float32Buffer mPositions;
         Float32Buffer mColors;
         public double MaxValue;
         public double MinValue;
         MaterialInstance mat;
         const ulong MeshObjID = 3;
+        public ColorMode ColorMode;
+        bool Append = false;
 
         public Graphic_Tris(double min, double max)
         {
@@ -31,6 +34,23 @@ namespace MViewer.Graphics
             mat.SetColor(ColorTable.RoyalBlue);
             mat.SetFaceSide(EnumFaceSide.DoubleSide);
             mat.SetLineWidth(2);
+        }
+        public Graphic_Tris(MeshPara para)
+        {
+            mPositions = new Float32Buffer(0);
+            mColors = new Float32Buffer(0);
+            PColor = para.MeshColor;
+            mat = BasicMaterial.Create("matTris");
+            if (para.ColorMode == ColorMode.Mono)
+                mat.SetVertexColors(false);
+            else mat.SetVertexColors(true);
+            float r = PColor.R / 255f;
+            float g = PColor.G / 255f;
+            float b = PColor.B / 255f;
+            mat.SetColor(new Vector3(r, g, b));
+            mat.SetFaceSide(EnumFaceSide.DoubleSide);
+            mat.SetLineWidth((byte)para.Thickness);
+            Append = para.Append;
         }
         public void Run(RenderControl renderControl, List<V3> tris)
         {
@@ -195,7 +215,7 @@ namespace MViewer.Graphics
                 prevNode.SetUserId(MeshObjID);
                 renderControl.Scene.AddNode(prevNode);
             }
-            prevNode.Clear();
+            if(!Append) prevNode.Clear();
             BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.LINES);
             var pts = mesh.GetPoints();
             var indices = mesh.GetTriangleIndices().Select(e=>(uint)e).ToArray();
