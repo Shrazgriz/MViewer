@@ -16,7 +16,8 @@ namespace MViewer
             InitializeComponent();
             Para = value;
             DataContext = Para;
-            LB_ColorMode.SelectedIndex = (int)(value.ColorMode);
+            LB_ColorMode.SelectedIndex = (int)(value.VertDisplay);
+            LB_ViewMode.SelectedIndex = (int)(value.ModelDisplay);
         }
         private void BN_Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -45,17 +46,26 @@ namespace MViewer
             ConfigurationManager.RefreshSection("appSettings");
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-            cfa.AppSettings.Settings["ColorMode"].Value = Para.ColorMode.ToString();            
+            cfa.AppSettings.Settings["VertDisplay"].Value = Para.VertDisplay.ToString();            
             cfa.AppSettings.Settings["Thickness"].Value = Para.Thickness.ToString();
             cfa.AppSettings.Settings["MeshBrush"].Value = Para.MeshBrush.ToString();
             cfa.AppSettings.Settings["AppendMesh"].Value = Para.Append.ToString();
+            cfa.AppSettings.Settings["ModelDisplay"].Value= Para.ModelDisplay.ToString();
             cfa.Save();
         }
         private void LB_ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Para != null)
             {
-                Para.ColorMode = (ColorMode)LB_ColorMode.SelectedIndex;
+                Para.VertDisplay = (ColorMode)LB_ColorMode.SelectedIndex;
+            }
+        }
+
+        private void LB_ViewMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Para != null)
+            {
+                Para.ModelDisplay = (ViewMode)LB_ViewMode.SelectedIndex;
             }
         }
     }

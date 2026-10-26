@@ -33,6 +33,17 @@ namespace MViewer
         /// </summary>
         Texture
     }
+    public enum ViewMode
+    {
+        /// <summary>
+        /// 显示线框
+        /// </summary>
+        Wireframe,
+        /// <summary>
+        /// 显示面片
+        /// </summary>
+        Shaded
+    }
     public class CloudPara : INotifyPropertyChanged
     {
         private V3 cloudscale;
@@ -141,10 +152,15 @@ namespace MViewer
     {
         private Color pointColor;
         public event PropertyChangedEventHandler PropertyChanged;
+        
         /// <summary>
-        /// 点云着色方式
+        /// 顶点着色方式
         /// </summary>
-        public ColorMode ColorMode { get; set; }
+        public ColorMode VertDisplay { get; set; }
+        /// <summary>
+        /// 模型着色方式
+        /// </summary>
+        public ViewMode ModelDisplay { get; set; }
         public int Thickness { get ; set ; }
         public SolidColorBrush MeshBrush
         {
@@ -167,7 +183,8 @@ namespace MViewer
         public MeshPara(string filename)
         {
             MeshFilePath = filename;
-            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
+            VertDisplay = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["VertDisplay"]);
+            ModelDisplay = (ViewMode)System.Enum.Parse(typeof(ViewMode), ConfigurationManager.AppSettings["ModelDisplay"]);
             Thickness = int.Parse(ConfigurationManager.AppSettings["Thickness"]);
             string burshString = ConfigurationManager.AppSettings["MeshBrush"];
             MeshColor = (Color)ColorConverter.ConvertFromString(burshString);

@@ -28,6 +28,10 @@
                 <TextBox Grid.Column="1" x:Name="TB_Thickness" Margin="2" HorizontalAlignment="Stretch"
              Text="{Binding Path=Thickness, Mode=TwoWay}"/>            
             </Grid>
+            <ComboBox Margin="2" x:Name="LB_ViewMode" SelectedIndex="0" SelectionChanged="LB_ViewMode_SelectionChanged">
+                <ComboBoxItem>线框</ComboBoxItem>
+                <ComboBoxItem>着色</ComboBoxItem>
+            </ComboBox>
             <ComboBox Margin="2" x:Name="LB_ColorMode" SelectedIndex="0" SelectionChanged="LB_ColorMode_SelectionChanged">
                 <ComboBoxItem>单色</ComboBoxItem>
                 <ComboBoxItem>X坐标</ComboBoxItem>

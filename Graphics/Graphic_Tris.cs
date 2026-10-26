@@ -20,7 +20,8 @@ namespace MViewer.Graphics
         public double MinValue;
         MaterialInstance mat;
         const ulong MeshObjID = 3;
-        public ColorMode ColorMode;
+        public ColorMode VertDisplay;
+        public ViewMode ModelDisplay;
         bool Append = false;
 
         public Graphic_Tris(double min, double max)
@@ -29,7 +30,7 @@ namespace MViewer.Graphics
             MinValue = min;
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
-            mat = BasicMaterial.Create("matTris");
+            mat = MeshPhongMaterial.Create("matTris");
             mat.SetVertexColors(false);
             mat.SetColor(ColorTable.RoyalBlue);
             mat.SetFaceSide(EnumFaceSide.DoubleSide);
@@ -40,8 +41,8 @@ namespace MViewer.Graphics
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
             PColor = para.MeshColor;
-            mat = BasicMaterial.Create("matTris");
-            if (para.ColorMode == ColorMode.Mono)
+            mat = MeshPhongMaterial.Create("matTris");
+            if (para.ModelDisplay == ViewMode.Shaded)
                 mat.SetVertexColors(false);
             else mat.SetVertexColors(true);
             float r = PColor.R / 255f;
@@ -51,6 +52,8 @@ namespace MViewer.Graphics
             mat.SetFaceSide(EnumFaceSide.DoubleSide);
             mat.SetLineWidth((byte)para.Thickness);
             Append = para.Append;
+            VertDisplay = para.VertDisplay;
+            ModelDisplay = para.ModelDisplay;
         }
         public void Run(RenderControl renderControl, List<V3> tris)
         {
@@ -216,23 +219,50 @@ namespace MViewer.Graphics
                 renderControl.Scene.AddNode(prevNode);
             }
             if(!Append) prevNode.Clear();
-            BufferGeometry buff = new BufferGeometry(EnumPrimitiveType.LINES);
+            BufferGeometry buff;
+            switch (ModelDisplay)
+            {
+                case ViewMode.Wireframe:
+                    buff = new BufferGeometry(EnumPrimitiveType.LINES);
+                    mat.SetVertexColors(true);
+                    break;
+                default:
+                case ViewMode.Shaded:
+                    buff = new BufferGeometry(EnumPrimitiveType.TRIANGLES);
+                    mat.SetVertexColors(false);
+                    break;
+            }
+            
             var pts = mesh.GetPoints();
             var indices = mesh.GetTriangleIndices().Select(e=>(uint)e).ToArray();
-            mPositions = new Float32Buffer(2 * 3 * (uint)pts.Length);
-            for (uint i = 0; i < mesh.TrianglesLen/3; i++)
+            mPositions = new Float32Buffer(0);
+            Uint32Buffer ib = new Uint32Buffer((uint)indices.Length);
+            for (uint i = 0; i < pts.Length; i++)
             {
-                uint i0 = indices[i * 3];
-                uint i1 = indices[i * 3 + 1];
-                uint i2 = indices[i * 3 + 2];
-                mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
-                mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
-                mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
-                mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
-                mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
-                mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
+                mPositions.Append((float)pts[i].X);
+                mPositions.Append((float)pts[i].Y);
+                mPositions.Append((float)pts[i].Z);
             }
-            buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);            
+            for(uint i = 0; i < indices.Length; i++)
+            {
+                ib.Append(indices[i]);
+            }
+            //mPositions = new Float32Buffer(2 * 3 * (uint)pts.Length);
+            //for (uint i = 0; i < mesh.GetTriCount(); i++)
+            //{
+            //    uint i0 = indices[i * 3];
+            //    uint i1 = indices[i * 3 + 1];
+            //    uint i2 = indices[i * 3 + 2];
+            //    mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
+            //    mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
+            //    mPositions.Append3(new Vector3((float)pts[i1].X, (float)pts[i1].Y, (float)pts[i1].Z));
+            //    mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
+            //    mPositions.Append3(new Vector3((float)pts[i2].X, (float)pts[i2].Y, (float)pts[i2].Z));
+            //    mPositions.Append3(new Vector3((float)pts[i0].X, (float)pts[i0].Y, (float)pts[i0].Z));
+            //}
+            buff = GeometryBuilder.CreateGeometry(EnumPrimitiveType.TRIANGLES, mPositions, null, null, ib);
+            //buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
+            NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
             prevNode.AddNode(wireNode);
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
