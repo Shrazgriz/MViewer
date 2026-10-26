@@ -429,7 +429,7 @@ namespace MViewer
                     {
                         case ".ply":
                             MeshReader mr = new MeshReader(openfile.FileName);
-                            TriangleMesh mesh = mr.ReadPly();                            
+                            TriangleMesh mesh = mr.ReadPly();
                             gtmesh.DisplayMesh(mRenderCtrl, mesh);
                             break;
                         case ".txt":
