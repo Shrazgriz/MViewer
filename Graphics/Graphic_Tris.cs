@@ -173,8 +173,8 @@ namespace MViewer.Graphics
                 ib.Append(indices[i]);
             }
             BufferGeometry buff;
-            buff = GeometryBuilder.CreateGeometry(EnumPrimitiveType.LINES, mPositions, null, null, ib);
-            mat.SetVertexColors(true);
+            buff = GeometryBuilder.CreateGeometry(EnumPrimitiveType.TRIANGLES, mPositions, null, null, ib);
+            mat.SetVertexColors(false);
             
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
@@ -212,7 +212,7 @@ namespace MViewer.Graphics
             }
             BufferGeometry buff;
             buff = GeometryBuilder.CreateGeometry(EnumPrimitiveType.LINES, mPositions, null, null, ib);
-            mat.SetVertexColors(true);
+            mat.SetVertexColors(false);
 
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
