@@ -113,7 +113,7 @@ namespace MViewer
             CloudFilePath = filename;
             Cloudformat = ConfigurationManager.AppSettings["CloudFormat"];
             CloudScale = new V3(ConfigurationManager.AppSettings["CloudScale"], ',');
-            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["ColorMode"]);
+            ColorMode = (ColorMode)System.Enum.Parse(typeof(ColorMode), ConfigurationManager.AppSettings["VertDisplay"]);
             LL = new V3(ConfigurationManager.AppSettings["LL"], ',');
             PointSize = int.Parse(ConfigurationManager.AppSettings["PointSize"]);
             string burshString = ConfigurationManager.AppSettings["PointBrush"];
