@@ -21,7 +21,7 @@ namespace MViewer.Graphics
         public int IntervalZ;
         public ColorMode ColorMode;
         public bool UseROI;
-        public ABB ROI;
+        public MVUnity.AABox ROI;
         public bool Transform = false;
         public V3 T = V3.Zero;
         public M3 R = M3.Identity;

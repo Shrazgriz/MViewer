@@ -28,7 +28,8 @@ namespace MViewer
         public ICommand Seg3Command { get; set; }
         public ICommand CirCommand { get; set; }
         public ICommand ExpPtsCommand { get; set; }
-        public ICommand M2CCommand { get; set; }
+        public ICommand RayCastCommand { get; set; }
+        public ICommand MeshPtsCommand { get; set; }
         public ICommand CalibCommand { get; set; }
         public ICommand SideCDTool { get; set; }
         public ICommand SeleByNBCommand { get; set; }
@@ -52,7 +53,8 @@ namespace MViewer
             InitializeComponent();
             DataContext = this;
             CADCommand = new Command(param => ReadCAD());
-            M2CCommand = new Command(param => ConvertModel());
+            RayCastCommand = new Command(param => rayCast());
+            MeshPtsCommand = new Command(param => modelMesh());
             Seg2Command = new Command(param => ReadSeg2());
             Seg3Command = new Command(param => ReadSeg3());
             CirCommand = new Command(param => ReadCir());
@@ -124,7 +126,7 @@ namespace MViewer
                         };
                         if (readCloud.Para.UseROI)
                         {
-                            ABB roi = ABB.Create(readCloud.Para.UL, readCloud.Para.LL);
+                            MVUnity.AABox roi = MVUnity.AABox.Create(readCloud.Para.UL, readCloud.Para.LL);
                             cloud.ROI = roi;
                             cloud.UseROI = true;
                         }
@@ -198,6 +200,10 @@ namespace MViewer
                 case ".STL":
                     {
                         var shape = readTopo(dlg.FileName);
+                        GPntList points = TopoExplor.GetVertexPoints(shape);
+                        List<V3> verts = points.Select(e => new V3(e.x, e.y, e.z)).ToList();
+                        MVUnity.AABox aab = MVUnity.AABox.Create(verts);
+                        WriteLine($"{aab.Min.ToString()}\n{aab.Max.ToString()}");
                         node = BrepSceneNode.Create(shape, matFace, matLine);
                     }
                     break;
@@ -261,7 +267,7 @@ namespace MViewer
             else { return hitPts; }
             #endregion
         }
-        private void ConvertModel()
+        private void rayCast()
         {
             bool findModel = false;
             TopoShape mshape = null;
@@ -388,6 +394,75 @@ namespace MViewer
                 #endregion
                 TimeSpan ts = DateTime.Now - s;
                 WriteLine($"points {hitpts.Count}, time cost:{ts.TotalMilliseconds}");
+            }
+        }
+        private void modelMesh()
+        {
+            bool findModel = false;
+            TopoShape mshape = null;
+            GroupSceneNode modelRoot = GroupSceneNode.Cast(mRenderCtrl.Scene.FindNodeByUserId(ModelID));
+            if (modelRoot != null)
+            {
+                var iter = modelRoot.CreateIterator();
+                if (iter.More())
+                {
+                    var child = BrepSceneNode.Cast(iter.Current());
+                    if (child != null)
+                    {
+                        findModel = true;
+                        mshape = child.GetTopoShape();
+                    }
+                }
+            }
+            if (findModel)
+            {
+                TopoShapeList faces = mshape.GetChildren(EnumTopoShapeType.Topo_FACE);
+                int faceNum = faces.Count;
+                List<int> faceIdList = new List<int>();
+                for (int i = 0; i < faceNum; i++)
+                {
+                    faceIdList.Add(i);
+                }
+                WModelMesh wMesh = new WModelMesh(faceIdList);
+                if (wMesh.ShowDialog() != true) return;
+
+                #region 模型分解
+                int faceId = wMesh.FaceId;
+                var currentFace = faces[faceId];
+                var gshape = GRepShape.Create(currentFace, matFace, matLine, 0, false);
+                var success = gshape.Build();
+                GRepIterator iter = new GRepIterator();
+                List<V3> allverts = new List<V3>();
+                for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
+                {
+                    var postions = iter.GetPositions();
+                    var idx = iter.GetIndex();
+                    uint pnum = postions.GetItemCount();
+                    uint idnum = idx.GetItemCount();
+                    List<V3> verts = new List<V3>();
+                    for (uint i = 0; i < pnum / 3; i++)
+                    {
+                        var vert = postions.GetVec3(i * 3);
+                        verts.Add(ConvertVector3.ToV3(vert));
+                    }
+                    //for (uint i = 0; i < idnum / 3; i++)
+                    //{
+                    //    uint id0 = idx.GetValue(i * 3);
+                    //    uint id1 = idx.GetValue(i * 3 + 1);
+                    //    uint id2 = idx.GetValue(i * 3 + 2);
+                    //    V3 v0 = verts[(int)id0];
+                    //    V3 v1 = verts[(int)id1];
+                    //    V3 v2 = verts[(int)id2];
+                    //    if (Math.Abs(((v0 - v1).Cross(v1 - v2)).Normalized().Dot(rayDir)) < 0.01f) continue;
+                    //    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
+                    //    facets0.Add(tri);
+                    //}
+                    allverts.AddRange(verts);
+                }
+
+                Graphic_Cloud cloud = new Graphic_Cloud();
+                cloud.ShowCloud(allverts, mRenderCtrl);
+                #endregion
             }
         }
         private void ReadSeg2()

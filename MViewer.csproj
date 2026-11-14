@@ -102,6 +102,9 @@
     <Compile Include="WMessage.xaml.cs">
       <DependentUpon>WMessage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WModelMesh.xaml.cs">
+      <DependentUpon>WModelMesh.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WRayHits.xaml.cs">
       <DependentUpon>WRayHits.xaml</DependentUpon>
     </Compile>
@@ -140,6 +143,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WModelMesh.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
