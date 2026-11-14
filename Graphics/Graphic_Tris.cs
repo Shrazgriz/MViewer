@@ -20,11 +20,12 @@ namespace MViewer.Graphics
         public double MinValue;
         MaterialInstance mat;
         const ulong MeshObjID = 3;
+        GroupSceneNode meshRoot;
         public ColorMode VertDisplay;
         public ViewMode ModelDisplay;
         bool Append = false;
 
-        public Graphic_Tris(MeshPara para)
+        public Graphic_Tris(MeshPara para, GroupSceneNode meshRoot)
         {
             mPositions = new Float32Buffer(0);
             mColors = new Float32Buffer(0);
@@ -42,8 +43,9 @@ namespace MViewer.Graphics
             Append = para.Append;
             VertDisplay = para.VertDisplay;
             ModelDisplay = para.ModelDisplay;
+            this.meshRoot = meshRoot;
         }
-        public void Run(RenderControl renderControl, List<V3> tris)
+        public void ShowTriangleSoup(List<V3> tris)
         {
             Vector3 color = ColorTable.RoyalBlue;
             for (int i = 0; i < tris.Count; i++)
@@ -59,8 +61,7 @@ namespace MViewer.Graphics
             buff.AddAttribute(EnumAttributeSemantic.Position, EnumAttributeComponents.Three, mPositions);
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode geoNode = new PrimitiveSceneNode(buff, mat);
-            renderControl.ShowSceneNode(geoNode);
-            renderControl.RequestDraw(EnumUpdateFlags.Scene);
+            meshRoot.AddNode(geoNode);
         }
         public void RunContourMap(RenderControl renderControl, GroupSceneNode root, List<Triangle2D> tris, List<double> Values)
         {
@@ -102,62 +103,56 @@ namespace MViewer.Graphics
             renderControl.RequestDraw(EnumUpdateFlags.Scene);
         }
 
-        public static List<Triangle> DecomposeFace(TopoShape Shape)
+        public static List<TriangleMesh> DecomposeFace(TopoShape Shape)
         {            
             var gshape = GRepShape.Create(Shape, null, null, 0, false);            
             return DecomposeFace(gshape);
         }
 
-        public static List<Triangle> DecomposeFace(GRepShape gshape)
+        public static List<TriangleMesh> DecomposeFace(GRepShape gshape)
         {
-            List<Triangle> facets = new List<Triangle>();
+            List<TriangleMesh> faceMeshs = new List<TriangleMesh>();
             var success = gshape.Build();
             GRepIterator iter = new GRepIterator();
+
             for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
-            {
+            {                
                 var postions = iter.GetPositions();
                 var idx = iter.GetIndex();
                 uint pnum = postions.GetItemCount();
                 uint idnum = idx.GetItemCount();
-                List<V3> verts = new List<V3>();
+                V3[] verts = new V3[pnum/3];
+                int[] indices = new int[idnum];
                 for (uint i = 0; i < pnum / 3; i++)
                 {
                     var vert = postions.GetVec3(i * 3);
-                    verts.Add(ConvertVector3.ToV3(vert));
+                    verts[i] = (ConvertVector3.ToV3(vert));
                 }
-                for (uint i = 0; i < idnum / 3; i++)
+                for (uint i = 0; i < idnum; i++)
                 {
-                    uint id0 = idx.GetValue(i * 3);
-                    uint id1 = idx.GetValue(i * 3 + 1);
-                    uint id2 = idx.GetValue(i * 3 + 2);
-                    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
-                    facets.Add(tri);
+                    uint id0 = idx.GetValue(i );
+                    indices[i] =(int)id0;
                 }
+                TriangleMesh mesh = new TriangleMesh(verts, indices);
+                faceMeshs.Add(mesh);
             }
-            return facets;
+            return faceMeshs;
         }
-        public void DisplayMesh(RenderControl renderControl, TriangleMesh mesh)
+        public void DisplayMesh(TriangleMesh mesh)
         {
             switch (ModelDisplay)
             { 
                 default:
                 case ViewMode.Wireframe:
-                    WireframeMode(renderControl, mesh); break;
+                    WireframeMode(mesh); break;
                 case ViewMode.Shaded: 
-                    ShadedMode(renderControl, mesh); break;
+                    ShadedMode(mesh); break;
             }
                 
         }
-        public void ShadedMode(RenderControl renderControl, TriangleMesh mesh)
+        public void ShadedMode(TriangleMesh mesh)
         {
-            var prevNode = GroupSceneNode.Cast(renderControl.Scene.FindNodeByUserId(MeshObjID));
-            if (prevNode == null)
-            {
-                prevNode = new GroupSceneNode();
-                prevNode.SetUserId(MeshObjID);
-                renderControl.Scene.AddNode(prevNode);
-            }
-            if(!Append) prevNode.Clear();
+            if(!Append) meshRoot.Clear();
             var pts = mesh.GetPoints();
             var indices = mesh.GetTriangleIndices().Select(e=>(uint)e).ToArray();
             mPositions = new Float32Buffer(0);
@@ -178,19 +173,11 @@ namespace MViewer.Graphics
             
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
-            prevNode.AddNode(wireNode);
-            renderControl.RequestDraw(EnumUpdateFlags.Scene);
+            meshRoot.AddNode(wireNode);
         }
-        public void WireframeMode(RenderControl renderControl, TriangleMesh mesh)
+        public void WireframeMode(TriangleMesh mesh)
         {
-            var prevNode = GroupSceneNode.Cast(renderControl.Scene.FindNodeByUserId(MeshObjID));
-            if (prevNode == null)
-            {
-                prevNode = new GroupSceneNode();
-                prevNode.SetUserId(MeshObjID);
-                renderControl.Scene.AddNode(prevNode);
-            }
-            if (!Append) prevNode.Clear();
+            if (!Append) meshRoot.Clear();
             var pts = mesh.GetPoints();
             var indices = mesh.GetTriangleIndices().Select(e => (uint)e).ToArray();
             mPositions = new Float32Buffer(0);
@@ -216,8 +203,7 @@ namespace MViewer.Graphics
 
             NormalCalculator.ComputeVertexNormals(buff);
             PrimitiveSceneNode wireNode = new PrimitiveSceneNode(buff, mat);
-            prevNode.AddNode(wireNode);
-            renderControl.RequestDraw(EnumUpdateFlags.Scene);
+            meshRoot.AddNode(wireNode);
         }
     }
 }

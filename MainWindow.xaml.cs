@@ -28,6 +28,7 @@ namespace MViewer
         public ICommand Seg3Command { get; set; }
         public ICommand CirCommand { get; set; }
         public ICommand ExpPtsCommand { get; set; }
+        public ICommand ExpMeshCommand { get; set; }
         public ICommand RayCastCommand { get; set; }
         public ICommand MeshPtsCommand { get; set; }
         public ICommand CalibCommand { get; set; }
@@ -39,6 +40,7 @@ namespace MViewer
         public ICommand SeleByCirCommand { get; set; }
         public ICommand CurveFaceCmd { get; set; }
         GroupSceneNode cloudroot;
+        GroupSceneNode meshroot;
         const ulong CloudID = 1;
         const ulong ModelID = 2;
         const ulong MeshID = 3;
@@ -60,6 +62,7 @@ namespace MViewer
             CirCommand = new Command(param => ReadCir());
             PCDCommand = new Command(param => ReadCloud());
             ExpPtsCommand = new Command(param => ExpPts());
+            ExpMeshCommand = new Command(param => ExpMesh());
             CalibCommand = new Command(param => Calib());
             SideCDTool = new Command(param => SideCDtool());
             SeleByNBCommand = new Command(param => SelectByNorm());
@@ -431,37 +434,28 @@ namespace MViewer
                 var currentFace = faces[faceId];
                 var gshape = GRepShape.Create(currentFace, matFace, matLine, 0, false);
                 var success = gshape.Build();
-                GRepIterator iter = new GRepIterator();
-                List<V3> allverts = new List<V3>();
-                for (bool init = iter.Initialize(gshape, EnumShapeFilter.Face); iter.More(); iter.Next())
-                {
-                    var postions = iter.GetPositions();
-                    var idx = iter.GetIndex();
-                    uint pnum = postions.GetItemCount();
-                    uint idnum = idx.GetItemCount();
-                    List<V3> verts = new List<V3>();
-                    for (uint i = 0; i < pnum / 3; i++)
+                var decomp = Graphic_Tris.DecomposeFace(gshape);
+                if(wMesh.TargetType == 0)
+                {//点云分支
+                    List<V3> allverts = new List<V3>();
+                    foreach (var mesh in decomp)
                     {
-                        var vert = postions.GetVec3(i * 3);
-                        verts.Add(ConvertVector3.ToV3(vert));
+                        allverts.AddRange(mesh.GetPoints());
                     }
-                    //for (uint i = 0; i < idnum / 3; i++)
-                    //{
-                    //    uint id0 = idx.GetValue(i * 3);
-                    //    uint id1 = idx.GetValue(i * 3 + 1);
-                    //    uint id2 = idx.GetValue(i * 3 + 2);
-                    //    V3 v0 = verts[(int)id0];
-                    //    V3 v1 = verts[(int)id1];
-                    //    V3 v2 = verts[(int)id2];
-                    //    if (Math.Abs(((v0 - v1).Cross(v1 - v2)).Normalized().Dot(rayDir)) < 0.01f) continue;
-                    //    Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
-                    //    facets0.Add(tri);
-                    //}
-                    allverts.AddRange(verts);
+                    Graphic_Cloud cloud = new Graphic_Cloud();
+                    cloud.ShowCloud(allverts, mRenderCtrl);
                 }
-
-                Graphic_Cloud cloud = new Graphic_Cloud();
-                cloud.ShowCloud(allverts, mRenderCtrl);
+                else
+                {//网格分支
+                    meshroot.Clear();
+                    MeshPara para=new MeshPara("") { Append=true , ModelDisplay = ViewMode.Wireframe };
+                    Graphic_Tris gTris = new Graphic_Tris(para, meshroot);
+                    foreach (var mesh in decomp)
+                    {
+                        gTris.DisplayMesh(mesh);
+                    }
+                }
+                mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
                 #endregion
             }
         }
@@ -499,20 +493,21 @@ namespace MViewer
                 WReadMesh readMesh=new WReadMesh(new MeshPara(openfile.FileName));
                 if (readMesh.ShowDialog() == true)
                 {
-                    Graphic_Tris gtmesh = new Graphic_Tris(readMesh.Para);
+                    Graphic_Tris gtmesh = new Graphic_Tris(readMesh.Para, meshroot);
                     switch (System.IO.Path.GetExtension(openfile.FileName).ToLowerInvariant())
                     {
                         case ".ply":
                             MeshReader mr = new MeshReader(openfile.FileName);
                             TriangleMesh mesh = mr.ReadPly();
-                            gtmesh.DisplayMesh(mRenderCtrl, mesh);
+                            gtmesh.DisplayMesh(mesh);
                             break;
                         case ".txt":
                             CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
                             var verts = reader.ReadXYZ();
-                            gtmesh.Run(mRenderCtrl, verts);
+                            gtmesh.ShowTriangleSoup(verts);
                             break;
                     }
+                    mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
                 }
             }
         }
@@ -582,6 +577,13 @@ namespace MViewer
                 }
             }
         }
+        /// <summary>
+        /// TODO
+        /// </summary>
+        private void ExpMesh()
+        {
+
+        }
         private void Calib()
         {
             var mng = mRenderCtrl.ViewContext.GetSelectionManager();
@@ -610,6 +612,8 @@ namespace MViewer
             mRenderCtrl.AddPickFilter(EnumShapeFilter.Vertex);
             cloudroot = new GroupSceneNode();
             mRenderCtrl.ShowSceneNode(cloudroot);
+            meshroot = new GroupSceneNode();
+            mRenderCtrl.ShowSceneNode(meshroot);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

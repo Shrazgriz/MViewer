@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MViewer"
         mc:Ignorable="d"
-        Title="网格离散" Height="180" Width="300">
+        Title="网格离散" Height="380" Width="300">
     <Window.Resources>
         <local:V3ToStringConverter x:Key="V3ToStringConverter"/>
     </Window.Resources>
@@ -21,7 +21,11 @@
             <Label >FaceId选择</Label>
             <ComboBox x:Name="CB_FaceId" Margin="4" SelectionChanged="CB_FaceId_SelectionChanged">
             </ComboBox>
-        </StackPanel>        
+            <ComboBox x:Name="CB_TargetType" Margin="4" SelectionChanged="CB_TargetType_SelectionChanged">
+                <ComboBoxItem>Points</ComboBoxItem>
+                <ComboBoxItem>TriMesh</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
         <StackPanel Margin="10" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button x:Name="BN_OK" Margin="18 0" MinWidth="100" HorizontalAlignment="Stretch"
             Click="BN_OK_Click">

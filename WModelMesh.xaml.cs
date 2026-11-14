@@ -20,6 +20,7 @@ namespace MViewer
     public partial class WModelMesh : Window
     {
         public int FaceId { get; set; }
+        public int TargetType { get; set; }
         public WModelMesh(List<int> IdList)
         {
             InitializeComponent();
@@ -28,6 +29,7 @@ namespace MViewer
                 CB_FaceId.Items.Add(i);
             }
             CB_FaceId.SelectedIndex = 0;
+            CB_TargetType.SelectedIndex = 0;
         }
         private void BN_OK_Click(object sender, RoutedEventArgs e)
         {
@@ -42,6 +44,11 @@ namespace MViewer
         private void CB_FaceId_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             FaceId = CB_FaceId.SelectedIndex;
+        }
+
+        private void CB_TargetType_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            TargetType = CB_TargetType.SelectedIndex;
         }
     }
 }

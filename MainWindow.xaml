@@ -35,6 +35,7 @@
                 </MenuItem>
                 <MenuItem Header="输出">
                     <MenuItem Header="点集" x:Name="menuExpPts" Command="{Binding Path=ExpPtsCommand}"/>
+                    <MenuItem Header="网格" x:Name="menuExpMesh" Command="{Binding Path=ExpMeshCommand}"/>
                 </MenuItem>
                 <MenuItem Header="标定...">
                     <MenuItem Header="标定工具" x:Name="menuCalibra" Command="{Binding Path=CalibCommand}"/>
