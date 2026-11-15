@@ -225,11 +225,15 @@ namespace MViewer
             modelRoot.AddNode(node);
             mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
         }
-        private List<V3> rayCastModel(List<Triangle> facets, CatersianSys raySys, double umin, double umax, double vmin, double vmax, double rayDense, bool AlignCenter)
+        private List<V3> rayCastModel(List<Triangle> facets, CatersianSys raySys, V2 min, V2 max, double rayDense, bool AlignCenter)
         {
             V3 rayDir = raySys.ZAxis;
             V3 u = raySys.XAxis;
             V3 v = raySys.YAxis;
+            double umin = min.X;
+            double vmin = min.Y;
+            double umax = max.X;
+            double vmax = max.Y;            
             List<Line> rayList = new List<Line>();
             int vjit = -1;
             #region 生成射线
@@ -378,9 +382,9 @@ namespace MViewer
                     // 6. 并行执行两个任务
                     Parallel.Invoke(parallelOptions,
                         // 任务1：处理第一部分点
-                        () => { hit0 = rayCastModel(facets0, raySys0, uValues.Min(), umid, vValues.Min(), vValues.Max(), d, wRay.Para.AlignCenter); },
+                        () => { hit0 = rayCastModel(facets0, raySys0, new V2(uValues.Min(), vValues.Min()), new V2(umid, vValues.Max()), d, wRay.Para.AlignCenter); },
                         // 任务2：处理第二部分点
-                        () => { hit1 = rayCastModel(facets1, raySys1, umid, uValues.Max(), vValues.Min(), vValues.Max(), d, wRay.Para.AlignCenter); }
+                        () => { hit1 = rayCastModel(facets1, raySys1, new V2(umid, vValues.Min()), new V2(uValues.Max(), vValues.Max()), d, wRay.Para.AlignCenter); }
                     );
                     if (hit0 != null & hit1 != null)
                     {
@@ -835,7 +839,6 @@ namespace MViewer
                 Graphic_Lines.DrawCircle(mRenderCtrl, prjCir);
                 WriteLine(prjCir.ToString());
             }
-            //WriteLine(string.Format("法向" plane.Norm.ToString());
         }
         private void FitCurveSurface()
         {
@@ -865,8 +868,6 @@ namespace MViewer
                 }
                 CubicSplineSurface surf = new CubicSplineSurface(cslist);
                 List<List<V3>> scanRows = new List<List<V3>>();
-                int rowid = 0;
-                int vertid = 0;
                 int rslx = 200; int rsly = 200;
                 var longtiLines = surf.GetLongtitudes(rslx);
                 foreach (var longti in longtiLines)

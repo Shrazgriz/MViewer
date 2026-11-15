@@ -105,7 +105,7 @@ namespace MViewer.Graphics
 
         public static List<TriangleMesh> DecomposeFace(TopoShape Shape)
         {            
-            var gshape = GRepShape.Create(Shape, null, null, 0, false);            
+            var gshape = GRepShape.Create(Shape, null, null, 0, false);
             return DecomposeFace(gshape);
         }
 
