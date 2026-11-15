@@ -37,6 +37,7 @@ namespace MViewer
         public ICommand SeleByROICommand { get; set; }
         public ICommand FitCirCommand { get; set; }
         public ICommand MeshCommand { get; set; }
+        public ICommand TriSoupCommand { get; set; }
         public ICommand SeleByCirCommand { get; set; }
         public ICommand CurveFaceCmd { get; set; }
         GroupSceneNode cloudroot;
@@ -50,6 +51,7 @@ namespace MViewer
         Graphic_Clip clip;
         static MaterialInstance matLine;
         static MaterialInstance matFace;
+        TriangleMesh _lastMesh;
         public MainWindow()
         {
             InitializeComponent();
@@ -70,6 +72,7 @@ namespace MViewer
             SeleByCirCommand = new Command(param => SelectByCir());
             FitCirCommand = new Command(param => FitCircle());
             MeshCommand = new Command(param => ReadMesh());
+            TriSoupCommand = new Command(param => ReadTriSoup());
             CurveFaceCmd = new Command(param => FitCurveSurface());
             showPoints = true;
 
@@ -170,7 +173,7 @@ namespace MViewer
                         return shape;
                     }
                 default:
-                    
+
                     throw new NotImplementedException();
             }
         }
@@ -218,16 +221,16 @@ namespace MViewer
             }
             if (node == null)
                 return;
-            
+
             modelRoot.AddNode(node);
             mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
         }
-        private List<V3> rayCastModel(List<Triangle>facets, CatersianSys raySys, double umin, double umax, double vmin ,double vmax, double rayDense, bool AlignCenter)
+        private List<V3> rayCastModel(List<Triangle> facets, CatersianSys raySys, double umin, double umax, double vmin, double vmax, double rayDense, bool AlignCenter)
         {
             V3 rayDir = raySys.ZAxis;
             V3 u = raySys.XAxis;
             V3 v = raySys.YAxis;
-            List<Line> rayList = new List<Line>();            
+            List<Line> rayList = new List<Line>();
             int vjit = -1;
             #region 生成射线
             for (double i = umin; i < umax; i += rayDense)
@@ -236,10 +239,10 @@ namespace MViewer
                 {
                     V3 ptOnLine = (i) * u + (j + vjit * rayJit) * v;
                     Line ray = new Line(rayDir, ptOnLine);
-                    rayList.Add(ray);                    
+                    rayList.Add(ray);
                 }
                 vjit *= -1;
-            }            
+            }
             #endregion
             #region 射线检测
             List<V3> hitPts = new List<V3>();
@@ -252,9 +255,9 @@ namespace MViewer
                     {
                         MVUnity.Plane triBase = MVUnity.Plane.CreatePlane(face.Vertices[0], face.Vertices[1], face.Vertices[2]);
                         var xpt = triBase.IntersectPoint(ray);
-                        if(Math.Abs(triBase.Norm.Dot(ray.Direction)) < 0.1f)
+                        if (Math.Abs(triBase.Norm.Dot(ray.Direction)) < 0.1f)
                         {
-                            if(face.IsPointInside(xpt)) xPts.Add(xpt);
+                            if (face.IsPointInside(xpt)) xPts.Add(xpt);
                         }
                         else xPts.Add(xpt);
                     }
@@ -278,9 +281,11 @@ namespace MViewer
             if (modelRoot != null)
             {
                 var iter = modelRoot.CreateIterator();
-                if (iter.More()) {
+                if (iter.More())
+                {
                     var child = BrepSceneNode.Cast(iter.Current());
-                    if (child != null) {
+                    if (child != null)
+                    {
                         findModel = true;
                         mshape = child.GetTopoShape();
                     }
@@ -350,8 +355,8 @@ namespace MViewer
                         V3 v0 = verts[(int)id0];
                         V3 v1 = verts[(int)id1];
                         V3 v2 = verts[(int)id2];
-                        if (Math.Abs(((v0-v1).Cross(v1-v2)).Normalized().Dot(rayDir)) < 0.01f) continue;
-                        Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });                        
+                        if (Math.Abs(((v0 - v1).Cross(v1 - v2)).Normalized().Dot(rayDir)) < 0.01f) continue;
+                        Triangle tri = new Triangle(new V3[3] { verts[(int)id0], verts[(int)id1], verts[(int)id2] });
                         facets0.Add(tri);
                         facets1.Add(new Triangle(tri));
                     }
@@ -373,9 +378,9 @@ namespace MViewer
                     // 6. 并行执行两个任务
                     Parallel.Invoke(parallelOptions,
                         // 任务1：处理第一部分点
-                        () => { hit0 = rayCastModel(facets0, raySys0, uValues.Min(), umid, vValues.Min(), vValues.Max(),d, wRay.Para.AlignCenter); },
+                        () => { hit0 = rayCastModel(facets0, raySys0, uValues.Min(), umid, vValues.Min(), vValues.Max(), d, wRay.Para.AlignCenter); },
                         // 任务2：处理第二部分点
-                        () => { hit1 = rayCastModel(facets1, raySys1, umid, uValues.Max(), vValues.Min(), vValues.Max(),d, wRay.Para.AlignCenter); }
+                        () => { hit1 = rayCastModel(facets1, raySys1, umid, uValues.Max(), vValues.Min(), vValues.Max(), d, wRay.Para.AlignCenter); }
                     );
                     if (hit0 != null & hit1 != null)
                     {
@@ -432,10 +437,8 @@ namespace MViewer
                 #region 模型分解
                 int faceId = wMesh.FaceId;
                 var currentFace = faces[faceId];
-                var gshape = GRepShape.Create(currentFace, matFace, matLine, 0, false);
-                var success = gshape.Build();
-                var decomp = Graphic_Tris.DecomposeFace(gshape);
-                if(wMesh.TargetType == 0)
+                var decomp = Graphic_Tris.DecomposeFace(currentFace);
+                if (wMesh.TargetType == 0)
                 {//点云分支
                     List<V3> allverts = new List<V3>();
                     foreach (var mesh in decomp)
@@ -448,12 +451,13 @@ namespace MViewer
                 else
                 {//网格分支
                     meshroot.Clear();
-                    MeshPara para=new MeshPara("") { Append=true , ModelDisplay = ViewMode.Wireframe };
+                    MeshPara para = new MeshPara("") { Append = true, ModelDisplay = ViewMode.Wireframe };
                     Graphic_Tris gTris = new Graphic_Tris(para, meshroot);
                     foreach (var mesh in decomp)
                     {
                         gTris.DisplayMesh(mesh);
                     }
+                    _lastMesh = decomp.Last();
                 }
                 mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
                 #endregion
@@ -487,26 +491,33 @@ namespace MViewer
         }
         private void ReadMesh()
         {
-            OpenFileDialog openfile = new OpenFileDialog() { Filter = "*.txt;*.ply|*.txt;*.ply" };
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "网格文件|*.obj;*.off;*.ply" };
             if (openfile.ShowDialog() == true)
             {
-                WReadMesh readMesh=new WReadMesh(new MeshPara(openfile.FileName));
+                WReadMesh readMesh = new WReadMesh(new MeshPara(openfile.FileName));
                 if (readMesh.ShowDialog() == true)
                 {
                     Graphic_Tris gtmesh = new Graphic_Tris(readMesh.Para, meshroot);
-                    switch (System.IO.Path.GetExtension(openfile.FileName).ToLowerInvariant())
-                    {
-                        case ".ply":
-                            MeshReader mr = new MeshReader(openfile.FileName);
-                            TriangleMesh mesh = mr.ReadPly();
-                            gtmesh.DisplayMesh(mesh);
-                            break;
-                        case ".txt":
-                            CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
-                            var verts = reader.ReadXYZ();
-                            gtmesh.ShowTriangleSoup(verts);
-                            break;
-                    }
+                    MeshReader mr = new MeshReader(openfile.FileName);
+                    TriangleMesh mesh = mr.ReadPly();
+                    _lastMesh = mesh;
+                    gtmesh.DisplayMesh(mesh);
+                    mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
+                }
+            }
+        }
+        private void ReadTriSoup()
+        {
+            OpenFileDialog openfile = new OpenFileDialog() { Filter = "triangle soup文件|*.txt;" };
+            if (openfile.ShowDialog() == true)
+            {
+                WReadMesh readMesh = new WReadMesh(new MeshPara(openfile.FileName));
+                if (readMesh.ShowDialog() == true)
+                {
+                    Graphic_Tris gtmesh = new Graphic_Tris(readMesh.Para, meshroot);
+                    CloudReader reader = new CloudReader() { FileName = openfile.FileName, Scale = V3.Identity, Format = "xyz" };
+                    var verts = reader.ReadXYZ();
+                    gtmesh.ShowTriangleSoup(verts);
                     mRenderCtrl.RequestDraw(EnumUpdateFlags.Scene);
                 }
             }
@@ -582,7 +593,17 @@ namespace MViewer
         /// </summary>
         private void ExpMesh()
         {
-
+            if (_lastMesh is null)
+            {
+                WriteLine("未生成网格对象");
+                return;
+            }
+            SaveFileDialog savefile = new SaveFileDialog() { Filter = "ply文件|*.ply" };
+            if (savefile.ShowDialog() == true)
+            {
+                MeshWriter.SavePly(_lastMesh, savefile.FileName);
+            }
+            MessageBox.Show("网格写入完成");
         }
         private void Calib()
         {
@@ -825,7 +846,7 @@ namespace MViewer
                 string line;
                 line = sr.ReadLine();
                 List<CubicSpline> cslist = new List<CubicSpline>();
-                List<V3> knots= new List<V3>();
+                List<V3> knots = new List<V3>();
                 while (line != null)
                 {
                     if (line == "===")
